@@ -21,6 +21,7 @@
 
    [app.ui.user.login :as login]
    [app.ui.home.index :as home]
+   [app.ui.drawer.index :as drawer]
    [app.ui.nativebase :as nativebase]))
 
 
@@ -29,28 +30,56 @@
   (status-bar/set-translucent true))
 
 
-
 (defn root-stack []
   [safe-area/safe-area-provider
    [(rnn/create-navigation-container-reload                 ;; navigation container with shadow-cljs hot reload
      {:on-ready #(re-frame/dispatch [:initialise-app])}     ;; when navigation initialized and mounted initialize the app
      [nativebase/nativebase-provider {:config {:dependencies {"linear-gradient" linear-gradient}}}
-      [stack/stack {}
-       [{:name      :main
-         :component home/anonymous
-         :options {:title ""}}
-        {:name       :login
-         :component  login/view
-         :options    {:title ""}}
-        {:name       :home5
-         :component  home/home5
-         :options    {:title ""}}
-        {:name       :home
-         :component  home/tabs
-         :options    {:title ""
-                      :headerLeft (fn [] nil)
-                      :header {:back false}
-                      :headerShown false}}]]])]])
-       ; [:f> nativebase/view]])]])
-       ; [drawer/view]])]])
-       ; [login/view]]])]])
+      ; [drawer/view]])]])
+      ;
+      [drawer/drawer {:screenOptions
+                      {
+                       :drawerPosition :left
+                       :drawerStyle {:width 300}
+                       :drawerType :front
+                       :headerShown false}
+                      :drawerContent
+                      (fn [props]
+                        (reagent/as-element
+                          [rnn/navigation-container {:independent true}
+                           [drawer/drawer {:screenOptions
+                                           {
+                                            :drawerPosition :left
+                                            :drawerType :front
+                                            :drawerStyle {:width 200}
+                                            :headerShown false}
+                                           :drawerContent
+                                           (fn [props]
+                                             (reagent/as-element
+                                               [drawer/drawer-content-scroll-view {}
+                                                [safe-area/safe-area-view
+                                                 [rn/text "hello Hi"]]]))}
+                            [{:name :front
+                              :component
+                              (fn [] [rn/text "hello world!"])}]]]))}
+       ;
+       [{:name :main-drawer
+         :component
+         (fn []
+           [stack/stack {}
+            [{:name      :main
+              :component home/anonymous
+              :options {:title ""
+                        :headerShown false}}
+             {:name       :login
+              :component  login/view
+              :options    {:title ""}}
+             {:name       :home5
+              :component  home/home5
+              :options    {:title ""}}
+             {:name       :home
+              :component  home/tabs
+              :options    {:title ""
+                           :headerLeft (fn [] nil)
+                           :header {:back false}
+                           :headerShown false}}]])}]]])]])

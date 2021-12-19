@@ -2,6 +2,7 @@
   (:require
    [app.ui.nativebase :as nbase]
    [app.ui.components :as ui]
+   [app.handler.navigation :as navigation]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [cljs-bean.core :as bean]
@@ -16,7 +17,9 @@
    [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                        :justifyContent "center" :alignSelf "center" :alignItems "center"
                        :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
-                       :onPress #(re-frame/dispatch [:navigate-to :home])}]])
+                       :onPress #(do ;(re-frame/dispatch [:navigate-to :home]))}]])
+                                   (navigation/nav-reset))}]])
+
 
 
 (def tab-icons
