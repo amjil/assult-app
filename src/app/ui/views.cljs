@@ -4,7 +4,6 @@
    [cljs-bean.core :as bean]
    [steroid.rn.core :as rn]
    [steroid.rn.navigation.core :as rnn]
-   [steroid.rn.navigation.bottom-tabs :as bottom-tabs]
    [steroid.rn.components.status-bar :as status-bar]
    [steroid.rn.navigation.safe-area :as safe-area]
    [steroid.rn.components.platform :as platform]
@@ -30,65 +29,6 @@
   (status-bar/set-translucent true))
 
 
-(def tab-icons
-  {"home"    "md-home"
-   "book"    "md-bookmark"
-   "edit"    "md-create"
-   "profile" "md-person"})
-
-(defn screen-options [options]
-  (let [{:keys [route]} (bean/->clj options)]
-    {:tabBarIcon
-     (fn [data]
-       (let [{:keys [color]} (bean/->clj data)
-             icon (get tab-icons (:name route))]
-         (reagent/as-element
-          [ui/ion-icons {:name icon :color color :size 30}])))}))
-
-
-(defn home1 []
-  [nativebase/center {:flex 1 :px 3 :safeArea true}
-   [nativebase/text "abc"]])
-
-(defn home2 []
-  [nativebase/center {:flex 1 :px 3 :safeArea true}
-   [nativebase/text "home2"]])
-
-(defn home3 []
-  [nativebase/center {:flex 1 :px 3 :safeArea true}
-   [nativebase/text "home3"]])
-
-(defn home4 []
-  [nativebase/center {:flex 1 :px 3 :safeArea true}
-   [nativebase/text "home4"]])
-
-(defn tabs []
-  [bottom-tabs/bottom-tab
-   {
-    ; :screenOptions screen-options}
-    :screenOptions
-    (fn [options]
-     (let [{:keys [route]} (bean/->clj options)]
-       (bean/->js {:activeTintColor   "#5cb85c"
-                   :inactiveTintColor :black
-                   :showLabel         false
-                   :tabBarLabel       (fn [] nil)
-                   :headerShown       false
-                   :modal             true
-                   :tabBarIcon (fn [data]
-                                 (let [{:keys [color]} (bean/->clj data)
-                                       icon (get tab-icons (:name route))]
-                                   (reagent/as-element
-                                     [ui/ion-icons {:name icon :color color :size 20}])))})))}
-
-   [{:name      :home
-     :component home1}
-    {:name      :book
-     :component home2}
-    {:name      :edit
-     :component home3}
-    {:name      :profile
-     :component home4}]])
 
 (defn root-stack []
   [safe-area/safe-area-provider
@@ -101,7 +41,16 @@
          :options {:title ""}}
         {:name       :login
          :component  login/view
-         :options    {:title ""}}]]])]])
+         :options    {:title ""}}
+        {:name       :home5
+         :component  home/home5
+         :options    {:title ""}}
+        {:name       :home
+         :component  home/tabs
+         :options    {:title ""
+                      :headerLeft (fn [] nil)
+                      :header {:back false}
+                      :headerShown false}}]]])]])
        ; [:f> nativebase/view]])]])
        ; [drawer/view]])]])
        ; [login/view]]])]])
