@@ -35,8 +35,6 @@
    [(rnn/create-navigation-container-reload                 ;; navigation container with shadow-cljs hot reload
      {:on-ready #(re-frame/dispatch [:initialise-app])}     ;; when navigation initialized and mounted initialize the app
      [nativebase/nativebase-provider {:config {:dependencies {"linear-gradient" linear-gradient}}}
-      ; [drawer/view]])]])
-      ;
       [drawer/drawer {:screenOptions
                       {
                        :drawerPosition :left
@@ -46,22 +44,9 @@
                       :drawerContent
                       (fn [props]
                         (reagent/as-element
-                          [rnn/navigation-container {:independent true}
-                           [drawer/drawer {:screenOptions
-                                           {
-                                            :drawerPosition :left
-                                            :drawerType :front
-                                            :drawerStyle {:width 200}
-                                            :headerShown false}
-                                           :drawerContent
-                                           (fn [props]
-                                             (reagent/as-element
-                                               [drawer/drawer-content-scroll-view {}
-                                                [safe-area/safe-area-view
-                                                 [rn/text "hello Hi"]]]))}
-                            [{:name :front
-                              :component
-                              (fn [] [rn/text "hello world!"])}]]]))}
+                          [drawer/drawer-content-scroll-view {}
+                           [ui/safe-area-consumer
+                             [rn/text "hello Hi"]]]))}
        ;
        [{:name :main-drawer
          :component

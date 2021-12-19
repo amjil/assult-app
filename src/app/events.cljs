@@ -2,8 +2,9 @@
   (:require
    [re-frame.core :as re-frame]
    [app.db :as db]
+   steroid.rn.navigation.events
    app.handler.candidates.events
-   steroid.rn.navigation.events))
+   app.handler.user.events))
 
 
 (re-frame/reg-event-fx                                      ;; usage: (dispatch [:initialise-app])
