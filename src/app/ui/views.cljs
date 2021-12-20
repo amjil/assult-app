@@ -56,7 +56,7 @@
               :component home/anonymous
               :options {:title ""
                         :headerShown false}}
-             {:name       :login
+             {:name       :sign-in
               :component  login/view
               :options    {:title ""}}
              {:name       :home5
