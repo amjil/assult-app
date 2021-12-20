@@ -35,6 +35,6 @@
      :on-success             on-success
      :on-failure             on-failure})))
 
-(defn get (partial http-request :get))
+(def get (partial http-request :get))
 
-(defn post (partial http-request :post))
+(def post (partial http-request :post))
