@@ -3,6 +3,7 @@
    [re-frame.core :as re-frame]
    [app.db :as db]
    steroid.rn.navigation.events
+   day8.re-frame.http-fx
    app.handler.candidates.events
    app.handler.user.events))
 
