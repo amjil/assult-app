@@ -22,3 +22,14 @@
      {:db       (assoc db :user user)
       :dispatch [:set-active-page {:page :home}]}
      {:dispatch [:navigate-to :sign-in]})))            ;; overwise open sig-in modal screen
+
+
+
+;; -- Request Handlers -----------------------------------------------------------
+;;
+(re-frame/reg-event-fx
+ :api-request-error                                         ;; triggered when we get request-error from the server
+ (fn [{db :db} [_ request-type response]]                   ;; destructure to obtain request-type and response
+   {:db (-> db                                              ;; when we complete a request we need to clean so that our ui is nice and tidy
+            (assoc-in [:errors request-type] (get-in response [:body :errors]))
+            (assoc-in [:loading request-type] false))}))

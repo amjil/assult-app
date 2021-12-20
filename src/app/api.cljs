@@ -1,5 +1,7 @@
 (ns app.api
-  (:require [clojure.string :as str]))
+  (:require
+   [clojure.string :as str]
+   [ajax.core :as ajax]))
 
 (def api-url "https://localhost:3000/api")
 
@@ -13,3 +15,26 @@
   [db]
   (when-let [token (get-in db [:user :token])]
     {"Authorization" (str "Token " token)}))
+
+;; opts {:db db :params params :headers headers}
+(defn http-request
+  ([method uri on-success on-failure]
+   {:method                 method
+    :uri                    uri
+    :format                 (ajax/json-request-format)
+    :response-format        (ajax/json-response-format {:keywords? true})
+    :on-success             on-success
+    :on-failure             on-failure})
+  ([method uri on-success on-failure opts]
+   (merge
+    opts
+    {:method                 method
+     :uri                    uri
+     :format                 (ajax/json-request-format)
+     :response-format        (ajax/json-response-format {:keywords? true})
+     :on-success             on-success
+     :on-failure             on-failure})))
+
+(defn get (partial http-request :get))
+
+(defn post (partial http-request :post))
