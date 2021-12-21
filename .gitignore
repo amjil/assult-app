@@ -65,5 +65,3 @@ buck-out/
 /.cpcache/
 /.clj-kondo/
 /.calva/
-/android
-/ios
