@@ -4,6 +4,4 @@
     [cljs-bean.core :as bean]))
 
 (defn nav-reset []
-  ; (reset! navigation/nav-ref nil)
-  ; (reset! navigation/callback nil))
   (.reset @navigation/nav-ref (bean/->js {:index 0, :routes [{:name "home"}]})))

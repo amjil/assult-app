@@ -4,12 +4,14 @@
    [app.ui.components :as ui]
    [steroid.rn.core :as rn]
    [reagent.core :as reagent]
+   [re-frame.core :as re-frame]
    ["native-base" :refer [ArrowForwardIcon]]
    ["react-native-vector-icons/Ionicons" :default Ionicons]
    ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]))
 
 (defn view []
-  (let [show (reagent/atom true)]
+  (let [show (reagent/atom true)
+        mobile (reagent/atom "")]
     (fn []
       [nbase/box {:h "100%" :safeArea true}
        [nbase/flex {:mt 20 :mx 10 :h "80%" :justifyContent "space-between"}
@@ -20,7 +22,8 @@
          [nbase/input {:keyboardType "number-pad"
                        :placeholder "Input Mobile"
                        :onFocus #(reset! show false)
-                       :onBlur #(reset! show true)}]
+                       :onBlur #(reset! show true)
+                       :on-change-text #(reset! mobile %)}]
          [nbase/flex {:flexDirection "row" :justifyContent "space-between"}
           [nbase/hstack {:space 2}
            [nbase/pressable
@@ -31,7 +34,8 @@
             [:f> nbase/styled-text-view {:color "darkBlue.600"} "Login in with email"]]]
           [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                               :justifyContent "center" :alignSelf "center" :alignItems "center"
-                              :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])}]]]
+                              :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
+                              :on-press #(re-frame/dispatch [:login @credentials])}]]]
         (if @show
           [nbase/center
            [nbase/hstack {:space 3}

@@ -1,4 +1,5 @@
 (ns app.api
+  (:refer-clojure :exclude [get])
   (:require
    [clojure.string :as str]
    [ajax.core :as ajax]))

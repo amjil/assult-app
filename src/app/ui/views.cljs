@@ -58,7 +58,9 @@
                         :headerShown false}}
              {:name       :sign-in
               :component  login/view
-              :options    {:title ""}}
+              :options    {:title ""
+                           :gestureEnabled false
+                           :headerShown false}}
              {:name       :home5
               :component  home/home5
               :options    {:title ""}}

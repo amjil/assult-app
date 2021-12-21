@@ -4,6 +4,7 @@
    [app.db :as db]
    steroid.rn.navigation.events
    day8.re-frame.http-fx
+   app.fx
    app.handler.candidates.events
    app.handler.user.events))
 
