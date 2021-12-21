@@ -18,7 +18,13 @@
                        :justifyContent "center" :alignSelf "center" :alignItems "center"
                        :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
                        :onPress #(do ;(re-frame/dispatch [:navigate-to :home]))}]])
-                                   (navigation/nav-reset))}]])
+                                   (navigation/nav-reset))}]
+   [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
+                       :justifyContent "center" :alignSelf "center" :alignItems "center"
+                       :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
+                       :onPress #(do ;(re-frame/dispatch [:navigate-to :home]))}]])
+                                   (re-frame/dispatch [:logout]))}]])
+
 
 
 

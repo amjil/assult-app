@@ -2,12 +2,13 @@
   (:require
    [re-frame.core :as re-frame]
    [ajax.core :as ajax]
+   [cljs-bean.core :as bean]
    [app.api :as api]
    [app.db :as db]))
 
 ;; -- Check Mobile -------------------------------------------------------------
 (re-frame/reg-event-fx
- :check-mobile
+ :user-check-mobile
  (fn [{:keys [db]} [_ mobile]]
    {:db    (assoc-in db [:loading :login] true)
     :http-xhrio {:method                 :post
@@ -15,16 +16,24 @@
                  :params                 {:mobile mobile}
                  :format                 (ajax/json-request-format)
                  :response-format        (ajax/json-response-format {:keywords? true})
-                 :on-success             [:check-mobile-success]
+                 :on-success             [:user-check-mobile-success]
                  :on-failure             [:api-request-error :check-mobile]}}))
 
 (re-frame/reg-event-fx
- :check-mobile-success
- (fn [{db :db} [_ {body :body}]]
-   (let [{props :user} body
-         user (merge (:user db) props)]
-     {:db               (assoc-in db [:user :token] user)
-      :store-user-in-ls user})))
+ :user-check-mobile-success
+ (fn [{db :db} [_ body]]
+   (let [{{exists :exists mobile :mobile} :data code :code msg :msg} body]
+     (merge
+       {:db               (assoc-in db [:user :mobile] mobile)}
+       (cond
+         (not (zero? code))
+         {:dispatch [:toast msg]} ;; error toast
+
+         (true? exists)
+         {:dispatch [:navigate-to :password]}
+
+         :else
+         {:dispatch [:navigate-to :sign-up]})))))
 ;; -- Login --------------------------------------------------------------------
 (re-frame/reg-event-fx
  :login

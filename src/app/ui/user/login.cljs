@@ -35,7 +35,10 @@
           [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                               :justifyContent "center" :alignSelf "center" :alignItems "center"
                               :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
-                              :on-press #(re-frame/dispatch [:user-check-mobile mobile])}]]]
+                              :on-press #(do
+                                           (js/console.log ">>>> " @mobile)
+                                           (re-frame/dispatch [:user-check-mobile @mobile]))}]]]
+
         (if @show
           [nbase/center
            [nbase/hstack {:space 3}

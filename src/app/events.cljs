@@ -20,8 +20,7 @@
  :set-user-from-storage
  (fn [{db :db} [_ user]]
    (if user                                          ;; if user signed in we can get user data from ls, in that case we navigate to home
-     {:db       (assoc db :user user)
-      :dispatch [:set-active-page {:page :home}]}
+     {:db       (assoc db :user user)}
      {:dispatch [:navigate-to :sign-in]})))            ;; overwise open sig-in modal screen
 
 

@@ -20,6 +20,8 @@
    ["react-native-linear-gradient" :default linear-gradient]
 
    [app.ui.user.login :as login]
+   [app.ui.user.register :as register]
+   [app.ui.user.code :as user-code]
    [app.ui.home.index :as home]
    [app.ui.drawer.index :as drawer]
    [app.ui.nativebase :as nativebase]))
@@ -61,6 +63,12 @@
               :options    {:title ""
                            :gestureEnabled false
                            :headerShown false}}
+             {:name       :sign-up
+              :component  register/view
+              :options    {:title ""}}
+             {:name       :user-in-code
+              :component  user-code/view
+              :options    {:title ""}}
              {:name       :home5
               :component  home/home5
               :options    {:title ""}}
