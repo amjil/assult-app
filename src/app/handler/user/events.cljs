@@ -5,6 +5,26 @@
    [app.api :as api]
    [app.db :as db]))
 
+;; -- Check Mobile -------------------------------------------------------------
+(re-frame/reg-event-fx
+ :check-mobile
+ (fn [{:keys [db]} [_ mobile]]
+   {:db    (assoc-in db [:loading :login] true)
+    :http-xhrio {:method                 :post
+                 :uri                    (api/endpoint "users" "check-mobile")
+                 :params                 {:mobile mobile}
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:check-mobile-success]
+                 :on-failure             [:api-request-error :check-mobile]}}))
+
+(re-frame/reg-event-fx
+ :check-mobile-success
+ (fn [{db :db} [_ {body :body}]]
+   (let [{props :user} body
+         user (merge (:user db) props)]
+     {:db               (assoc-in db [:user :token] user)
+      :store-user-in-ls user})))
 ;; -- Login --------------------------------------------------------------------
 (re-frame/reg-event-fx
  :login
