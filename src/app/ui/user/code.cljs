@@ -28,4 +28,5 @@
                                 :justifyContent "center" :alignSelf "center" :alignItems "center"
                                 :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
                                 :on-press #(do
-                                             (js/console.log ">>>> "))}]]]]]))))
+                                             (js/console.log ">>>> ")
+                                             (re-frame/dispatch [:register-user {:mobile mobile :code @code}]))}]]]]]))))

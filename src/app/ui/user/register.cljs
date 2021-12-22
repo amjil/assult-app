@@ -43,4 +43,4 @@
                                   :else false)
                                 :on-press #(do
                                              (js/console.log ">>>> ")
-                                             (re-frame/dispatch [:navigate-to :user-in-code]))}]]]]]))))
+                                             (re-frame/dispatch [:user-send-code {:mobile mobile :direction 1}]))}]]]]]))))

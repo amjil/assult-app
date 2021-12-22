@@ -1,6 +1,8 @@
 (ns app.fx
-  (:require [re-frame.core :as re-frame]
-            [steroid.rn.components.async-storage :as async-storage]))
+  (:require
+   [re-frame.core :as re-frame]
+   [steroid.rn.components.async-storage :as async-storage]
+   [app.handler.navigation :as navigation]))
 
 ;; copied from https://github.com/flexsurfer/conduitrn
 
@@ -28,3 +30,8 @@
  :get-user-from-ls
  (fn [cb]
    (async-storage/get-item app-user-key cb)))
+
+(re-frame/reg-fx
+ :navigation-reset
+ (fn []
+   (navigation/nav-reset)))

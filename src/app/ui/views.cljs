@@ -22,6 +22,7 @@
    [app.ui.user.login :as login]
    [app.ui.user.register :as register]
    [app.ui.user.code :as user-code]
+   [app.ui.setting.detail :as setting-detail]
    [app.ui.home.index :as home]
    [app.ui.drawer.index :as drawer]
    [app.ui.nativebase :as nativebase]))
@@ -54,7 +55,11 @@
          :component
          (fn []
            [stack/stack {}
-            [{:name      :main
+            [
+             {:name       :setting-detail
+              :component  setting-detail/view
+              :options    {:title ""}}
+             {:name      :main
               :component home/anonymous
               :options {:title ""
                         :headerShown false}}
@@ -68,9 +73,6 @@
               :options    {:title ""}}
              {:name       :user-in-code
               :component  user-code/view
-              :options    {:title ""}}
-             {:name       :home5
-              :component  home/home5
               :options    {:title ""}}
              {:name       :home
               :component  home/tabs

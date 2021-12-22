@@ -4,7 +4,7 @@
    [clojure.string :as str]
    [ajax.core :as ajax]))
 
-(def api-url "https://localhost:3000/api")
+(def api-url "http://t.amjil.net/api")
 
 (defn endpoint
   "Concat any params to api-url separated by /"

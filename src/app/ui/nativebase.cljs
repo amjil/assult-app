@@ -167,9 +167,15 @@
     (bean/->clj text-props)))
 
 
-(defn styled-text-view [props t]
-  (let [[text-props _] (useStyledSystemPropsResolver (bean/->js props))]
-    [measured-text (bean/->clj text-props) t]))
+(defn styled-text-view [focus name props]
+  (let [theme-props (bean/->clj (useThemeProps name (bean/->js props)))
+        [text-props _] (bean/->clj (useStyledSystemPropsResolver (bean/->js theme-props)))]
+    (js/console.log "theme-props = " (bean/->js theme-props))
+    (js/console.log "text-props = " (bean/->js text-props))
+    [pressable (merge theme-props (if @focus (:_focus theme-props))
+                 {:on-press #(reset! focus true)})
+     [measured-text (select-keys text-props [:fontSize :color])  "hello world"]]))
+    ; [measured-text {}  "hello world"]))
 
 (defn view []
   [center {:flex 1 :py 3 :safeArea true}])
