@@ -110,7 +110,6 @@
 
 (def center (reagent/adapt-react-class Center))
 
-
 (defn rotated-text [props width height t]
   (let [offset (js/Math.abs (- (/ height 2) (/ width 2)))]
     [text (merge props {:style {:width height :height width
@@ -164,18 +163,11 @@
 (defn theme-props [name props]
   (let [theme-props (bean/->js (useThemeProps name (bean/->js props)))
         [text-props _] (useStyledSystemPropsResolver (bean/->js theme-props))]
-    (bean/->clj text-props)))
+    [(bean/->clj theme-props) (bean/->clj text-props)]))
 
-
-(defn styled-text-view [focus name props]
-  (let [theme-props (bean/->clj (useThemeProps name (bean/->js props)))
-        [text-props _] (bean/->clj (useStyledSystemPropsResolver (bean/->js theme-props)))]
-    (js/console.log "theme-props = " (bean/->js theme-props))
-    (js/console.log "text-props = " (bean/->js text-props))
-    [pressable (merge theme-props (if @focus (:_focus theme-props))
-                 {:on-press #(reset! focus true)})
-     [measured-text (select-keys text-props [:fontSize :color])  "hello world"]]))
-    ; [measured-text {}  "hello world"]))
+(defn styled-text-view [props t]
+  (let [[text-props _] (useStyledSystemPropsResolver (bean/->js props))]
+    [measured-text (bean/->clj text-props) t]))
 
 (defn view []
   [center {:flex 1 :py 3 :safeArea true}])

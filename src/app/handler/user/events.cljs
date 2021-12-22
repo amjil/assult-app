@@ -53,6 +53,8 @@
    (let [{props :user} body
          user (merge (:user db) props)]
      {:db               (assoc-in db [:user :token] user)
+      :dispatch [:navigate-to :home]
+      :navigation-reset nil
       :store-user-in-ls user})))
 
 ;; -- Register ----------------------------------------------------------------
