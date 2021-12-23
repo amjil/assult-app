@@ -129,14 +129,15 @@
      (measured-text props t (bean/->clj info))))
   ([props t info]
    (let [height (or (:height props) (:width info))
-         width (/ (:height info) (:lineCount info))
+         ;; plus 1
+         width (+ 1 (/ (:height info) (:lineCount info)))
          offset (- (/ height 2) (/ width 2))]
      (cond
        (nil? info)
        [text "empty ...."]
 
        (= 1 (:lineCount info))
-       [box {:style {:width (:height info)
+       [box {:style {:width width
                      :height height}}
         [rotated-text props width height t]]
 

@@ -17,14 +17,13 @@
 (defn input-view [focus t name props]
   (let [[theme-props text-props] (nbase/theme-props name props)
         text-props (select-keys text-props [:fontSize :color])
-        info (if @t
-              (rntext/measure (bean/->js (merge (assoc text-props :text @t))))
-              (rntext/measure (bean/->js (merge (assoc text-props :text "abc")))))]
+        info (rntext/measure (bean/->js (merge (assoc text-props :text @t :useCharsWidth true))))]
     (js/console.log (bean/->js info))
+    (js/console.log (bean/->js (j/get info :lineInfo)))
     [nbase/pressable (merge theme-props (if @focus (:_focus theme-props))
                        {:on-press #(reset! focus true)})
      [nbase/zstack
-      [nbase/measured-text (select-keys text-props [:fontSize :color])  "hello world" info]]]))
+      [nbase/measured-text (select-keys text-props [:fontSize :color])  @t]]]))
         ; [:> blinkview {"useNativeDriver" false}
         ;  [rn/view {:style {:position :absolute :top (or @y 0) :left (or @x 0)}}
         ;   [:> svg/Svg {:width 32 :height 2}
@@ -33,7 +32,7 @@
 (defn view []
   (let [focus (reagent/atom false)
         height (reagent/atom nil)
-        value (reagent/atom nil)]
+        value (reagent/atom " ")]
     (fn []
       (let [mobile @(re-frame/subscribe [:user-mobile])
             loading @(re-frame/subscribe [:loading])]
