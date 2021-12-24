@@ -128,7 +128,7 @@
          info (rntext/measure (bean/->js (merge (assoc props :text t) (if width {:width width}))))]
      (measured-text props t (bean/->clj info))))
   ([props t info]
-   (let [height (or (:height props) (:width info))
+   (let [height (or (:height props) (:width info) 2)
          ;; plus 1
          width (+ 1 (/ (:height info) (:lineCount info)))
          offset (- (/ height 2) (/ width 2))]
