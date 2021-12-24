@@ -19,6 +19,7 @@
   (let [ex (j/get evt :x)
         ey (j/get evt :y)
 
+        _ (js/console.log "xxx1111" ex ey)
         x (loop [i      0]
             (cond
               (empty? widths)
@@ -37,11 +38,14 @@
 
               :else
               (recur (inc i))))
+        _ (js/console.log "xxx1112 = " x)
 
         line (nth widths x)
         item-count (count line)
 
+        _ (js/console.log "xxx >>> " item-count)
         y (loop [i      0]
+            (js/console.log "xxx111>> " i)
             (cond
               (empty? widths)
               0
@@ -54,6 +58,7 @@
               (let [item (nth line i)
                     item-y (+ (:y item) (:width item))
                     half-width (/ (:width item) 2)]
+                (js/console.log "item y >>" (bean/->js item))
                 (cond
                   (<= ey (+ (:y item) half-width))
                   (:y item)
@@ -62,7 +67,10 @@
                   item-y
 
                   :else
-                  (recur (inc i))))))]
+                  (recur (inc i))))))
+        _ (js/console.log "xxx1113")]
+    ; [(+ x 8) y]
+    (js/console.log "result = " (* line-height x) y)
     [(* line-height x) y]))
 
 (defn text-widths [info]
@@ -83,26 +91,26 @@
         (swap! atomic assoc :x 0)
         (swap! atomic assoc :y (:width info))
         (swap! atomic assoc :flag true)))
-    ; (js/console.log (bean/->js text-props))
-    ; (js/console.log (bean/->js t-props))
-    ; (js/console.log (bean/->js info))
-    ; (js/console.log (bean/->js widths))
+    (js/console.log (bean/->js text-props))
+    (js/console.log (bean/->js t-props))
+    (js/console.log (bean/->js info))
+    (js/console.log (bean/->js widths))
     [gesture/tap-gesture-handler
      {:onHandlerStateChange #(do
                                (swap! atomic assoc :focus true)
                                (if (gesture/tap-state-end (j/get % :nativeEvent))
-                                 (let [[ex ey] (cursor-location (j/get % :nativeEvent) line-width widths)
-                                       ey (- ey padding-value)]
+                                 (let [[ex ey] (cursor-location (j/get % :nativeEvent) line-width widths)]
+                                       ; ey (- ey padding-value)]
                                    (swap! atomic assoc :x ex)
                                    (swap! atomic assoc :y ey))))}
-     [gesture/pan-gesture-handler {:onGestureEvent #(let [[ex ey] (cursor-location (j/get % :nativeEvent) line-width widths)
-                                                          ey (- ey padding-value)]
+     [gesture/pan-gesture-handler {:onGestureEvent #(let [[ex ey] (cursor-location (j/get % :nativeEvent) line-width widths)]
+                                                          ; ey (- ey padding-value)]
                                                       (swap! atomic assoc :x ex)
                                                       (swap! atomic assoc :y ey))}
-      [nbase/pressable (merge theme-props (if (:focus @atomic) (:_focus theme-props))
-                         {:on-press #(swap! atomic assoc :focus true)})
+      [nbase/box (merge theme-props (if (:focus @atomic) (:_focus theme-props))
+                   {:on-press #(swap! atomic assoc :focus true)})
        [nbase/zstack
-          [nbase/measured-text (select-keys text-props [:fontSize :color])  (:text @atomic) info]
+        [nbase/measured-text (select-keys text-props [:fontSize :color])  (:text @atomic) info]
         [nbase/box {:style {:margin-top (:y @atomic) :margin-left (:x @atomic)}}
          [:> blinkview {"useNativeDriver" false}
           [:> svg/Svg {:width (:height info) :height 2}
