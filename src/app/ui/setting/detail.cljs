@@ -95,20 +95,20 @@
     (js/console.log (bean/->js t-props))
     (js/console.log (bean/->js info))
     (js/console.log (bean/->js widths))
-    [gesture/tap-gesture-handler
-     {:onHandlerStateChange #(do
-                               (swap! atomic assoc :focus true)
-                               (if (gesture/tap-state-end (j/get % :nativeEvent))
-                                 (let [[ex ey] (cursor-location (j/get % :nativeEvent) line-width widths)]
-                                       ; ey (- ey padding-value)]
-                                   (swap! atomic assoc :x ex)
-                                   (swap! atomic assoc :y ey))))}
-     [gesture/pan-gesture-handler {:onGestureEvent #(let [[ex ey] (cursor-location (j/get % :nativeEvent) line-width widths)]
-                                                          ; ey (- ey padding-value)]
-                                                      (swap! atomic assoc :x ex)
-                                                      (swap! atomic assoc :y ey))}
-      [nbase/box (merge theme-props (if (:focus @atomic) (:_focus theme-props))
-                   {:on-press #(swap! atomic assoc :focus true)})
+    [nbase/box (merge theme-props (if (:focus @atomic) (:_focus theme-props))
+                 {:on-press #(swap! atomic assoc :focus true)})
+     [gesture/tap-gesture-handler
+      {:onHandlerStateChange #(do
+                                (swap! atomic assoc :focus true)
+                                (if (gesture/tap-state-end (j/get % :nativeEvent))
+                                  (let [[ex ey] (cursor-location (j/get % :nativeEvent) line-width widths)]
+                                        ; ey (- ey padding-value)]
+                                    (swap! atomic assoc :x ex)
+                                    (swap! atomic assoc :y ey))))}
+      [gesture/pan-gesture-handler {:onGestureEvent #(let [[ex ey] (cursor-location (j/get % :nativeEvent) line-width widths)]
+                                                           ; ey (- ey padding-value)]
+                                                       (swap! atomic assoc :x ex)
+                                                       (swap! atomic assoc :y ey))}
        [nbase/zstack
         [nbase/measured-text (select-keys text-props [:fontSize :color])  (:text @atomic) info]
         [nbase/box {:style {:margin-top (:y @atomic) :margin-left (:x @atomic)}}
