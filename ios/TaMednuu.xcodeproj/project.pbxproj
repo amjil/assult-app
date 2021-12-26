@@ -30,6 +30,7 @@
 		D754BB632D4343AC9D4FDB1C /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 24E382AEB9DF42DE8AFAB9DA /* SimpleLineIcons.ttf */; };
 		E02042B98F874185AF90028D /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E36AA061CDC942BEA3F83091 /* Fontisto.ttf */; };
 		F6035868BD5048758FC0F3B1 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE9E329A044B409183CE6721 /* Zocial.ttf */; };
+		106B76D11D0A40D0988BC991 /* MongolianBaiZheng.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B89F1DCC03A54E50BA1E485E /* MongolianBaiZheng.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		EA31C776A7F83EED45AA21A0 /* libPods-TaMednuu.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TaMednuu.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EF154149E43CA2A54B448B0E /* libPods-TaMednuu-TaMednuuTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TaMednuu-TaMednuuTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B89F1DCC03A54E50BA1E485E /* MongolianBaiZheng.ttf */ = {isa = PBXFileReference; name = "MongolianBaiZheng.ttf"; path = "../assets/fonts/MongolianBaiZheng.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +159,7 @@
 				3870651814A74E20BA9F5B75 /* Octicons.ttf */,
 				24E382AEB9DF42DE8AFAB9DA /* SimpleLineIcons.ttf */,
 				AE9E329A044B409183CE6721 /* Zocial.ttf */,
+				B89F1DCC03A54E50BA1E485E /* MongolianBaiZheng.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -316,6 +319,7 @@
 				A25D280B8EA14B80B25BF596 /* Octicons.ttf in Resources */,
 				D754BB632D4343AC9D4FDB1C /* SimpleLineIcons.ttf in Resources */,
 				F6035868BD5048758FC0F3B1 /* Zocial.ttf in Resources */,
+				106B76D11D0A40D0988BC991 /* MongolianBaiZheng.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

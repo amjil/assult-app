@@ -111,7 +111,7 @@
 (def center (reagent/adapt-react-class Center))
 
 (defn rotated-text [props width height t]
-  (let [offset (js/Math.abs (- (/ height 2) (/ width 2)))]
+  (let [offset (- (/ height 2) (/ width 2))]
     [text (merge props {:style {:width height :height width
                                 :transform [{:rotate "90deg"}
                                             {:translateX offset}
@@ -130,8 +130,7 @@
   ([props t info]
    (let [height (or (:height props) (:width info) 2)
          ;; plus 1
-         width (+ 1 (/ (:height info) (:lineCount info)))
-         offset (- (/ height 2) (/ width 2))]
+         width (or (:width props) (+ 4 (/ (:height info) (:lineCount info))))]
      (cond
        (nil? info)
        [text "empty ...."]
@@ -142,7 +141,7 @@
         [rotated-text props width height t]]
 
        :else
-       [box {:style {:width (:height info)
+       [box {:style {:width  (+ (* 4 (:lineCount info)) (:height info))
                      :height height}}
         [flat-list
          {:horizontal true

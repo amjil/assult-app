@@ -2,6 +2,7 @@
   (:require
    [re-frame.core :as re-frame]
    [app.persist.sqlite :as sqlite]
+   [app.ui.text.index :as text]
    [clojure.string :as str]))
 
 (re-frame/reg-fx
@@ -41,13 +42,15 @@
 ;;; on delete press
 (re-frame/reg-event-fx
  :keyboard-delete
- (fn [{db :db} [_ _]]
+ (fn [{db :db} [_ props]]
    (let [old-index (get-in db [:candidates :index])
          new-index (str/join "" (drop-last old-index))]
      (cond
        (or (empty? old-index) (= 1 (count old-index)))
-       {:db       (assoc-in db [:candidates :index] "")
-        :dispatch [:set-candidates-list []]}
+       (let [value (str/join "" (drop-last (:text @props)))]
+         (swap! props assoc :text value)
+         {:db       (assoc-in db [:candidates :index] "")
+          :dispatch [:set-candidates-list []]})
 
        :else
        {:db               (assoc-in db [:candidates :index] new-index)
@@ -84,6 +87,20 @@
  :set-editor-cursor
  (fn [{db :db} [_ value]]
    {:db (assoc-in db [:editor :cursor] value)}))
+
+;;
+(re-frame/reg-event-fx
+ :set-editor-cursor
+ (fn [{db :db} [_ value]]
+   {:db (assoc-in db [:editor :cursor] value)}))
+
+(re-frame/reg-event-fx
+ :set-editor-cursor-xy
+ (fn [{db :db} [_ [x y]]]
+   {:db
+     (-> db
+        (assoc-in [:editor :x] x)
+        (assoc-in [:editor :y] y))}))
 
 (comment
   (str/join "" (drop-last "hello"))
