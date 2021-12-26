@@ -141,7 +141,7 @@
         [rotated-text props width height t]]
 
        :else
-       [box {:style {:width  (+ (* 4 (:lineCount info)) (:height info))
+       [box {:style {:width  (* (:lineCount info) width)
                      :height height}}
         [flat-list
          {:horizontal true

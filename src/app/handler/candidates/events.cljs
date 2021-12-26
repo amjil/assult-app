@@ -48,7 +48,7 @@
      (cond
        (or (empty? old-index) (= 1 (count old-index)))
        (let [value (str/join "" (drop-last (:text @props)))]
-         (swap! props assoc :text value)
+         (swap! props assoc :text (if (empty? value) " " value))
          {:db       (assoc-in db [:candidates :index] "")
           :dispatch [:set-candidates-list []]})
 
@@ -90,17 +90,40 @@
 
 ;;
 (re-frame/reg-event-fx
- :set-editor-cursor
+ :set-editor-selection-cursor
  (fn [{db :db} [_ value]]
-   {:db (assoc-in db [:editor :cursor] value)}))
+   {:db (assoc-in db [:editor :selection :cursor] value)}))
 
 (re-frame/reg-event-fx
- :set-editor-cursor-xy
+ :set-editor-selection-xy
  (fn [{db :db} [_ [x y]]]
    {:db
      (-> db
-        (assoc-in [:editor :x] x)
-        (assoc-in [:editor :y] y))}))
+        (assoc-in [:editor :selection :x] x)
+        (assoc-in [:editor :selection :y] y))}))
+;;
+(re-frame/reg-event-fx
+ :set-editor-text-props
+ (fn [{db :db} [_ props]]
+   {:db (assoc-in db [:editor :text-porps] props)}))
+;;
+(re-frame/reg-event-fx
+ :set-editor-text-info
+ (fn [{db :db} [_ value]]
+   {:db (assoc-in db [:editor :text-info] value)}))
+;;
+
+
+; (re-frame/reg-fx
+;  :set-editor-text-info
+;  (fn [text-props value cb]
+;    (cb
+;      (bean/->clj
+;        (rntext/measure
+;          (bean/->js
+;            (assoc text-props
+;                   :text value
+;                   :useCharsWidth true)))))))
 
 (comment
   (str/join "" (drop-last "hello"))

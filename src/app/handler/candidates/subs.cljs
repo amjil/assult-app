@@ -11,3 +11,10 @@
  :candidates-index
  (fn [db _]
    (get-in db [:candidates :index])))
+
+(re-frame/reg-sub
+ :editor-selection-xy
+ (fn [db _]
+   (let [x (get-in db [:editor :selection :x])
+         y (get-in db [:editor :selection :y])]
+     [x y])))
