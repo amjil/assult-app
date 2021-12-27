@@ -2,8 +2,10 @@
   (:require
    [re-frame.core :as re-frame]
    [app.persist.sqlite :as sqlite]
-   [app.ui.text.index :as text]
-   [clojure.string :as str]))
+   [app.handler.text.index :as text]
+   [clojure.string :as str]
+   [cljs-bean.core :as bean]
+   ["react-native-measure-text-chars" :as rntext]))
 
 (re-frame/reg-fx
  :candidates-query
@@ -47,7 +49,22 @@
          new-index (str/join "" (drop-last old-index))]
      (cond
        (or (empty? old-index) (= 1 (count old-index)))
-       (let [value (str/join "" (drop-last (:text @props)))]
+       (let [value (str/join "" (drop-last (:text @props)))
+             _ (js/console.log ">>>>>>>>>>>>> A")
+             text-info  (bean/->clj
+                          (rntext/measure
+                            (bean/->js
+                              (assoc {:color "#1f2937" :fontSize 12}
+                                     :text value
+                                     :useCharsWidth true))))
+             _ (js/console.log ">>>>>>>>>>>>> B")
+             text-widths (text/text-widths text-info)
+             [x y] (text/cursor-update
+                     (count value)
+                     20
+                     text-widths)]
+         ; (swap! props assoc :x x)
+         ; (swap! props assoc :y y)
          (swap! props assoc :text (if (empty? value) " " value))
          {:db       (assoc-in db [:candidates :index] "")
           :dispatch [:set-candidates-list []]})
@@ -106,24 +123,26 @@
  :set-editor-text-props
  (fn [{db :db} [_ props]]
    {:db (assoc-in db [:editor :text-porps] props)}))
-;;
+
 (re-frame/reg-event-fx
  :set-editor-text-info
  (fn [{db :db} [_ value]]
-   {:db (assoc-in db [:editor :text-info] value)}))
-;;
+   {:db (-> db
+          (assoc-in [:editor :text-info] value)
+          (assoc-in [:editor :text-widths] (text/text-widths value)))}))
 
 
-; (re-frame/reg-fx
-;  :set-editor-text-info
-;  (fn [text-props value cb]
-;    (cb
-;      (bean/->clj
-;        (rntext/measure
-;          (bean/->js
-;            (assoc text-props
-;                   :text value
-;                   :useCharsWidth true)))))))
+(re-frame/reg-fx
+ :set-editor-text-info
+ (fn [text-props value]
+   (re-frame/dispatch
+     [:set-editor-text-info
+      (bean/->clj
+        (rntext/measure
+          (bean/->js
+            (assoc text-props
+                   :text value
+                   :useCharsWidth true))))])))
 
 (comment
   (str/join "" (drop-last "hello"))

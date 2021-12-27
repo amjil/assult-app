@@ -10,7 +10,7 @@
    [app.handler.gesture :as gesture]
    [app.ui.keyboard.index :as keyboard]
    [app.ui.keyboard.candidates :as candidates]
-   [app.ui.text.index :as text]
+   [app.handler.text.index :as text]
    ["native-base" :refer [ArrowForwardIcon]]
    ["react-native-vector-icons/Ionicons" :default Ionicons]
    ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]
@@ -18,9 +18,6 @@
    ["react-native-measure-text-chars" :as rntext]
    ["react-native-svg" :as svg]))
 
-(defn text-widths [info]
-  (let [widths (map #(:charWidths %) (:lineInfo info))]
-    (map #(map-indexed (fn [idx item] {:width item :y (reduce + (take idx %))}) %) widths)))
 
 (defn input-view [atomic params]
   (let [{:keys [name props]} params
@@ -35,7 +32,7 @@
                           :text (:text @atomic)
                           :useCharsWidth true))))
         line-width (/ (:height info) (:lineCount info))
-        widths (text-widths info)]
+        widths (text/text-widths info)]
     (if (false? (:flag @atomic))
       (do
         (swap! atomic assoc :x 0)
@@ -46,7 +43,7 @@
     (js/console.log (bean/->js t-props))
     (js/console.log (bean/->js info))
     (js/console.log (bean/->js widths))
-    (js/console.log line-width)
+    (js/console.log line-width (get @atomic :x) (get @atomic :y))
     [gesture/tap-gesture-handler
      {:onHandlerStateChange #(do
                                (swap! atomic assoc :focus true)
