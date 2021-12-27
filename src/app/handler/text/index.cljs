@@ -83,13 +83,16 @@
           line (if (empty? widths) [] (nth widths x))
           item-count (apply + (map (fn [i] (count i)) (take x widths)))
 
+          _ (js/console.log "item-count " item-count)
           y (loop [i    0]
+              (js/console.log "i<<< " i)
               (cond
                 (empty? widths)
                 0
 
                 (<= pos (+ item-count i))
-                (if (> i (count line))
+                ; 0
+                (if (>= i (count line))
                   (let [item (last line)]
                     (+ (:y item) (:width item)))
                   (let [item (nth line i)]
@@ -100,8 +103,8 @@
                 (recur (inc i))))]
 
       ; (js/console.log "cursor update " x y)
-      ; [(if (zero? x) 0 (* line-height x)) y])
-      [0 0])))
+      [(if (zero? x) 0 (* line-height x)) y])))
+      ; [0 0])))
 
 (defn text-widths [info]
   (let [widths (map #(:charWidths %) (:lineInfo info))]

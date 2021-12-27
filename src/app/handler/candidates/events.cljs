@@ -60,11 +60,11 @@
              _ (js/console.log ">>>>>>>>>>>>> B")
              text-widths (text/text-widths text-info)
              [x y] (text/cursor-update
-                     (count value)
+                     (dec (count value))
                      20
                      text-widths)]
-         ; (swap! props assoc :x x)
-         ; (swap! props assoc :y y)
+         (swap! props assoc :x x)
+         (swap! props assoc :y y)
          (swap! props assoc :text (if (empty? value) " " value))
          {:db       (assoc-in db [:candidates :index] "")
           :dispatch [:set-candidates-list []]})
