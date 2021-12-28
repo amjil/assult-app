@@ -86,6 +86,7 @@
 
 
 (defn cursor-update [pos line-height widths]
+  (js/console.log "cursor-upate " pos)
   (if (> pos (apply + (map (fn [x] (count x)) widths)))
     (let [item (last (last widths))]
       [(* (dec (count widths)) line-height) (+ (:y item) (:width item))])
@@ -103,9 +104,9 @@
           line (if (empty? widths) [] (nth widths x))
           item-count (apply + (map (fn [i] (count i)) (take x widths)))
 
-          ;; _ (js/console.log "item-count " item-count)
+          _ (js/console.log "item-count " item-count)
           y (loop [i    0]
-              ;; (js/console.log "i<<< " i)
+              (js/console.log "i<<< " i)
               (cond
                 (empty? widths)
                 0
@@ -122,7 +123,7 @@
                 :else
                 (recur (inc i))))]
 
-      ; (js/console.log "cursor update " x y)
+      (js/console.log "cursor update " x y)
       [(if (zero? x) 0 (* line-height x)) y])))
       ; [0 0])))
 
@@ -174,12 +175,19 @@
      (str (subs t1 0 p1) t2 (subs t1 p2)))))
 
 (defn text-info [t props]
-  (bean/->clj
-   (rntext/measure
-    (bean/->js
-     (assoc props
-            :text t
-            :useCharsWidth true)))))
+  (if (empty? t)
+    (let [info (bean/->clj
+                (rntext/measure
+                 (bean/->js
+                  (assoc props
+                         :text " "))))]
+      (dissoc info :lineInfo))
+    (bean/->clj
+     (rntext/measure
+      (bean/->js
+       (assoc props
+              :text t
+              :useCharsWidth true))))))
 
 (defmulti text-change (fn [x] (:type x)))
 
@@ -253,6 +261,7 @@
         new-cursor           (count t)
         line-height          (if (nil? lh) (/ (:height info) (:lineCount info)) lh)
         [x y]                (cursor-update new-cursor line-height widths)]
+    (js/console.log " text -info -inti >>>")
     {:text         t
      :text-props   props
      :text-info    info
@@ -266,13 +275,19 @@
  :fx-text-change
  (fn [params]
    (let [info (text-change params)]
+     (js/console.log "fx text change >>>>>" (bean/->js params)
+                     (bean/->js info)
+                     (bean/->js (:text-widths info))
+                     (bean/->js (:lineInfo (:text-info info))))
      (re-frame/dispatch [:set-editor-info info]))))
 
 (re-frame/reg-event-fx
  :text-change
  (fn [{db :db} [_ params]]
    {:db             db
-    :fx-text-change params}))
+    :fx-text-change (merge params 
+                           (select-keys (:editor db)
+                                        [:text :cursor :text-props :line-height]))}))
 
 (re-frame/reg-fx
  :fx-init-editor
@@ -319,6 +334,11 @@
   (def widths (text-widths info))
   widths
   (cursor-update 4 1 widths)
+
+  @(re-frame/subscribe [:editor-text])
+  (re-frame/dispatch [:init-editor {:text "abcd" :text-props {:fontSize 14} :padding 8}])
+  (re-frame/dispatch [:text-change {:type :delete }])
+  (re-frame/subscribe [:editor])
 
 
   (text-info-init {:text "abcdef" :text-props {:fontSize 14}}))

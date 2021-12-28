@@ -25,25 +25,29 @@
         text-props (select-keys text-props [:fontSize :color])
         
         info @(re-frame/subscribe [:editor-info])
+        etext @(re-frame/subscribe [:editor-text])
+        line-height @(re-frame/subscribe [:editor-line-height])
         [x y] @(re-frame/subscribe [:editor-selection-xy])]
-    (if (false? (:flag @atomic))
+    (js/console.log ".........>>>>>>>>> " etext (:text @atomic))
+    (when (false? (:flag @atomic))
+      (swap! atomic assoc :flag true)
       (re-frame/dispatch
        [:init-editor {:text (:text @atomic) :text-props text-props :padding padding-value}]))
     [gesture/tap-gesture-handler
      {:onHandlerStateChange #(do
                                (swap! atomic assoc :focus true)
                                (if (gesture/tap-state-end (j/get % :nativeEvent))
-                                 (re-frame/dispatch [:cursor-localtion (j/get % :nativeEvent)])))}
+                                 (re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])))}
      [gesture/pan-gesture-handler {:onGestureEvent #(re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])}
       [nbase/box (merge theme-props (if (:focus @atomic) (:_focus theme-props)))
                    ; {:on-press #(swap! atomic assoc :focus true)})
        [nbase/zstack
-        [nbase/measured-text text-props (:text @atomic) info]
+        [nbase/measured-text text-props etext info]
         (if (:focus @atomic)
           [nbase/box {:style {:margin-top y :margin-left x}}
            [:> blinkview {"useNativeDriver" false}
-            [:> svg/Svg {:width (:height info) :height 2}
-             [:> svg/Rect {:x "0" :y "0" :width (:height info) :height 2 :fill "blue"}]]]])]]]]))
+            [:> svg/Svg {:width (or (:height info) line-height) :height 2}
+             [:> svg/Rect {:x "0" :y "0" :width (or (:height info) line-height) :height 2 :fill "blue"}]]]])]]]]))
 
 (defn view []
   (let [props (reagent/atom {:focus false :height nil

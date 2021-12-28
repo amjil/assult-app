@@ -49,10 +49,10 @@
        (or (empty? old-index) (= 1 (count old-index)))
        {:db          (assoc-in db [:candidates :index] "")
         :dispatch    [:set-candidates-list []]
-        :text-change (merge 
-                      (select-keys (:editor db) 
-                                   [:text :cursor :text-props :line-height])
-                      {:type :delete})}
+        :fx-text-change (merge
+                         (select-keys (:editor db)
+                                      [:text :cursor :text-props :line-height])
+                         {:type :delete})}
 
        :else
        {:db               (assoc-in db [:candidates :index] new-index)
@@ -76,8 +76,7 @@
 (re-frame/reg-event-fx
  :set-editor-selection-xy
  (fn [{db :db} [_ [x y]]]
-   {:db (assoc-in db [:editor :selection-xy] [x y])
-        }))
+   {:db (assoc-in db [:editor :selection-xy] [x y])}))
 ;;
 (re-frame/reg-event-fx
  :set-editor-text-props
@@ -87,7 +86,7 @@
 (re-frame/reg-event-fx
  :set-editor-info
  (fn [{db :db} [_ value]]
-   (merge-with into db {:editor value})))
+   {:db (merge-with into db {:editor value})}))
 
 
 (comment

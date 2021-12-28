@@ -28,4 +28,19 @@
  (fn [db _]
    (get-in db [:editor :text-info])))
 
+(re-frame/reg-sub
+ :editor-text
+ (fn [db _]
+   (get-in db [:editor :text])))
+
+(re-frame/reg-sub
+ :editor-line-height
+ (fn [db _]
+   (get-in db [:editor :line-height])))
+
+(re-frame/reg-sub
+ :editor
+ (fn [db _]
+   (get db :editor)))
+
 
