@@ -66,7 +66,7 @@
     ; (js/console.log "result = " (:iy y) (:y y))
     ; (js/console.log "result = " (bean/->js [x (* line-height x) (:iy y) (:y y)]))
     ; [x (* line-height x) iy y]
-    [x (if (zero? x) 0 (* line-height x)) (:iy y) (:y y)]))
+    [x (+ 2 (if (zero? x) 0 (* line-height x))) (:iy y) (:y y)]))
 
 
 (defn text-delete-cursor
@@ -124,14 +124,14 @@
                 (recur (inc i))))]
 
       (js/console.log "cursor update " x y)
-      [(if (zero? x) 0 (* line-height x)) y])))
+      [(+ 2 (if (zero? x) 0 (* line-height x))) y])))
       ; [0 0])))
 
 (defn text-widths [info]
   (let [widths (map #(:charWidths %) (:lineInfo info))]
     (map #(map-indexed (fn [idx item] {:width item :y (reduce + (take idx %))}) %) widths)))
 
-;;because of cursor settled zero position, nothing to delete 
+;;because of cursor settled zero position, nothing to delete
 (defn text-delete
   ([t pos]
    (cond
@@ -233,7 +233,7 @@
 (defmethod text-change
   :add-text
   [params]
-  (let [{start :start
+  (let [{start :cursor
          t     :text
          added :text-added
          props :text-props
@@ -285,7 +285,7 @@
  :text-change
  (fn [{db :db} [_ params]]
    {:db             db
-    :fx-text-change (merge params 
+    :fx-text-change (merge params
                            (select-keys (:editor db)
                                         [:text :cursor :text-props :line-height]))}))
 
@@ -317,7 +317,7 @@
  :cursor-location
  (fn [{db :db} [_ evt]]
    {:db                 db
-    :fx-cursor-location (assoc (select-keys (:editor db) [:padding :line-height :text-widths]) 
+    :fx-cursor-location (assoc (select-keys (:editor db) [:padding :line-height :text-widths])
                                :evt evt)}))
 
 
@@ -337,8 +337,10 @@
 
   @(re-frame/subscribe [:editor-text])
   (re-frame/dispatch [:init-editor {:text "abcd" :text-props {:fontSize 14} :padding 8}])
-  (re-frame/dispatch [:text-change {:type :delete }])
+  (re-frame/dispatch [:text-change {:type :delete}])
   (re-frame/subscribe [:editor])
+  ;; text add
+  (re-frame/dispatch [:text-change {:type :add-text :text-added "abcd"}])
 
 
   (text-info-init {:text "abcdef" :text-props {:fontSize 14}}))

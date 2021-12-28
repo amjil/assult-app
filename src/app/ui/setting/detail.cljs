@@ -22,8 +22,8 @@
         [theme-props text-props] (nbase/theme-props name props)
         t-props text-props
         padding-value (:padding t-props)
-        text-props (select-keys text-props [:fontSize :color])
-        
+        text-props (assoc (select-keys text-props [:fontSize :color]) :fontFamily "MongolianBaiZheng")
+
         info @(re-frame/subscribe [:editor-info])
         etext @(re-frame/subscribe [:editor-text])
         line-height @(re-frame/subscribe [:editor-line-height])
