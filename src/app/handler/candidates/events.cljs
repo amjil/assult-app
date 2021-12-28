@@ -2,10 +2,8 @@
   (:require
    [re-frame.core :as re-frame]
    [app.persist.sqlite :as sqlite]
-   [app.handler.text.index :as text]
    [clojure.string :as str]
-   [cljs-bean.core :as bean]
-   ["react-native-measure-text-chars" :as rntext]))
+   [cljs-bean.core :as bean]))
 
 (re-frame/reg-fx
  :candidates-query
@@ -44,30 +42,17 @@
 ;;; on delete press
 (re-frame/reg-event-fx
  :keyboard-delete
- (fn [{db :db} [_ props]]
+ (fn [{db :db} [_ _]]
    (let [old-index (get-in db [:candidates :index])
          new-index (str/join "" (drop-last old-index))]
      (cond
        (or (empty? old-index) (= 1 (count old-index)))
-       (let [value (str/join "" (drop-last (:text @props)))
-             _ (js/console.log ">>>>>>>>>>>>> A")
-             text-info  (bean/->clj
-                          (rntext/measure
-                            (bean/->js
-                              (assoc {:color "#1f2937" :fontSize 12}
-                                     :text value
-                                     :useCharsWidth true))))
-             _ (js/console.log ">>>>>>>>>>>>> B")
-             text-widths (text/text-widths text-info)
-             [x y] (text/cursor-update
-                     (dec (count value))
-                     20
-                     text-widths)]
-         (swap! props assoc :x x)
-         (swap! props assoc :y y)
-         (swap! props assoc :text (if (empty? value) " " value))
-         {:db       (assoc-in db [:candidates :index] "")
-          :dispatch [:set-candidates-list []]})
+       {:db          (assoc-in db [:candidates :index] "")
+        :dispatch    [:set-candidates-list []]
+        :text-change (merge 
+                      (select-keys (:editor db) 
+                                   [:text :cursor :text-props :line-height])
+                      {:type :delete})}
 
        :else
        {:db               (assoc-in db [:candidates :index] new-index)
@@ -84,40 +69,15 @@
 
 ;; editor events
 (re-frame/reg-event-fx
- :set-editor-content
- (fn [{db :db} [_ value]]
-   {:db (assoc-in db [:editor :content] value)}))
-
-(re-frame/reg-event-fx
- :editor-content-conj
- (fn [{db :db} [_ value]]
-   (let [new-value (str (get-in db [:editor :content]) value)]
-     {:db       (assoc-in db [:candidates :index] new-value)
-      :dispatch [:set-editor-lines new-value]})))
-
-(re-frame/reg-event-fx
- :set-editor-lines
- (fn [{db :db} [_ value]]
-   {:db (assoc-in db [:editor :lines] value)}))
-
-(re-frame/reg-event-fx
  :set-editor-cursor
  (fn [{db :db} [_ value]]
    {:db (assoc-in db [:editor :cursor] value)}))
 
-;;
-(re-frame/reg-event-fx
- :set-editor-selection-cursor
- (fn [{db :db} [_ value]]
-   {:db (assoc-in db [:editor :selection :cursor] value)}))
-
 (re-frame/reg-event-fx
  :set-editor-selection-xy
  (fn [{db :db} [_ [x y]]]
-   {:db
-     (-> db
-        (assoc-in [:editor :selection :x] x)
-        (assoc-in [:editor :selection :y] y))}))
+   {:db (assoc-in db [:editor :selection-xy] [x y])
+        }))
 ;;
 (re-frame/reg-event-fx
  :set-editor-text-props
@@ -125,26 +85,13 @@
    {:db (assoc-in db [:editor :text-porps] props)}))
 
 (re-frame/reg-event-fx
- :set-editor-text-info
+ :set-editor-info
  (fn [{db :db} [_ value]]
-   {:db (-> db
-          (assoc-in [:editor :text-info] value)
-          (assoc-in [:editor :text-widths] (text/text-widths value)))}))
+   (merge-with into db {:editor value})))
 
-
-(re-frame/reg-fx
- :set-editor-text-info
- (fn [text-props value]
-   (re-frame/dispatch
-     [:set-editor-text-info
-      (bean/->clj
-        (rntext/measure
-          (bean/->js
-            (assoc text-props
-                   :text value
-                   :useCharsWidth true))))])))
 
 (comment
+(merge-with into {:editor {:cursor 1}} {:editor {:cursor 2 :text "ab"}})
   (str/join "" (drop-last "hello"))
   (re-frame/dispatch [:candidates-index-concat "ab"])
   (re-frame/dispatch [:set-candidates-index ""])

@@ -49,7 +49,7 @@
                 {:label "ᠤ᠊" :code "v"} {:label "ᠪ᠊" :code "b"}
                 {:label "ᠨ᠊" :code "n"} {:label "ᠮ᠊" :code "m"}]])
 
-(defn keyboard [props]
+(defn keyboard []
   [nbase/box {:style {:flex-direction "column"
                       :flex 1
                       :height 300}}
@@ -93,7 +93,7 @@
                  [nbase/rotated-text {:font-family "MongolianBaiZheng" :font-size 18} 28 28 (:label kk)]]]]))
      [nbase/box {:style (merge key-con-style {:flex 1.5})}
       [:> ripple {:rippleColor "#000" :style key-style
-                  :on-press #(dispatch [:keyboard-delete props])}
+                  :on-press #(dispatch [:keyboard-delete])}
        [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
         [ui/ion-icons {:name "backspace" :color "gray" :size 30}]]]]]
     [nbase/box {:style {:flex 1 :flex-direction "row"

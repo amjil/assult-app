@@ -15,6 +15,17 @@
 (re-frame/reg-sub
  :editor-selection-xy
  (fn [db _]
-   (let [x (get-in db [:editor :selection :x])
-         y (get-in db [:editor :selection :y])]
+   (let [[x y] (get-in db [:editor :selection-xy])]
      [x y])))
+
+(re-frame/reg-sub
+ :editor-cursor
+ (fn [db _]
+   (get-in db [:editor :cursor])))
+
+(re-frame/reg-sub
+ :editor-info
+ (fn [db _]
+   (get-in db [:editor :text-info])))
+
+
