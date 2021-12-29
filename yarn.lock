@@ -7119,10 +7119,10 @@ react-native-linear-gradient@^2.5.6:
   resolved "https://registry.npmjs.org/react-native-linear-gradient/-/react-native-linear-gradient-2.5.6.tgz"
   integrity sha512-HDwEaXcQIuXXCV70O+bK1rizFong3wj+5Q/jSyifKFLg0VWF95xh8XQgfzXwtq0NggL9vNjPKXa016KuFu+VFg==
 
-react-native-measure-text-chars@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/react-native-measure-text-chars/-/react-native-measure-text-chars-0.3.1.tgz#4b51b03b4fc42d9a81598838eb270f5a482cef19"
-  integrity sha512-d6b0Ny5QKUSzuyPMYNgSK/nl7FT2x7G/8HrWWukHm71kg9rVfA6JTLd8CecgrXBA6KHI5Z7dpnLdPr2hq8o7Bg==
+react-native-measure-text-chars@^0.3.7:
+  version "0.3.7"
+  resolved "https://registry.npmjs.org/react-native-measure-text-chars/-/react-native-measure-text-chars-0.3.7.tgz#aa7d69aa62a20bfae74d1d155968ad5238fda3e4"
+  integrity sha512-2KuxOP7EOXPZcnF1SgKtiXWr9Xw0zllRIYF6YimHo2DFCyQbvf+Ym0Wi4njE18OJR5m0nKXbyKtOtR5dXEH8fQ==
 
 react-native-modal@^13.0.0:
   version "13.0.0"

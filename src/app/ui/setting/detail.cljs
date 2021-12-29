@@ -8,48 +8,14 @@
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [app.handler.gesture :as gesture]
+   [app.ui.text.index :as text]
    [app.ui.keyboard.index :as keyboard]
    [app.ui.keyboard.candidates :as candidates]
-   ["native-base" :refer [ArrowForwardIcon]]
-   ["react-native-vector-icons/Ionicons" :default Ionicons]
-   ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]
-   ["react-native-smooth-blink-view" :default blinkview]
-   ["react-native-svg" :as svg]))
+   ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
-
-(defn input-view [atomic params]
-  (let [{:keys [name props]} params
-        [theme-props text-props] (nbase/theme-props name props)
-        t-props text-props
-        padding-value (:padding t-props)
-        text-props (assoc (select-keys text-props [:fontSize :color]) :fontFamily "MongolianBaiZheng")
-
-        info @(re-frame/subscribe [:editor-info])
-        etext @(re-frame/subscribe [:editor-text])
-        line-height @(re-frame/subscribe [:editor-line-height])
-        [x y] @(re-frame/subscribe [:editor-selection-xy])]
-    (when (false? (:flag @atomic))
-      (swap! atomic assoc :flag true)
-      (re-frame/dispatch
-       [:init-editor {:text (:text @atomic) :text-props text-props :padding padding-value}]))
-    [gesture/tap-gesture-handler
-     {:onHandlerStateChange #(do
-                               (swap! atomic assoc :focus true)
-                               (if (gesture/tap-state-end (j/get % :nativeEvent))
-                                 (re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])))}
-     [gesture/pan-gesture-handler {:onGestureEvent #(re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])}
-      [nbase/box (merge theme-props (if (:focus @atomic) (:_focus theme-props)))
-       [nbase/zstack
-        [nbase/measured-text text-props etext info]
-        (if (:focus @atomic)
-          [nbase/box {:style {:margin-top y :margin-left x}}
-           [:> blinkview {"useNativeDriver" false}
-            [:> svg/Svg {:width (or (:height info) line-height) :height 2}
-             [:> svg/Rect {:x "0" :y "0" :width (or (:height info) line-height) :height 2 :fill "blue"}]]]])]]]]))
 
 (defn view []
-  (let [props (reagent/atom {:focus false :height nil
-                             :text "abcd" :x 0 :y 0 :flag false})
+  (let [atomic (reagent/atom {:focus false :text "" :flag false :height nil})
         params {:name "Input" :props {:variant "filled" :fontSize 18}}
         height (reagent/atom nil)]
     (fn []
@@ -57,19 +23,17 @@
             loading @(re-frame/subscribe [:loading])]
         [nbase/flex {:style {:height "100%"} :justifyContent "space-between"}
          [nbase/pressable {:flexDirection "row" :justifyContent "space-between"
-                           :ml 10
-                           :mt 10
-                           :mb 10
+                           :m 10
                            :flex 1
                            :on-press (fn []
-                                       (swap! props assoc :focus false)
+                                       (swap! atomic assoc :focus false)
                                        (re-frame/dispatch [:set-candidates-list []]))
                            :on-layout #(let [h (j/get-in % [:nativeEvent :layout :height])]
-                                         (swap! props assoc :height h))}
+                                         (swap! atomic assoc :height h))}
           [nbase/hstack {:space 2}
            [nbase/measured-text {:fontSize 18 :fontFamily "MongolianBaiZheng"} "ᠨᠡᠷ᠎ᠡ"]
-           [:f> input-view props params]
-           [nbase/measured-text {:fontSize 18 :fontFamily "MongolianBaiZheng" :height (:height @props)} "ᠦᠨᠡᠨ ᠨᠡᠷ᠎ᠡ ᠪᠤᠶᠤ ᠨᠠᠢᠵᠠ ᠨᠠᠷ ᠲᠠᠭᠠᠨ ᠠᠮᠠᠷᠬᠠᠨ ᠲᠠᠨᠢᠭᠳᠠᠬᠤ ᠨᠡᠷ᠎ᠡ ᠪᠠᠨ ᠲᠠᠭᠯᠠᠭᠠᠷᠠᠢ"]]
+           [:f> text/text-input atomic params]
+           [nbase/measured-text {:fontSize 18 :fontFamily "MongolianBaiZheng" :height (:height @atomic)} "ᠦᠨᠡᠨ ᠨᠡᠷ᠎ᠡ ᠪᠤᠶᠤ ᠨᠠᠢᠵᠠ ᠨᠠᠷ ᠲᠠᠭᠠᠨ ᠠᠮᠠᠷᠬᠠᠨ ᠲᠠᠨᠢᠭᠳᠠᠬᠤ ᠨᠡᠷ᠎ᠡ ᠪᠠᠨ ᠲᠠᠭᠯᠠᠭᠠᠷᠠᠢ"]]
           [nbase/flex {:flexDirection "row" :justifyContent "flex-end"}
            [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                                :justifyContent "center" :alignSelf "center" :alignItems "center"
