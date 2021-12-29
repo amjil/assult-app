@@ -44,7 +44,7 @@
        [nbase/zstack
         [nbase/measured-text text-props etext info]
         (if (:focus @atomic)
-          [nbase/box {:style {:margin-top y :margin-left x}}
+          [nbase/box {:style {:margin-top y :margin-left (+ 2 x)}}
            [:> blinkview {"useNativeDriver" false}
             [:> svg/Svg {:width (or (:height info) line-height) :height 2}
              [:> svg/Rect {:x "0" :y "0" :width (or (:height info) line-height) :height 2 :fill "blue"}]]]])]]]]))

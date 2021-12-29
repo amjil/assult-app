@@ -21,11 +21,6 @@
               (<= ex (+ (* i line-height) line-height))
               i
 
-              (>= i (count widths))
-              (if (zero? (count widths))
-                0
-                (dec i))
-
               (= (inc i) (count widths))
               i
 
@@ -124,7 +119,7 @@
                 (recur (inc i))))]
 
       (js/console.log "cursor update " x y)
-      [(+ 2 (if (zero? x) 0 (* line-height x))) y])))
+      [(if (zero? x) 0 (* line-height x)) y])))
       ; [0 0])))
 
 (defn text-widths [info]
@@ -341,6 +336,8 @@
   (re-frame/subscribe [:editor])
   ;; text add
   (re-frame/dispatch [:text-change {:type :add-text :text-added "abcd"}])
+
+  @(re-frame/subscribe [:editor-selection-xy])
 
 
   (text-info-init {:text "abcdef" :text-props {:fontSize 14}}))

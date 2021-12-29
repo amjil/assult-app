@@ -106,10 +106,13 @@
 (comment
  (merge-with into {:editor {:cursor 1}} {:editor {:cursor 2 :text "ab"}})
  (str/join "" (drop-last "hello"))
- (re-frame/dispatch [:candidates-index-concat "ab"])
+ (re-frame/dispatch [:candidates-index-concat "gsgn"])
  (re-frame/dispatch [:set-candidates-index ""])
  (re-frame/dispatch [:set-candidates-list []])
  (re-frame/dispatch [:candidates-query 2])
  (re-frame/subscribe [:candidates-index])
  (re-frame/subscribe [:candidates-list])
- (re-frame/dispatch [:candidate-select {:id 665 :short_index "ab"}]))
+ (def  a
+ @(re-frame/subscribe [:candidates-list]))
+ a
+ (re-frame/dispatch [:candidate-select (second a)]))
