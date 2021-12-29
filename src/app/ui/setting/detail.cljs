@@ -28,7 +28,6 @@
         etext @(re-frame/subscribe [:editor-text])
         line-height @(re-frame/subscribe [:editor-line-height])
         [x y] @(re-frame/subscribe [:editor-selection-xy])]
-    (js/console.log ".........>>>>>>>>> " etext (:text @atomic))
     (when (false? (:flag @atomic))
       (swap! atomic assoc :flag true)
       (re-frame/dispatch
@@ -40,11 +39,10 @@
                                  (re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])))}
      [gesture/pan-gesture-handler {:onGestureEvent #(re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])}
       [nbase/box (merge theme-props (if (:focus @atomic) (:_focus theme-props)))
-                   ; {:on-press #(swap! atomic assoc :focus true)})
        [nbase/zstack
         [nbase/measured-text text-props etext info]
         (if (:focus @atomic)
-          [nbase/box {:style {:margin-top y :margin-left (+ 2 x)}}
+          [nbase/box {:style {:margin-top y :margin-left x}}
            [:> blinkview {"useNativeDriver" false}
             [:> svg/Svg {:width (or (:height info) line-height) :height 2}
              [:> svg/Rect {:x "0" :y "0" :width (or (:height info) line-height) :height 2 :fill "blue"}]]]])]]]]))
@@ -52,7 +50,7 @@
 (defn view []
   (let [props (reagent/atom {:focus false :height nil
                              :text "abcd" :x 0 :y 0 :flag false})
-        params {:name "Input" :props {}}
+        params {:name "Input" :props {:variant "filled" :fontSize 18}}
         height (reagent/atom nil)]
     (fn []
       (let [mobile @(re-frame/subscribe [:user-mobile])
@@ -63,7 +61,9 @@
                            :mt 10
                            :mb 10
                            :flex 1
-                           :on-press #(swap! props assoc :focus false)
+                           :on-press (fn []
+                                       (swap! props assoc :focus false)
+                                       (re-frame/dispatch [:set-candidates-list []]))
                            :on-layout #(let [h (j/get-in % [:nativeEvent :layout :height])]
                                          (swap! props assoc :height h))}
           [nbase/hstack {:space 2}
