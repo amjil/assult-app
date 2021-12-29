@@ -5,6 +5,7 @@
    steroid.rn.navigation.events
    day8.re-frame.http-fx
    app.fx
+   app.handler.text.events
    app.handler.candidates.events
    app.handler.user.events))
 

@@ -10,64 +10,44 @@
    [app.handler.gesture :as gesture]
    [app.ui.keyboard.index :as keyboard]
    [app.ui.keyboard.candidates :as candidates]
-   [app.ui.text.index :as text]
    ["native-base" :refer [ArrowForwardIcon]]
    ["react-native-vector-icons/Ionicons" :default Ionicons]
    ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]
    ["react-native-smooth-blink-view" :default blinkview]
-   ["react-native-measure-text-chars" :as rntext]
    ["react-native-svg" :as svg]))
 
-(defn text-widths [info]
-  (let [widths (map #(:charWidths %) (:lineInfo info))]
-    (map #(map-indexed (fn [idx item] {:width item :y (reduce + (take idx %))}) %) widths)))
 
 (defn input-view [atomic params]
   (let [{:keys [name props]} params
         [theme-props text-props] (nbase/theme-props name props)
         t-props text-props
         padding-value (:padding t-props)
-        text-props (select-keys text-props [:fontSize :color])
-        info (bean/->clj
-               (rntext/measure
-                 (bean/->js
-                   (assoc text-props
-                          :text (:text @atomic)
-                          :useCharsWidth true))))
-        line-width (/ (:height info) (:lineCount info))
-        widths (text-widths info)]
-    (if (false? (:flag @atomic))
-      (do
-        (swap! atomic assoc :x 0)
-        (swap! atomic assoc :y (:width info))
-        (swap! atomic assoc :flag true)
-        (swap! atomic assoc :cursor (count widths))))
-    (js/console.log (bean/->js text-props))
-    (js/console.log (bean/->js t-props))
-    (js/console.log (bean/->js info))
-    (js/console.log (bean/->js widths))
-    (js/console.log line-width)
+        text-props (assoc (select-keys text-props [:fontSize :color]) :fontFamily "MongolianBaiZheng")
+
+        info @(re-frame/subscribe [:editor-info])
+        etext @(re-frame/subscribe [:editor-text])
+        line-height @(re-frame/subscribe [:editor-line-height])
+        [x y] @(re-frame/subscribe [:editor-selection-xy])]
+    (js/console.log ".........>>>>>>>>> " etext (:text @atomic))
+    (when (false? (:flag @atomic))
+      (swap! atomic assoc :flag true)
+      (re-frame/dispatch
+       [:init-editor {:text (:text @atomic) :text-props text-props :padding padding-value}]))
     [gesture/tap-gesture-handler
      {:onHandlerStateChange #(do
                                (swap! atomic assoc :focus true)
                                (if (gesture/tap-state-end (j/get % :nativeEvent))
-                                 (let [[ix ex iy ey] (text/cursor-location (j/get % :nativeEvent) padding-value line-width widths)]
-                                   (swap! atomic assoc :x ex)
-                                   (swap! atomic assoc :y ey)
-                                   (re-frame/dispatch [:set-editor-cursor (+ iy (apply + (map (fn [x] (count x)) (take ix widths))))]))))}
-     [gesture/pan-gesture-handler {:onGestureEvent #(let [[ix ex iy ey] (text/cursor-location (j/get % :nativeEvent) padding-value line-width widths)]
-                                                      (swap! atomic assoc :x ex)
-                                                      (swap! atomic assoc :y ey)
-                                                      (re-frame/dispatch [:set-editor-cursor (+ iy (apply + (map (fn [x] (count x)) (take ix widths))))]))}
+                                 (re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])))}
+     [gesture/pan-gesture-handler {:onGestureEvent #(re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])}
       [nbase/box (merge theme-props (if (:focus @atomic) (:_focus theme-props)))
                    ; {:on-press #(swap! atomic assoc :focus true)})
        [nbase/zstack
-        [nbase/measured-text (select-keys text-props [:fontSize :color]) (:text @atomic) info]
+        [nbase/measured-text text-props etext info]
         (if (:focus @atomic)
-          [nbase/box {:style {:margin-top (:y @atomic) :margin-left (:x @atomic)}}
+          [nbase/box {:style {:margin-top y :margin-left (+ 2 x)}}
            [:> blinkview {"useNativeDriver" false}
-            [:> svg/Svg {:width (:height info) :height 2}
-             [:> svg/Rect {:x "0" :y "0" :width (:height info) :height 2 :fill "blue"}]]]])]]]]))
+            [:> svg/Svg {:width (or (:height info) line-height) :height 2}
+             [:> svg/Rect {:x "0" :y "0" :width (or (:height info) line-height) :height 2 :fill "blue"}]]]])]]]]))
 
 (defn view []
   (let [props (reagent/atom {:focus false :height nil
@@ -98,4 +78,4 @@
                                            ; (re-frame/dispatch [:register-user {:mobile mobile :code @code}]))}]]]]))
          [candidates/views]
          [nbase/box {:style {:height 220}}
-          [keyboard/keyboard props]]]))))
+          [keyboard/keyboard]]]))))
