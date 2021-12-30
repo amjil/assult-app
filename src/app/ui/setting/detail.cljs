@@ -13,14 +13,19 @@
    [app.ui.keyboard.candidates :as candidates]
    ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
+(defn call-back-fn [step]
+  (fn []
+    (condp = @step
+      2 (re-frame/dispatch [:reset-to-home])
+
+      :else (swap! step inc))))
 
 (defn name-view [step]
   (let [atomic (reagent/atom {:focus false :text "" :flag false :height nil})
         params {:name "Input" :props {:variant "filled" :fontSize 18}}
         height (reagent/atom nil)]
     (fn []
-      (let [mobile @(re-frame/subscribe [:user-mobile])
-            rf-key :put-profile
+      (let [rf-key :put-profile
             loading @(re-frame/subscribe [:loading rf-key])
             errors @(re-frame/subscribe [:errors rf-key])]
         [nbase/flex {:style {:height "100%"} :justifyContent "space-between"}
@@ -44,17 +49,41 @@
                                             (re-frame/dispatch
                                               [:put-user-profile
                                                {:realname @(re-frame/subscribe [:editor-text])}
-                                               #(swap! step inc)]))}]]]
+                                               (fn [] (call-back-fn step))]))}]]]
 
          [candidates/views]
          [nbase/box {:style {:height 220}}
           [keyboard/keyboard]]]))))
 
-(defn pass-view [step])
+(defn pass-view [step]
+  (let [model (reagent/atom "")
+        props {:fontSize 18 :fontFamily "MongolianBaiZheng"}]
+    (fn []
+      (let [rf-key :put-profile
+            loading @(re-frame/subscribe [:loading rf-key])
+            errors @(re-frame/subscribe [:errors rf-key])]
+        [nbase/box {:h "100%" :safeArea true}
+         [nbase/flex {:mt 0 :mx 10 :h "80%" :justifyContent "space-between"}
+          [nbase/vstack {:space 4}
+           [nbase/hstack {}
+            [nbase/measured-text props "ᠨᠢᠭᠤᠴᠠ"]
+            [nbase/measured-text props "ᠦᠭᠡ"]]
+           [nbase/input {:type "password"
+                         :placeholder "Password"
+                         :on-change-text #(reset! model %)}]
+           [nbase/flex {:flexDirection "row" :justifyContent "flex-end"}
+            [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
+                                :justifyContent "center" :alignSelf "center" :alignItems "center"
+                                :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
+                                :on-press #(do
+                                             (re-frame/dispatch
+                                               [:put-user-profile
+                                                {:password @model}
+                                                (fn [] (swap! step inc))]))}]]]]]))))
 
 
 (defn view []
-  (let [step (reagent/atom 1)]
+  (let [step (reagent/atom 2)]
     (fn []
       (condp = @step
         1 [name-view step]

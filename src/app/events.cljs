@@ -21,10 +21,15 @@
  :set-user-from-storage
  (fn [{db :db} [_ user]]
    (if user                                          ;; if user signed in we can get user data from ls, in that case we navigate to home
-     {:db       (assoc db :user user)})))
-     ; {:dispatch [:navigate-to :sign-in]})))            ;; overwise open sig-in modal screen
+     {:db       (assoc db :user user)}
+     {:dispatch [:navigate-to :sign-in]})))            ;; overwise open sig-in modal screen
 
-
+(re-frame/reg-event-fx
+  :reset-to-home
+  (fn [{db :db} [_ _]]
+    { :db db
+      :dispatch [:navigate-to :home]
+      :navigation-reset nil}))
 
 ;; -- Request Handlers -----------------------------------------------------------
 ;;

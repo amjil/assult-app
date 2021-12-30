@@ -62,7 +62,7 @@
    {:db    (assoc-in db [:loading :login] true)
     :http-xhrio {:method                 :post
                  :uri                    (api/endpoint "users" "login")
-                 :params                 {:user credentials}
+                 :params                 credentials
                  :format                 (ajax/json-request-format)
                  :response-format        (ajax/json-response-format {:keywords? true})
                  :on-success             [:login-success]
