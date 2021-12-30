@@ -14,13 +14,15 @@
    ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
 
-(defn name-view [kname step]
+(defn name-view [step]
   (let [atomic (reagent/atom {:focus false :text "" :flag false :height nil})
         params {:name "Input" :props {:variant "filled" :fontSize 18}}
         height (reagent/atom nil)]
     (fn []
       (let [mobile @(re-frame/subscribe [:user-mobile])
-            loading @(re-frame/subscribe [:loading])]
+            rf-key :put-profile
+            loading @(re-frame/subscribe [:loading rf-key])
+            errors @(re-frame/subscribe [:errors rf-key])]
         [nbase/flex {:style {:height "100%"} :justifyContent "space-between"}
          [nbase/pressable {:flexDirection "row" :justifyContent "space-between"
                            :m 10
@@ -39,17 +41,21 @@
                                :justifyContent "center" :alignSelf "center" :alignItems "center"
                                :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
                                :on-press #(do
-                                            (re-frame/dispatch [:put-user-profile {kname @(re-frame/subscribe [:editor-text])}]))}]]]
+                                            (re-frame/dispatch
+                                              [:put-user-profile
+                                               {:realname @(re-frame/subscribe [:editor-text])}
+                                               #(swap! step inc)]))}]]]
+
          [candidates/views]
          [nbase/box {:style {:height 220}}
           [keyboard/keyboard]]]))))
 
-(defn pass-view [step]
-  )
+(defn pass-view [step])
+
 
 (defn view []
   (let [step (reagent/atom 1)]
     (fn []
       (condp = @step
-        1 [name-view :realname step]
-        2 [pass-view :password step]))))
+        1 [name-view step]
+        2 [pass-view step]))))
