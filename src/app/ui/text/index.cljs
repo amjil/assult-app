@@ -1,18 +1,10 @@
 (ns app.ui.text.index
   (:require
    [app.ui.nativebase :as nbase]
-   [app.ui.components :as ui]
-   [steroid.rn.core :as rn]
    [cljs-bean.core :as bean]
    [applied-science.js-interop :as j]
-   [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [app.handler.gesture :as gesture]
-   [app.ui.keyboard.index :as keyboard]
-   [app.ui.keyboard.candidates :as candidates]
-   ["native-base" :refer [ArrowForwardIcon]]
-   ["react-native-vector-icons/Ionicons" :default Ionicons]
-   ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]
    ["react-native-smooth-blink-view" :default blinkview]
    ["react-native-svg" :as svg]))
 

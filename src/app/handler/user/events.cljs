@@ -6,6 +6,25 @@
    [app.api :as api]
    [app.db :as db]))
 
+;; -- Update User Profile --------------------------------------------------------
+(re-frame/reg-event-fx
+ :put-user-profile
+ (fn [{:keys [db]} [_ params]]
+   {:db    (assoc-in db [:loading :login] true)
+    :http-xhrio {:method                 :post
+                 :uri                    (api/endpoint "users" "check-mobile")
+                 :headers                (api/auth-header db)
+                 :params                 params
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:put-user-profile-success]
+                 :on-failure             [:api-request-error :put-profile]}}))
+
+(re-frame/reg-event-fx
+ :put-user-profile-success
+ (fn [{db :db} [_  body]]
+   (let [{code :code msg :msg} body]
+     {:db               db})))
 ;; -- Check Mobile -------------------------------------------------------------
 (re-frame/reg-event-fx
  :user-check-mobile

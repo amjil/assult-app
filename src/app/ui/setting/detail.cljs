@@ -14,7 +14,7 @@
    ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
 
-(defn view []
+(defn name-view [kname step]
   (let [atomic (reagent/atom {:focus false :text "" :flag false :height nil})
         params {:name "Input" :props {:variant "filled" :fontSize 18}}
         height (reagent/atom nil)]
@@ -37,9 +37,19 @@
           [nbase/flex {:flexDirection "row" :justifyContent "flex-end"}
            [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                                :justifyContent "center" :alignSelf "center" :alignItems "center"
-                               :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])}]]]
-                              ; :on-press #(do)}]]]]))
-                                           ; (re-frame/dispatch [:register-user {:mobile mobile :code @code}]))}]]]]))
+                               :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
+                               :on-press #(do
+                                            (re-frame/dispatch [:put-user-profile {kname @(re-frame/subscribe [:editor-text])}]))}]]]
          [candidates/views]
          [nbase/box {:style {:height 220}}
           [keyboard/keyboard]]]))))
+
+(defn pass-view [step]
+  )
+
+(defn view []
+  (let [step (reagent/atom 1)]
+    (fn []
+      (condp = @step
+        1 [name-view :realname step]
+        2 [pass-view :password step]))))
