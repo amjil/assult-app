@@ -341,4 +341,4 @@
 
 
   (text-info-init {:text "abcdef" :text-props {:fontSize 14}})
-  (re-frame/dispatch [:toast "error"]))
+  (re-frame/dispatch [:toast "error hello"]))

@@ -7,6 +7,7 @@
    [steroid.rn.components.async-storage :as async-storage]
    [app.ui.nativebase :as nbase]
    [app.handler.navigation :as navigation]
+   ["react-native-measure-text-chars" :as rntext]
    ["native-base" :refer [useToast useStyledSystemPropsResolver Toast]]))
 
 ;; copied from https://github.com/flexsurfer/conduitrn
@@ -44,7 +45,9 @@
 (re-frame/reg-fx
   :toast
   (fn [msg]
-    (let [props {:color "#FFFFFF" :fontFamily "MongolianBaiZheng" :fontSize 16}]
+    (let [props {:color "#FFFFFF" :fontFamily "MongolianBaiZheng" :fontSize 16}
+          info (bean/->clj (rntext/measure (bean/->js (assoc props :text msg :width 300))))
+          width (:width info)]
       (j/call Toast :show
         (bean/->js
           {
@@ -56,5 +59,6 @@
                 [nbase/measured-text
                   (merge
                     props
-                    {:height 300})
-                  msg]]))})))))
+                    {:height width})
+                  msg
+                  info]]))})))))
