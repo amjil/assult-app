@@ -182,6 +182,7 @@
               :text t
               :useCharsWidth true))))))
 
+
 (defmulti text-change (fn [x] (:type x)))
 
 (defmethod text-change
@@ -294,17 +295,17 @@
    {:db             db
     :fx-init-editor params}))
 
-;; ------------------------
+;; range change ------------------------
 (re-frame/reg-fx
-  :range-change
+  :fx-range-change
   (fn [params]
-    (let [{padding :padding
-           lh      :line-height
-           widths  :text-widths
-           evt     :evt
-           type    :type
-           [c1 c2] :cursor
-           [p1 p2]   :selection-xy}
+    (let [{padding    :padding
+           lh         :line-height
+           widths     :text-widths
+           evt        :evt
+           type       :type
+           [c1 c2]    :cursor
+           [p1 p2]    :selection-xy}
           params
           [ix ex iy ey]  (cursor-location evt padding lh widths)
           cursor         (+ iy (apply + (map (fn [x] (count x)) (take ix widths))))
@@ -318,6 +319,49 @@
                                  [p1 [ex ey]])]
       (re-frame/dispatch [:set-editor-cursor compose-cursor])
       (re-frame/dispatch [:set-editor-selection-xy compose-selection-xy]))))
+
+(re-frame/reg-event-fx
+ :range-change
+ (fn [{db :db} [_ evt]]
+   {:db                 db
+    :fx-range-change (assoc (select-keys (:editor db)
+                              [:padding
+                               :line-height
+                               :text-widths
+                               :cursor
+                               :selection-xy])
+                       :evt evt)}))
+
+;; --------------------------------------
+(defn next-stop-char [type t idx]
+  (let [cur-char (get t idx)]
+    (cond
+      (= \space cur-char)
+      idx
+
+      (= idx 0)
+      idx
+
+      (>= idx (count widths))
+      idx)))
+
+(defn init-range-selection [params]
+  (let [{t        :text
+         props    :text-props
+         lh       :line-height
+         padding  :padding
+         evt      :evt
+         type     :type} params
+        [ix ex iy ey]  (cursor-location evt padding line-height widths)
+        idx            (max (dec (+ iy (apply + (map (fn [x] (count x)) (take ix widths))))) 0)]
+    (if (empty? t)
+      [0 [0 0]]
+      (let [cur-char (get t idx)
+            ix    (next-step-char 1 t idx)
+            iy    (next-step-char 2 t idx)]))))
+
+
+
 ;; ------------------------
 
 (re-frame/reg-fx
