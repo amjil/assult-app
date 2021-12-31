@@ -340,4 +340,5 @@
   @(re-frame/subscribe [:editor-selection-xy])
 
 
-  (text-info-init {:text "abcdef" :text-props {:fontSize 14}}))
+  (text-info-init {:text "abcdef" :text-props {:fontSize 14}})
+  (re-frame/dispatch [:toast "error"]))

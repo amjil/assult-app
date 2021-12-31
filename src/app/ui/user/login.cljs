@@ -5,6 +5,7 @@
    [steroid.rn.core :as rn]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
+   [cljs-bean.core :as bean]
    ["native-base" :refer [ArrowForwardIcon]]
    ["react-native-vector-icons/Ionicons" :default Ionicons]
    ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]))

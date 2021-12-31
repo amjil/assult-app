@@ -31,6 +31,11 @@
       :dispatch [:navigate-to :home]
       :navigation-reset nil}))
 
+(re-frame/reg-event-fx
+  :toast
+  (fn [{db :db} [_ msg]]
+    {:db db
+     :toast msg}))
 ;; -- Request Handlers -----------------------------------------------------------
 ;;
 (re-frame/reg-event-fx

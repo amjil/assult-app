@@ -7,7 +7,7 @@
    [steroid.rn.components.async-storage :as async-storage]
    [app.ui.nativebase :as nbase]
    [app.handler.navigation :as navigation]
-   ["native-base" :refer [useToast useStyledSystemPropsResolver]]))
+   ["native-base" :refer [useToast useStyledSystemPropsResolver Toast]]))
 
 ;; copied from https://github.com/flexsurfer/conduitrn
 
@@ -44,10 +44,8 @@
 (re-frame/reg-fx
   :toast
   (fn [msg]
-    (let [toast (useToast)
-          text-props {:fontSize "md" :color :white :fontFamily "MongolianBaiZheng"}
-          [props _] (useStyledSystemPropsResolver (bean/->js text-props))]
-      (j/call toast :show
+    (let [props {:color "#FFFFFF" :fontFamily "MongolianBaiZheng" :fontSize 16}]
+      (j/call Toast :show
         (bean/->js
           {
            :placement :bottom-left
@@ -57,6 +55,6 @@
                [nbase/box {:bg "emerald.500" :px "2" :py "1" :rounded "sm" :mb 5}
                 [nbase/measured-text
                   (merge
-                    (bean/->clj props)
-                    {:height "60%"})
+                    props
+                    {:height 300})
                   msg]]))})))))
