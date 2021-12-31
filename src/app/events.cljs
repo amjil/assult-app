@@ -42,6 +42,8 @@
  :api-request-error                                         ;; triggered when we get request-error from the server
  (fn [{db :db} [_ request-type response]]                   ;; destructure to obtain request-type and response
    (js/console.log "api error " request-type " " (cljs-bean.core/->js response))
-   {:db (-> db                                              ;; when we complete a request we need to clean so that our ui is nice and tidy
-            (assoc-in [:errors request-type] (get-in response [:body :errors]))
-            (assoc-in [:loading request-type] false))}))
+   (let [msg (get-in response [:body :msg])]
+     {:db (-> db                                              ;; when we complete a request we need to clean so that our ui is nice and tidy
+              (assoc-in [:errors request-type] msg)
+              (assoc-in [:loading request-type] false))
+      :dispatch [:toast msg]})))
