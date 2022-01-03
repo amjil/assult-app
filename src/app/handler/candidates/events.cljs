@@ -39,25 +39,6 @@
      {:db      (assoc-in db [:candidates :index] new-index)
       :candidates-query new-index})))
 
-;;; on delete press
-(re-frame/reg-event-fx
- :keyboard-delete
- (fn [{db :db} [_ _]]
-   (let [old-index (get-in db [:candidates :index])
-         new-index (str/join "" (drop-last old-index))]
-     (cond
-       (or (empty? old-index) (= 1 (count old-index)))
-       {:db          (assoc-in db [:candidates :index] "")
-        :dispatch    [:set-candidates-list []]
-        :fx-text-change (merge
-                         (select-keys (:editor db)
-                                      [:text :cursor :text-props :line-height])
-                         {:type :delete})}
-
-       :else
-       {:db               (assoc-in db [:candidates :index] new-index)
-        :candidates-query new-index}))))
-
 ;; candidate select
 (re-frame/reg-event-fx
  :candidate-select
@@ -113,6 +94,6 @@
  (re-frame/subscribe [:candidates-index])
  (re-frame/subscribe [:candidates-list])
  (def  a
- @(re-frame/subscribe [:candidates-list]))
+  @(re-frame/subscribe [:candidates-list]))
  a
  (re-frame/dispatch [:candidate-select (second a)]))

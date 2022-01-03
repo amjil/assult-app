@@ -108,17 +108,20 @@
        [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
         [ui/ion-icons {:name "globe" :color "gray" :size 30}]]]]
      [nbase/box {:style (merge key-con-style {:flex 1})}
-      [:> ripple {:rippleColor "#000" :style key-style}
+      [:> ripple {:rippleColor "#000" :style key-style
+                  :on-press #(dispatch [:keyboard-add-char "᠂"])}
        [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
-        [nbase/text {} ""]]]]
+        [nbase/text {} "᠂"]]]]
      [nbase/box {:style (merge key-con-style {:flex 3.5})}
-      [:> ripple {:rippleColor "#000" :style key-style}
+      [:> ripple {:rippleColor "#000" :style key-style
+                  :on-press #(dispatch [:keyboard-add-char " "])}
        [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
         [ui/ion-icons {:name "ios-scan" :color "gray" :size 30}]]]]
      [nbase/box {:style (merge key-con-style {:flex 1})}
-      [:> ripple {:rippleColor "#000" :style key-style}
+      [:> ripple {:rippleColor "#000" :style key-style
+                  :on-press #(dispatch [:keyboard-add-char "᠃"])}
        [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
-        [nbase/text {} ""]]]]
+        [nbase/text {} "᠃"]]]]
      [nbase/box {:style (merge key-con-style {:flex 1.5})}
       [:> ripple {:rippleColor "#000" :style key-style
                   :on-press #(dispatch [:candidates-query 2])}

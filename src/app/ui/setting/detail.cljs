@@ -83,7 +83,7 @@
 
 
 (defn view []
-  (let [step (reagent/atom 2)]
+  (let [step (reagent/atom 1)]
     (fn []
       (condp = @step
         1 [name-view step]

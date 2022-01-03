@@ -7,6 +7,7 @@
    app.fx
    app.handler.text.events
    app.handler.candidates.events
+   app.handler.keyboard.events
    app.handler.user.events))
 
 
@@ -22,7 +23,8 @@
  (fn [{db :db} [_ user]]
    (if user                                          ;; if user signed in we can get user data from ls, in that case we navigate to home
      {:db       (assoc db :user user)}
-     {:dispatch [:navigate-to :sign-in]})))            ;; overwise open sig-in modal screen
+     {:db       db})))
+     ; {:dispatch [:navigate-to :sign-in]})))            ;; overwise open sig-in modal screen
 
 (re-frame/reg-event-fx
   :reset-to-home

@@ -337,13 +337,18 @@
   (let [cur-char (get t idx)]
     (cond
       (= \space cur-char)
-      idx
+      (if (zero? type)
+        idx
+        (inc idx))
 
       (= idx 0)
       idx
 
-      (>= idx (count widths))
-      idx)))
+
+      (>= idx (count t))
+      (if (zero? type)
+        (dec idx)
+        idx))))
 
 (defn init-range-selection [params]
   (let [{t        :text
@@ -351,14 +356,15 @@
          lh       :line-height
          padding  :padding
          evt      :evt
+         widths   :text-widths
          type     :type} params
-        [ix ex iy ey]  (cursor-location evt padding line-height widths)
+        [ix ex iy ey]  (cursor-location evt padding lh widths)
         idx            (max (dec (+ iy (apply + (map (fn [x] (count x)) (take ix widths))))) 0)]
     (if (empty? t)
       [0 [0 0]]
       (let [cur-char (get t idx)
-            ix    (next-step-char 1 t idx)
-            iy    (next-step-char 2 t idx)]))))
+            ix    (next-stop-char 0 t idx)
+            iy    (next-stop-char 1 t idx)]))))
 
 
 

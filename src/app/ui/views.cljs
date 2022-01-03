@@ -57,13 +57,13 @@
          (fn []
            [stack/stack {}
             [
+             {:name       :setting-detail
+              :component  setting-detail/view
+              :options    {:title ""}}
              {:name      :main
               :component home/anonymous
               :options {:title ""
                         :headerShown false}}
-             {:name       :setting-detail
-              :component  setting-detail/view
-              :options    {:title ""}}
              {:name       :password
               :component  password/view
               :options    {:title ""}}
