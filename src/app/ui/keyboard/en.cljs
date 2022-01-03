@@ -1,31 +1,28 @@
 (ns app.ui.keyboard.en
   (:require
    [re-frame.core :refer [dispatch subscribe]]
-   [app.ui.components :as ui]
    [applied-science.js-interop :as j]
    [cljs-bean.core :as bean]
    [reagent.core :as reagent]
+   [app.ui.components :as ui]
    [app.ui.nativebase :as nbase]
+   [app.ui.keyboard.common :as keycommon]))
 
-   ["react-native-advanced-ripple" :as ripple]))
+(def key-list
+  [[:q :w :e :r :t :y :u :i :o :p]
+   [:a :s :d :f :g :h :j :k :l]
+   [:z :x :c :v :b :b :n :m]])
 
-(defn key-content [child]
-  (into
-    [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}]
-    child))
-
-(defn key-button [box-style ripple-style child]
-  [nbase/box {:style box-style}
-   [:> ripple {:rippleColor "#000" :style ripple-style}
-    [key-content child]]])
-
-(defn key-row [child]
-  (into
-    [nbase/box {:style {:flex 1 :flex-direction "row"
-                        :alignItems "center"
-                        :justifyContent "center"}}]
-    child))
-
+(defn alpha-board []
+  [
+   [key-row
+    (for [kk (nth key-list 0)]
+      ^{:key kk}
+      [keycommon/key-char-button (str kk)])]
+   [key-row
+    (for [kk (nth key-list 1)]
+      ^{:key kk}
+      [keycommon/key-char-button (str kk)])]])
 
 (comment
   (into [:a {:style {:foo :bar}}]

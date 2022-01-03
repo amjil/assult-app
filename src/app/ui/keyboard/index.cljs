@@ -7,37 +7,9 @@
    [cljs-bean.core :as bean]
    [reagent.core :as reagent]
    [app.ui.nativebase :as nbase]
+   [app.ui.keyboard.style :refer [key-style key-con-style key-text-style]]
 
    ["react-native-advanced-ripple" :as ripple]))
-
-(def key-style
-  {
-          :flex-direction "row"
-          :flex 1
-          :justifyContent "center"
-          :alignItems "center"
-          :backgroundColor "#FFF"
-          :borderRightColor "#e8e8e8"
-          :borderRightWidth 1
-          :borderBottomColor "#e8e8e8"
-          :borderBottomWidth 1})
-          ; :height 38})
-
-(def key-con-style
-  {:backgroundColor "#FFF"
-   :borderRightColor "#e8e8e8"
-   :borderRightWidth 1
-   :borderBottomColor "#e8e8e8"
-   :borderBottomWidth 1
-   :flex 1})
-
-(def key-text-style
-  {
-    :fontWeight "400"
-    :fontSize 25,
-    :textAlign "center",
-    :color "#222222"
-    :width 42})
 
 (def key-list [[{:label "ᠣ" :code "q"} {:label "ᠸ᠊" :code "w"} {:label "ᠡ" :code "e"}
                 {:label "ᠷ᠊" :code "r"} {:label "ᠲ᠊" :code "t"} {:label "ᠶ᠊" :code "y"}
