@@ -6,5 +6,10 @@
 
 (re-frame/reg-sub
  :loading
- (fn [db _]
-   (get db :loading)))
+ (fn [db [_ query]]
+   (get-in db [:loading query])))
+
+(re-frame/reg-sub
+  :errors
+  (fn [db [_ query]]
+    (get-in db [:errors query])))

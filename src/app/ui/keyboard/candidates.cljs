@@ -52,7 +52,7 @@
                             [nbase/pressable {:on-press #(do
                                                            (dispatch [:candidate-select (bean/->clj item)]))}
                              [nbase/box {:style {:height "100%" :width 28}}
-                              [nbase/measured-text {:font-family "MongolianBaiZheng" :font-size 18}
+                              [nbase/measured-text {:fontFamily "MongolianBaiZheng" :fontSize 18}
                                 (j/get item :char_word)]]])))
           :initialNumToRender 7
           :showsHorizontalScrollIndicator false

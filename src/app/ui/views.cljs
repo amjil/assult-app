@@ -20,6 +20,7 @@
    ["react-native-linear-gradient" :default linear-gradient]
 
    [app.ui.user.login :as login]
+   [app.ui.user.password :as password]
    [app.ui.user.register :as register]
    [app.ui.user.code :as user-code]
    [app.ui.setting.detail :as setting-detail]
@@ -63,6 +64,9 @@
               :component home/anonymous
               :options {:title ""
                         :headerShown false}}
+             {:name       :password
+              :component  password/view
+              :options    {:title ""}}
              {:name       :sign-in
               :component  login/view
               :options    {:title ""

@@ -100,8 +100,8 @@
                               next-grouped)
                     sql (hsql/format {:select   [:*]
                                       :from     [{:union sqls}]
-                                      :order-by [[:active_order :desc]]})]
-                                      ; :limit    20})]
+                                      :order-by [[:active_order :desc]]
+                                      :limit    20})]
                 ;; (js/console.log "sql = " (bean/->js sql))
                 (p/let [sql-result (.executeSql @conn (first sql) (bean/->js (rest sql)))]
                   (p/then sql-result

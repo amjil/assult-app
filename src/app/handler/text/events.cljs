@@ -5,8 +5,6 @@
    [applied-science.js-interop :as j]
    ["react-native-measure-text-chars" :as rntext]))
 
-
-
 (defn cursor-location [evt padding-value line-height widths]
   (let [ex (j/get evt :x)
         ey (j/get evt :y)
@@ -184,6 +182,7 @@
               :text t
               :useCharsWidth true))))))
 
+
 (defmulti text-change (fn [x] (:type x)))
 
 (defmethod text-change
@@ -296,6 +295,81 @@
    {:db             db
     :fx-init-editor params}))
 
+;; range change ------------------------
+(re-frame/reg-fx
+  :fx-range-change
+  (fn [params]
+    (let [{padding    :padding
+           lh         :line-height
+           widths     :text-widths
+           evt        :evt
+           type       :type
+           [c1 c2]    :cursor
+           [p1 p2]    :selection-xy}
+          params
+          [ix ex iy ey]  (cursor-location evt padding lh widths)
+          cursor         (+ iy (apply + (map (fn [x] (count x)) (take ix widths))))
+
+          ;;
+          compose-cursor  (if (= 1 type)
+                            [cursor c2]
+                            [c1 cursor])
+          compose-selection-xy (if (= 1 type)
+                                 [[ex ey] p2]
+                                 [p1 [ex ey]])]
+      (re-frame/dispatch [:set-editor-cursor compose-cursor])
+      (re-frame/dispatch [:set-editor-selection-xy compose-selection-xy]))))
+
+(re-frame/reg-event-fx
+ :range-change
+ (fn [{db :db} [_ evt]]
+   {:db                 db
+    :fx-range-change (assoc (select-keys (:editor db)
+                              [:padding
+                               :line-height
+                               :text-widths
+                               :cursor
+                               :selection-xy])
+                       :evt evt)}))
+
+;; --------------------------------------
+(defn next-stop-char [type t idx]
+  (let [cur-char (get t idx)]
+    (cond
+      (= \space cur-char)
+      (if (zero? type)
+        idx
+        (inc idx))
+
+      (= idx 0)
+      idx
+
+
+      (>= idx (count t))
+      (if (zero? type)
+        (dec idx)
+        idx))))
+
+(defn init-range-selection [params]
+  (let [{t        :text
+         props    :text-props
+         lh       :line-height
+         padding  :padding
+         evt      :evt
+         widths   :text-widths
+         type     :type} params
+        [ix ex iy ey]  (cursor-location evt padding lh widths)
+        idx            (max (dec (+ iy (apply + (map (fn [x] (count x)) (take ix widths))))) 0)]
+    (if (empty? t)
+      [0 [0 0]]
+      (let [cur-char (get t idx)
+            ix    (next-stop-char 0 t idx)
+            iy    (next-stop-char 1 t idx)]))))
+
+
+
+;; ------------------------
+
 (re-frame/reg-fx
  :fx-cursor-location
  (fn [params]
@@ -340,4 +414,5 @@
   @(re-frame/subscribe [:editor-selection-xy])
 
 
-  (text-info-init {:text "abcdef" :text-props {:fontSize 14}}))
+  (text-info-init {:text "abcdef" :text-props {:fontSize 14}})
+  (re-frame/dispatch [:toast "error hello"]))

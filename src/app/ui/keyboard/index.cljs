@@ -7,37 +7,9 @@
    [cljs-bean.core :as bean]
    [reagent.core :as reagent]
    [app.ui.nativebase :as nbase]
+   [app.ui.keyboard.style :refer [key-style key-con-style key-text-style]]
 
    ["react-native-advanced-ripple" :as ripple]))
-
-(def key-style
-  {
-          :flex-direction "row"
-          :flex 1
-          :justifyContent "center"
-          :alignItems "center"
-          :backgroundColor "#FFF"
-          :borderRightColor "#e8e8e8"
-          :borderRightWidth 1
-          :borderBottomColor "#e8e8e8"
-          :borderBottomWidth 1})
-          ; :height 38})
-
-(def key-con-style
-  {:backgroundColor "#FFF"
-   :borderRightColor "#e8e8e8"
-   :borderRightWidth 1
-   :borderBottomColor "#e8e8e8"
-   :borderBottomWidth 1
-   :flex 1})
-
-(def key-text-style
-  {
-    :fontWeight "400"
-    :fontSize 25,
-    :textAlign "center",
-    :color "#222222"
-    :width 42})
 
 (def key-list [[{:label "ᠣ" :code "q"} {:label "ᠸ᠊" :code "w"} {:label "ᠡ" :code "e"}
                 {:label "ᠷ᠊" :code "r"} {:label "ᠲ᠊" :code "t"} {:label "ᠶ᠊" :code "y"}
@@ -108,17 +80,20 @@
        [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
         [ui/ion-icons {:name "globe" :color "gray" :size 30}]]]]
      [nbase/box {:style (merge key-con-style {:flex 1})}
-      [:> ripple {:rippleColor "#000" :style key-style}
+      [:> ripple {:rippleColor "#000" :style key-style
+                  :on-press #(dispatch [:keyboard-add-char "᠂"])}
        [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
-        [nbase/text {} ""]]]]
+        [nbase/text {} "᠂"]]]]
      [nbase/box {:style (merge key-con-style {:flex 3.5})}
-      [:> ripple {:rippleColor "#000" :style key-style}
+      [:> ripple {:rippleColor "#000" :style key-style
+                  :on-press #(dispatch [:keyboard-add-char " "])}
        [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
         [ui/ion-icons {:name "ios-scan" :color "gray" :size 30}]]]]
      [nbase/box {:style (merge key-con-style {:flex 1})}
-      [:> ripple {:rippleColor "#000" :style key-style}
+      [:> ripple {:rippleColor "#000" :style key-style
+                  :on-press #(dispatch [:keyboard-add-char "᠃"])}
        [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
-        [nbase/text {} ""]]]]
+        [nbase/text {} "᠃"]]]]
      [nbase/box {:style (merge key-con-style {:flex 1.5})}
       [:> ripple {:rippleColor "#000" :style key-style
                   :on-press #(dispatch [:candidates-query 2])}

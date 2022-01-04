@@ -7,6 +7,7 @@
    app.fx
    app.handler.text.events
    app.handler.candidates.events
+   app.handler.keyboard.events
    app.handler.user.events))
 
 
@@ -21,17 +22,30 @@
  :set-user-from-storage
  (fn [{db :db} [_ user]]
    (if user                                          ;; if user signed in we can get user data from ls, in that case we navigate to home
-     {:db       (assoc db :user user)})))
+     {:db       (assoc db :user user)}
+     {:db       db})))
      ; {:dispatch [:navigate-to :sign-in]})))            ;; overwise open sig-in modal screen
 
+(re-frame/reg-event-fx
+  :reset-to-home
+  (fn [{db :db} [_ _]]
+    { :db db
+      :dispatch [:navigate-to :home]
+      :navigation-reset nil}))
 
-
+(re-frame/reg-event-fx
+  :toast
+  (fn [{db :db} [_ msg]]
+    {:db db
+     :toast msg}))
 ;; -- Request Handlers -----------------------------------------------------------
 ;;
 (re-frame/reg-event-fx
  :api-request-error                                         ;; triggered when we get request-error from the server
  (fn [{db :db} [_ request-type response]]                   ;; destructure to obtain request-type and response
    (js/console.log "api error " request-type " " (cljs-bean.core/->js response))
-   {:db (-> db                                              ;; when we complete a request we need to clean so that our ui is nice and tidy
-            (assoc-in [:errors request-type] (get-in response [:body :errors]))
-            (assoc-in [:loading request-type] false))}))
+   (let [msg (get-in response [:body :msg])]
+     {:db (-> db                                              ;; when we complete a request we need to clean so that our ui is nice and tidy
+              (assoc-in [:errors request-type] msg)
+              (assoc-in [:loading request-type] false))
+      :dispatch [:toast msg]})))

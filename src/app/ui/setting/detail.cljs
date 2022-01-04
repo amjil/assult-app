@@ -8,74 +8,83 @@
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [app.handler.gesture :as gesture]
+   [app.ui.text.index :as text]
    [app.ui.keyboard.index :as keyboard]
    [app.ui.keyboard.candidates :as candidates]
-   ["native-base" :refer [ArrowForwardIcon]]
-   ["react-native-vector-icons/Ionicons" :default Ionicons]
-   ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]
-   ["react-native-smooth-blink-view" :default blinkview]
-   ["react-native-svg" :as svg]))
+   ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
+(defn call-back-fn [step]
+  (fn []
+    (condp = @step
+      2 (re-frame/dispatch [:reset-to-home])
 
-(defn input-view [atomic params]
-  (let [{:keys [name props]} params
-        [theme-props text-props] (nbase/theme-props name props)
-        t-props text-props
-        padding-value (:padding t-props)
-        text-props (assoc (select-keys text-props [:fontSize :color]) :fontFamily "MongolianBaiZheng")
+      :else (swap! step inc))))
 
-        info @(re-frame/subscribe [:editor-info])
-        etext @(re-frame/subscribe [:editor-text])
-        line-height @(re-frame/subscribe [:editor-line-height])
-        [x y] @(re-frame/subscribe [:editor-selection-xy])]
-    (js/console.log ".........>>>>>>>>> " etext (:text @atomic))
-    (when (false? (:flag @atomic))
-      (swap! atomic assoc :flag true)
-      (re-frame/dispatch
-       [:init-editor {:text (:text @atomic) :text-props text-props :padding padding-value}]))
-    [gesture/tap-gesture-handler
-     {:onHandlerStateChange #(do
-                               (swap! atomic assoc :focus true)
-                               (if (gesture/tap-state-end (j/get % :nativeEvent))
-                                 (re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])))}
-     [gesture/pan-gesture-handler {:onGestureEvent #(re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])}
-      [nbase/box (merge theme-props (if (:focus @atomic) (:_focus theme-props)))
-                   ; {:on-press #(swap! atomic assoc :focus true)})
-       [nbase/zstack
-        [nbase/measured-text text-props etext info]
-        (if (:focus @atomic)
-          [nbase/box {:style {:margin-top y :margin-left (+ 2 x)}}
-           [:> blinkview {"useNativeDriver" false}
-            [:> svg/Svg {:width (or (:height info) line-height) :height 2}
-             [:> svg/Rect {:x "0" :y "0" :width (or (:height info) line-height) :height 2 :fill "blue"}]]]])]]]]))
-
-(defn view []
-  (let [props (reagent/atom {:focus false :height nil
-                             :text "abcd" :x 0 :y 0 :flag false})
-        params {:name "Input" :props {}}
+(defn name-view [step]
+  (let [atomic (reagent/atom {:focus false :text "" :flag false :height nil})
+        params {:name "Input" :props {:variant "filled" :fontSize 18}}
         height (reagent/atom nil)]
     (fn []
-      (let [mobile @(re-frame/subscribe [:user-mobile])
-            loading @(re-frame/subscribe [:loading])]
+      (let [rf-key :put-profile
+            loading @(re-frame/subscribe [:loading rf-key])
+            errors @(re-frame/subscribe [:errors rf-key])]
         [nbase/flex {:style {:height "100%"} :justifyContent "space-between"}
          [nbase/pressable {:flexDirection "row" :justifyContent "space-between"
-                           :ml 10
-                           :mt 10
-                           :mb 10
+                           :m 10
                            :flex 1
-                           :on-press #(swap! props assoc :focus false)
+                           :on-press (fn []
+                                       (swap! atomic assoc :focus false)
+                                       (re-frame/dispatch [:set-candidates-list []]))
                            :on-layout #(let [h (j/get-in % [:nativeEvent :layout :height])]
-                                         (swap! props assoc :height h))}
+                                         (swap! atomic assoc :height h))}
           [nbase/hstack {:space 2}
            [nbase/measured-text {:fontSize 18 :fontFamily "MongolianBaiZheng"} "ᠨᠡᠷ᠎ᠡ"]
-           [:f> input-view props params]
-           [nbase/measured-text {:fontSize 18 :fontFamily "MongolianBaiZheng" :height (:height @props)} "ᠦᠨᠡᠨ ᠨᠡᠷ᠎ᠡ ᠪᠤᠶᠤ ᠨᠠᠢᠵᠠ ᠨᠠᠷ ᠲᠠᠭᠠᠨ ᠠᠮᠠᠷᠬᠠᠨ ᠲᠠᠨᠢᠭᠳᠠᠬᠤ ᠨᠡᠷ᠎ᠡ ᠪᠠᠨ ᠲᠠᠭᠯᠠᠭᠠᠷᠠᠢ"]]
+           [:f> text/text-input atomic params]
+           [nbase/measured-text {:fontSize 18 :fontFamily "MongolianBaiZheng" :height (:height @atomic)} "ᠦᠨᠡᠨ ᠨᠡᠷ᠎ᠡ ᠪᠤᠶᠤ ᠨᠠᠢᠵᠠ ᠨᠠᠷ ᠲᠠᠭᠠᠨ ᠠᠮᠠᠷᠬᠠᠨ ᠲᠠᠨᠢᠭᠳᠠᠬᠤ ᠨᠡᠷ᠎ᠡ ᠪᠠᠨ ᠲᠠᠭᠯᠠᠭᠠᠷᠠᠢ"]]
           [nbase/flex {:flexDirection "row" :justifyContent "flex-end"}
            [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                                :justifyContent "center" :alignSelf "center" :alignItems "center"
-                               :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])}]]]
-                              ; :on-press #(do)}]]]]))
-                                           ; (re-frame/dispatch [:register-user {:mobile mobile :code @code}]))}]]]]))
+                               :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
+                               :on-press #(do
+                                            (re-frame/dispatch
+                                              [:put-user-profile
+                                               {:realname @(re-frame/subscribe [:editor-text])}
+                                               (fn [] (call-back-fn step))]))}]]]
+
          [candidates/views]
          [nbase/box {:style {:height 220}}
           [keyboard/keyboard]]]))))
+
+(defn pass-view [step]
+  (let [model (reagent/atom "")
+        props {:fontSize 18 :fontFamily "MongolianBaiZheng"}]
+    (fn []
+      (let [rf-key :put-profile
+            loading @(re-frame/subscribe [:loading rf-key])
+            errors @(re-frame/subscribe [:errors rf-key])]
+        [nbase/box {:h "100%" :safeArea true}
+         [nbase/flex {:mt 0 :mx 10 :h "80%" :justifyContent "space-between"}
+          [nbase/vstack {:space 4}
+           [nbase/hstack {}
+            [nbase/measured-text props "ᠨᠢᠭᠤᠴᠠ"]
+            [nbase/measured-text props "ᠦᠭᠡ"]]
+           [nbase/input {:type "password"
+                         :placeholder "Password"
+                         :on-change-text #(reset! model %)}]
+           [nbase/flex {:flexDirection "row" :justifyContent "flex-end"}
+            [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
+                                :justifyContent "center" :alignSelf "center" :alignItems "center"
+                                :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
+                                :on-press #(do
+                                             (re-frame/dispatch
+                                               [:put-user-profile
+                                                {:password @model}
+                                                (fn [] (swap! step inc))]))}]]]]]))))
+
+
+(defn view []
+  (let [step (reagent/atom 1)]
+    (fn []
+      (condp = @step
+        1 [name-view step]
+        2 [pass-view step]))))
