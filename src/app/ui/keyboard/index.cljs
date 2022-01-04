@@ -8,6 +8,7 @@
    [reagent.core :as reagent]
    [app.ui.nativebase :as nbase]
    [app.ui.keyboard.style :refer [key-style key-con-style key-text-style]]
+   [app.ui.keyboard.common :as keycommon]
 
    ["react-native-advanced-ripple" :as ripple]))
 
@@ -79,21 +80,10 @@
       [:> ripple {:rippleColor "#000" :style key-style}
        [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
         [ui/ion-icons {:name "globe" :color "gray" :size 30}]]]]
-     [nbase/box {:style (merge key-con-style {:flex 1})}
-      [:> ripple {:rippleColor "#000" :style key-style
-                  :on-press #(dispatch [:keyboard-add-char "᠂"])}
-       [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
-        [nbase/text {} "᠂"]]]]
-     [nbase/box {:style (merge key-con-style {:flex 3.5})}
-      [:> ripple {:rippleColor "#000" :style key-style
-                  :on-press #(dispatch [:keyboard-add-char " "])}
-       [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
-        [ui/ion-icons {:name "ios-scan" :color "gray" :size 30}]]]]
-     [nbase/box {:style (merge key-con-style {:flex 1})}
-      [:> ripple {:rippleColor "#000" :style key-style
-                  :on-press #(dispatch [:keyboard-add-char "᠃"])}
-       [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
-        [nbase/text {} "᠃"]]]]
+     [keycommon/key-char-button "᠂"]
+     [keycommon/key-button {:flex 3.5} #(dispatch [:keyboard-add-char " "])
+      [ui/ion-icons {:name "ios-scan" :color "gray" :size 30}]]
+     [keycommon/key-char-button "᠃"]
      [nbase/box {:style (merge key-con-style {:flex 1.5})}
       [:> ripple {:rippleColor "#000" :style key-style
                   :on-press #(dispatch [:candidates-query 2])}

@@ -1,4 +1,4 @@
-(ns app.ui.keyboard.en
+(ns app.ui.keyboard.common
   (:require
    [re-frame.core :refer [dispatch subscribe]]
    [app.ui.components :as ui]
@@ -11,9 +11,8 @@
    ["react-native-advanced-ripple" :as ripple]))
 
 (defn key-content [child]
-  (into
-    [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}]
-    child))
+  [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
+   child])
 
 (defn key-button [box-style on-press child]
   [nbase/box {:style (merge key-con-style box-style)}
@@ -24,7 +23,6 @@
 (defn key-char-button [c]
   [key-button {} #(dispatch [:keyboard-add-char c])
    [nbase/text {} c]])
-
 
 (defn key-row [child]
   (into
