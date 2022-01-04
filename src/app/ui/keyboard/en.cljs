@@ -22,7 +22,12 @@
    [key-row
     (for [kk (nth key-list 1)]
       ^{:key kk}
-      [keycommon/key-char-button (str kk)])]])
+      [keycommon/key-char-button (str kk)])]
+   [key-row
+    [[key-button {} #(dispatch [:keyboard-shift c])
+      [nbase/text {} c]]]]])
+
+;; keyboard shift - alter
 
 (comment
   (into [:a {:style {:foo :bar}}]

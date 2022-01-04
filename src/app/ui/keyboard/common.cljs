@@ -15,13 +15,14 @@
     [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}]
     child))
 
-(defn key-button [box-style child]
+(defn key-button [box-style on-press child]
   [nbase/box {:style (merge key-con-style box-style)}
-   [:> ripple {:rippleColor "#000" :style key-style}
+   [:> ripple {:rippleColor "#000" :style key-style
+               :on-press on-press}
     [key-content child]]])
 
 (defn key-char-button [c]
-  [key-button {}
+  [key-button {} #(dispatch [:keyboard-add-char c])
    [nbase/text {} c]])
 
 

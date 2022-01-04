@@ -40,6 +40,5 @@
             (assoc-in [:candidates :index] ""))
     :dispatch [:text-change {:type :add-text :text-added value}]}))
 
-
 (comment
  (on-press "a"))
