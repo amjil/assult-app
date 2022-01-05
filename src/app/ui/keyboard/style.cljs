@@ -30,10 +30,10 @@
     :width 42})
 
 (def key-box-style
- {:flex nil
+ {;:flex nil
   :width "100%"
   :flex-direction "column"
   :justifyContent "flex-end"
-  :height 180
+  :height "100%"
   :borderTopWidth 1
   :borderTopColor "#e8e8e8"})

@@ -45,5 +45,20 @@
   (fn [{db :db} [_ _]]
     {:db (assoc-in db [:keyboard :shift] (not (get-in db [:keyboard :shift])))}))
 
+(re-frame/reg-event-fx
+  :keyboard-shift-num
+  (fn [{db :db} [_ _]]
+    {:db (assoc-in db [:keyboard :shift-num] (not (get-in db [:keyboard :shift-num])))}))
+
+(re-frame/reg-event-fx
+  :keyboard-alter-num
+  (fn [{db :db} [_ _]]
+    {:db (assoc-in db [:keyboard :alter-num] (not (get-in db [:keyboard :alter-num])))}))
+
+(re-frame/reg-event-fx
+  :keyboard-alter
+  (fn [{db :db} [_ _]]
+    {:db (assoc-in db [:keyboard :alter] (not (get-in db [:keyboard :alter])))}))
+
 (comment
  (on-press "a"))

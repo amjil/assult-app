@@ -15,10 +15,17 @@
    child])
 
 (defn key-button [box-style on-press child]
-  [nbase/box {:style (merge key-con-style box-style)}
-   [:> ripple {:rippleColor "#000" :style key-style
-               :on-press on-press}
-    [key-content child]]])
+  ; [nbase/pressable {:style (merge key-con-style box-style)}]
+   ; [:> ripple {:rippleColor "#000" :style key-style
+                      ; :on-press on-press]
+  [nbase/pressable (merge
+                     {:bg "coolGray.100"
+                      :flex 1
+                      :m 1
+                      :borderRadius "md"
+                      :on-press on-press}
+                     box-style)
+    [key-content child]])
 
 (defn key-char-button [c]
   [key-button {} #(dispatch [:keyboard-add-char c])

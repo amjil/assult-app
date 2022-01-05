@@ -15,8 +15,8 @@
 
 (defn keyboard []
   [nbase/box {:style {:flex-direction "column"
-                      :flex 1}}
-                      ; :height "100%"}}
+                      :flex 1
+                      :height "100%"}}
    ;; keyboard
    ; [layout/mn-layout]
    [layout/en-layout]])
