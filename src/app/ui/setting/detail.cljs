@@ -28,7 +28,7 @@
       (let [rf-key :put-profile
             loading @(re-frame/subscribe [:loading rf-key])
             errors @(re-frame/subscribe [:errors rf-key])]
-        [nbase/flex {:style {:height "100%"} :justifyContent "space-between"}
+        [nbase/flex {:style {:height "100%"} :justifyContent "space-between" :safeArea true}
          [nbase/pressable {:flexDirection "row" :justifyContent "space-between"
                            :m 10
                            :flex 1

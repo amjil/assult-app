@@ -6,7 +6,7 @@
    [cljs-bean.core :as bean]
    [reagent.core :as reagent]
    [app.ui.nativebase :as nbase]
-   [app.ui.keyboard.style :refer [key-style key-con-style key-text-style]]
+   [app.ui.keyboard.style :refer [key-style key-con-style key-text-style key-box-style]]
 
    ["react-native-advanced-ripple" :as ripple]))
 

@@ -28,3 +28,12 @@
     :textAlign "center",
     :color "#222222"
     :width 42})
+
+(def key-box-style
+ {:flex nil
+  :width "100%"
+  :flex-direction "column"
+  :justifyContent "flex-end"
+  :height 180
+  :borderTopWidth 1
+  :borderTopColor "#e8e8e8"})

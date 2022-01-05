@@ -40,5 +40,10 @@
             (assoc-in [:candidates :index] ""))
     :dispatch [:text-change {:type :add-text :text-added value}]}))
 
+(re-frame/reg-event-fx
+  :keyboard-shift
+  (fn [{db :db} [_ _]]
+    {:db (assoc-in db [:keyboard :shift] (not (get-in db [:keyboard :shift])))}))
+
 (comment
  (on-press "a"))

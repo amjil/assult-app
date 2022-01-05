@@ -117,7 +117,7 @@
                 (recur (inc i))))]
 
       (js/console.log "cursor update " x y)
-      [(if (zero? x) 0 (* line-height x)) y])))
+      [(+ 2 (if (zero? x) 0 (* line-height x))) y])))
       ; [0 0])))
 
 (defn text-widths [info]
