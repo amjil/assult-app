@@ -29,11 +29,12 @@
     :color "#222222"
     :width 42})
 
-(def key-box-style
- {;:flex nil
-  :width "100%"
-  :flex-direction "column"
-  :justifyContent "flex-end"
-  :height "100%"
-  :borderTopWidth 1
-  :borderTopColor "#e8e8e8"})
+(def layout-box-style
+  {:bg "blueGray.400"
+   :w "100%"
+   :h "100%"
+   :borderTopWidth 1
+   :borderColor "gray.500"
+   :justify "center"
+   :align "center"
+   :flex 1})

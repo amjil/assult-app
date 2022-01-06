@@ -6,7 +6,7 @@
    [cljs-bean.core :as bean]
    [reagent.core :as reagent]
    [app.ui.nativebase :as nbase]
-   [app.ui.keyboard.style :refer [key-style key-con-style key-text-style key-box-style]]
+   [app.ui.keyboard.style :refer [key-style key-con-style key-text-style]]
 
    ["react-native-advanced-ripple" :as ripple]))
 
@@ -15,21 +15,26 @@
    child])
 
 (defn key-button [box-style on-press child]
-  ; [nbase/pressable {:style (merge key-con-style box-style)}]
-   ; [:> ripple {:rippleColor "#000" :style key-style
-                      ; :on-press on-press]
-  [nbase/pressable (merge
-                     {:bg "coolGray.100"
-                      :flex 1
-                      :m 1
-                      :borderRadius "md"
-                      :on-press on-press}
-                     box-style)
+  [nbase/button (merge
+                  {:bg "coolGray.100"
+                   :flex 1
+                   :m 1
+                   :p 0
+                   :borderRadius "md"
+                   :on-press on-press
+                   :align "center"
+                   :justify "center"}
+                  box-style)
     [key-content child]])
 
-(defn key-char-button [c]
-  [key-button {} #(dispatch [:keyboard-add-char c])
-   [nbase/text {} c]])
+(defn key-char-button
+  ([c]
+   [key-button {} #(dispatch [:keyboard-add-char c])
+    [nbase/text {:fontSize 18} c]])
+  ([style c]
+   [key-button {} #(dispatch [:keyboard-add-char c])
+    [nbase/text {} c]]))
+
 
 (defn key-row [child]
   (into
