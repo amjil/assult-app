@@ -58,7 +58,11 @@
 (re-frame/reg-event-fx
   :keyboard-alter
   (fn [{db :db} [_ _]]
-    {:db (assoc-in db [:keyboard :alter] (not (get-in db [:keyboard :alter])))}))
+    {:db (-> db
+           (assoc-in [:keyboard :alter] (not (get-in db [:keyboard :alter])))
+           (assoc-in [:keyboard :alter-num] false)
+           (assoc-in [:keyboard :shift] false)
+           (assoc-in [:keyboard :shift-num] false))}))
 
 (comment
  (on-press "a"))

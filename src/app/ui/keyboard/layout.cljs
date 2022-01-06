@@ -57,7 +57,7 @@
     [keycommon/key-button {:flex 1.5} #(dispatch [:keyboard-add-char " "])
      [ui/ion-icons {:name "ios-return-down-back-sharp" :color "gray" :size 30}]]]])
 
-(defn mn-layout-n [s sn a an]
+(defn mn-layout-a [s sn a an]
   [nbase/box  style/layout-box-style;{:style key-box-style}
    (for [k (take 2 mn-key-list)]
      ^{:key k}
@@ -78,7 +78,7 @@
       [ui/ion-icons {:name "backspace" :color "gray" :size 30}]]]]
    [toolkit-row a an]])
 
-(defn mn-layout-a [s sn a an]
+(defn mn-layout-n [s sn a an]
   [nbase/box style/layout-box-style
    [keycommon/key-row
     (for [kk (nth en-key-list-n (if (true? sn) 1 0))]
@@ -156,7 +156,7 @@
         shift-num   @(subscribe [:keyboard-shift-num])
         alter       @(subscribe [:keyboard-alter])
         alter-num   @(subscribe [:keyboard-alter-num])]
-    (if (true? shift)
+    (if (true? alter-num)
       [mn-layout-n shift shift-num alter alter-num]
       [mn-layout-a shift shift-num alter alter-num])))
 
@@ -165,6 +165,6 @@
         shift-num   @(subscribe [:keyboard-shift-num])
         alter       @(subscribe [:keyboard-alter])
         alter-num   @(subscribe [:keyboard-alter-num])]
-    (if (true? shift)
+    (if (true? alter-num)
       [en-layout-n shift shift-num alter alter-num]
       [en-layout-a shift shift-num alter alter-num])))
