@@ -30,7 +30,16 @@
 
 (def en-key-list-n
   [["1" "2" "3" "4" "5" "6" "7" "8" "9" "0"]
+   ["[" "]" "{" "}" "#" "%" "^" "*" "+" "="]
    ["-" "/" ":" ";" "(" ")" "$" "&" "@" "\""]
+   ["_" "\\" "|" "~" "<" ">" "€" "£" "¥" "•"]
+   ["." "," "?" "!" "'"]])
+
+(def mn-key-list-n
+  [["1" "2" "3" "4" "5" "6" "7" "8" "9" "0"]
+   ["[" "]" "{" "}" "#" "%" "^" "*" "+" "="]
+   ["-" "/" ":" ";" "(" ")" "$" "&" "@" "\""]
+   ["_" "\\" "|" "~" "<" ">" "€" "£" "¥" "•"]
    ["." "," "?" "!" "'"]])
 
 (defn toolkit-row [alter alter-num]
@@ -48,66 +57,114 @@
     [keycommon/key-button {:flex 1.5} #(dispatch [:keyboard-add-char " "])
      [ui/ion-icons {:name "ios-return-down-back-sharp" :color "gray" :size 30}]]]])
 
+(defn mn-layout-n [s sn a an]
+  [nbase/box  style/layout-box-style;{:style key-box-style}
+   (for [k (take 2 mn-key-list)]
+     ^{:key k}
+     [keycommon/key-row
+      (for [kk k]
+        ^{:key kk}
+        [keycommon/key-button {} #(dispatch [:candidates-index-concat (:code kk)])
+         [nbase/rotated-text {:font-family "MongolianBaiZheng" :font-size 18} 28 28 (:label kk)]])])
+   [keycommon/key-row
+    [
+     [keycommon/key-button {:flex 1.5} identity;#(dispatch [:keyboard-alter])
+      [ui/ion-icons {:name "ios-arrow-up-circle-outline" :color "gray" :size 30}]]
+     (for [kk (nth mn-key-list 2)]
+       ^{:key kk}
+       [keycommon/key-button {} #(dispatch [:candidates-index-concat (:code kk)])
+        [nbase/rotated-text {:font-family "MongolianBaiZheng" :font-size 18} 28 28 (:label kk)]])
+     [keycommon/key-button {:flex 1.5} #(dispatch [:keyboard-delete])
+      [ui/ion-icons {:name "backspace" :color "gray" :size 30}]]]]
+   [toolkit-row a an]])
+
+(defn mn-layout-a [s sn a an]
+  [nbase/box style/layout-box-style
+   [keycommon/key-row
+    (for [kk (nth en-key-list-n (if (true? sn) 1 0))]
+      ^{:key kk}
+      [keycommon/key-char-button kk])]
+   [keycommon/key-row
+    (for [kk (nth en-key-list-n (if (true? sn) 3 2))]
+      ^{:key kk}
+      [keycommon/key-char-button kk])]
+   [keycommon/key-row
+    [
+     [keycommon/key-button {:flex 1.65} #(dispatch [:keyboard-shift-num])
+      [nbase/text {} (if (true? sn) "123" "#+=")]]
+     (for [kk (nth en-key-list-n 4)]
+       ^{:key kk}
+       [keycommon/key-char-button (if (true? s) (str/upper-case kk) kk)])
+     [keycommon/key-button {:flex 1.65} #(dispatch [:keyboard-delete])
+      [ui/ion-icons {:name "backspace" :color "gray" :size 30}]]]]
+   [toolkit-row a an]])
+
+
+;; ----------------------------------------------------------------------
+(defn en-layout-n [s sn a an]
+  [nbase/box style/layout-box-style
+   [keycommon/key-row
+    (for [kk (nth en-key-list-n (if (true? sn) 1 0))]
+      ^{:key kk}
+      [keycommon/key-char-button kk])]
+   [keycommon/key-row
+    (for [kk (nth en-key-list-n (if (true? sn) 3 2))]
+      ^{:key kk}
+      [keycommon/key-char-button kk])]
+   [keycommon/key-row
+    [
+     [keycommon/key-button {:flex 1.65} #(dispatch [:keyboard-shift-num])
+      [nbase/text {} (if (true? sn) "123" "#+=")]]
+     (for [kk (nth en-key-list-n 4)]
+       ^{:key kk}
+       [keycommon/key-char-button (if (true? s) (str/upper-case kk) kk)])
+     [keycommon/key-button {:flex 1.65} #(dispatch [:keyboard-delete])
+      [ui/ion-icons {:name "backspace" :color "gray" :size 30}]]]]
+   [toolkit-row a an]])
+
+(defn en-layout-a [s sn a an]
+  [nbase/box style/layout-box-style
+   [keycommon/key-row
+    (for [kk (nth en-key-list 0)]
+      ^{:key kk}
+      [keycommon/key-char-button (if (true? s) (str/upper-case kk) kk)])]
+   ;
+   ; [into]
+   [nbase/flex {:flex 1 :w "100%"
+                 :alignItems "center"
+                 :justifyContent "center"}
+    [nbase/flex { :flex-direction "row"
+                  :alignItems "center"
+                  :justifyContent "center"
+                  :width "90%"}
+     (for [kk (nth en-key-list 1)]
+       ^{:key kk}
+       [keycommon/key-char-button (if (true? s) (str/upper-case kk) kk)])]]
+   [keycommon/key-row
+    [[keycommon/key-button {:flex 1.65} #(dispatch [:keyboard-shift])
+      [ui/ion-icons {:name "ios-arrow-up-circle-outline" :color "gray" :size 30}]]
+     (for [kk (nth en-key-list 2)]
+       ^{:key kk}
+       [keycommon/key-char-button (if (true? s) (str/upper-case kk) kk)])
+     [keycommon/key-button {:flex 1.65} #(dispatch [:keyboard-delete])
+      [ui/ion-icons {:name "backspace" :color "gray" :size 30}]]]]
+   [toolkit-row a an]])
+
+;; ----------------------------------------------------------------------
 (defn mn-layout []
   (let [shift       @(subscribe [:keyboard-shift])
         shift-num   @(subscribe [:keyboard-shift-num])
         alter       @(subscribe [:keyboard-alter])
         alter-num   @(subscribe [:keyboard-alter-num])]
-    [nbase/box  style/layout-box-style;{:style key-box-style}
-     (for [k (take 2 mn-key-list)]
-       ^{:key k}
-       [keycommon/key-row
-        (for [kk k]
-          ^{:key kk}
-          [keycommon/key-button {} #(dispatch [:candidates-index-concat (:code kk)])
-           [nbase/rotated-text {:font-family "MongolianBaiZheng" :font-size 18} 28 28 (:label kk)]])])
-     [keycommon/key-row
-      [
-       [keycommon/key-button {:flex 1.5} identity;#(dispatch [:keyboard-alter])
-        [ui/ion-icons {:name "ios-arrow-up-circle-outline" :color "gray" :size 30}]]
-       (for [kk (nth mn-key-list 2)]
-         ^{:key kk}
-         [keycommon/key-button {} #(dispatch [:candidates-index-concat (:code kk)])
-          [nbase/rotated-text {:font-family "MongolianBaiZheng" :font-size 18} 28 28 (:label kk)]])
-       [keycommon/key-button {:flex 1.5} #(dispatch [:keyboard-delete])
-        [ui/ion-icons {:name "backspace" :color "gray" :size 30}]]]]
-     [toolkit-row alter alter-num]]))
-
-(defn en-layout-n [s sn a an]
-  [nbase/box style/layout-box-style
-   [keycommon/key-row
-    (for [kk (nth en-key-list-n 0)]
-      ^{:key kk}
-      [keycommon/key-char-button (if (true? s) (str/upper-case kk) kk)])]])
+    (if (true? shift)
+      [mn-layout-n shift shift-num alter alter-num]
+      [mn-layout-a shift shift-num alter alter-num])))
 
 (defn en-layout []
   (let [shift       @(subscribe [:keyboard-shift])
         shift-num   @(subscribe [:keyboard-shift-num])
         alter       @(subscribe [:keyboard-alter])
         alter-num   @(subscribe [:keyboard-alter-num])]
-    [nbase/box style/layout-box-style
-     [keycommon/key-row
-      (for [kk (nth en-key-list 0)]
-        ^{:key kk}
-        [keycommon/key-char-button (if (true? shift) (str/upper-case kk) kk)])]
-     ;
-     ; [into]
-     [nbase/flex {:flex 1 :w "100%"
-                   :alignItems "center"
-                   :justifyContent "center"}
-      [nbase/flex { :flex-direction "row"
-                    :alignItems "center"
-                    :justifyContent "center"
-                    :width "90%"}
-       (for [kk (nth en-key-list 1)]
-         ^{:key kk}
-         [keycommon/key-char-button (if (true? shift) (str/upper-case kk) kk)])]]
-     [keycommon/key-row
-      [[keycommon/key-button {:flex 1.65} #(dispatch [:keyboard-shift])
-        [ui/ion-icons {:name "ios-arrow-up-circle-outline" :color "gray" :size 30}]]
-       (for [kk (nth en-key-list 2)]
-         ^{:key kk}
-         [keycommon/key-char-button (if (true? shift) (str/upper-case kk) kk)])
-       [keycommon/key-button {:flex 1.65} #(dispatch [:keyboard-delete])
-        [ui/ion-icons {:name "backspace" :color "gray" :size 30}]]]]
-     [toolkit-row alter alter-num]]))
+    (if (true? shift)
+      [en-layout-n shift shift-num alter alter-num]
+      [en-layout-a shift shift-num alter alter-num])))
