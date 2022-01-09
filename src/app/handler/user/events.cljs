@@ -90,7 +90,7 @@
    {:db    (assoc-in db [:loading :register-user] true)
     :http-xhrio {:method                 :post
                  :uri                    (api/endpoint "users" "register")
-                 :params                 {:user registration}
+                 :params                 registration
                  :format                 (ajax/json-request-format)
                  :response-format        (ajax/json-response-format {:keywords? true})
                  :on-success             [:register-user-success]

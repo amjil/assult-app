@@ -23,8 +23,8 @@
  (fn [{db :db} [_ user]]
    (if user                                          ;; if user signed in we can get user data from ls, in that case we navigate to home
      {:db       (assoc db :user user)}
-     {:db       db})))
-     ; {:dispatch [:navigate-to :sign-in]})))            ;; overwise open sig-in modal screen
+     {:db       db
+      :dispatch [:navigate-to :sign-in]})))            ;; overwise open sig-in modal screen
 
 (re-frame/reg-event-fx
   :reset-to-home
@@ -44,7 +44,7 @@
  :api-request-error                                         ;; triggered when we get request-error from the server
  (fn [{db :db} [_ request-type response]]                   ;; destructure to obtain request-type and response
    (js/console.log "api error " request-type " " (cljs-bean.core/->js response))
-   (let [msg (get-in response [:body :msg])]
+   (let [msg (get-in response [:response :msg])]
      {:db (-> db                                              ;; when we complete a request we need to clean so that our ui is nice and tidy
               (assoc-in [:errors request-type] msg)
               (assoc-in [:loading request-type] false))
