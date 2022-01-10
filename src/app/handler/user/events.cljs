@@ -73,15 +73,15 @@
 
 (re-frame/reg-event-fx
  :login-success
- (fn [{db :db} [_ {body :body}]]
-   (let [{props :user} body
-         user (merge (:user db) props)]
+ (fn [{db :db} [_ body]]
+   (let [{token :token} body]
+     (js/console.log ">>>>> login " (bean/->js body))
      {:db             (-> db
-                          (assoc-in [:user :token] user)
+                          (assoc-in [:user :token] token)
                           (assoc-in [:loading :login] false))
       :dispatch [:navigate-to :home]
       :navigation-reset nil
-      :store-user-in-ls user})))
+      :store-user-in-ls (assoc (:user db) :token token)})))
 
 ;; -- Register ----------------------------------------------------------------
 (re-frame/reg-event-fx
@@ -90,7 +90,7 @@
    {:db    (assoc-in db [:loading :register-user] true)
     :http-xhrio {:method                 :post
                  :uri                    (api/endpoint "users" "register")
-                 :params                 {:user registration}
+                 :params                 registration
                  :format                 (ajax/json-request-format)
                  :response-format        (ajax/json-response-format {:keywords? true})
                  :on-success             [:register-user-success]
@@ -180,3 +180,14 @@
    {:db                  db/default-db
     :remove-user-from-ls nil
     :dispatch            [:navigate-to :sign-in]}))
+
+
+(comment
+  (re-frame/dispatch [:user-send-code {:mobile "15248141905" :direction 1}])
+  (re-frame/dispatch [:register-user {:mobile "15248141905" :code "414004"}])
+
+  (re-frame/dispatch [:user-send-code {:mobile "15248141905" :direction 2}])
+  (re-frame/dispatch [:login {:mobile "15248141905" :code "370049"}])
+  (re-frame/subscribe [:user-token])
+  (re-frame/subscribe [:user])
+  )
