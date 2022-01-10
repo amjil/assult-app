@@ -28,3 +28,13 @@
     :textAlign "center",
     :color "#222222"
     :width 42})
+
+(def layout-box-style
+  {:bg "blueGray.400"
+   :w "100%"
+   :h "100%"
+   :borderTopWidth 1
+   :borderColor "gray.500"
+   :justify "center"
+   :align "center"
+   :flex 1})

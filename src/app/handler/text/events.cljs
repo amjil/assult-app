@@ -117,12 +117,14 @@
                 (recur (inc i))))]
 
       (js/console.log "cursor update " x y)
-      [(if (zero? x) 0 (* line-height x)) y])))
+      [(+ 2 (if (zero? x) 0 (* line-height x))) y])))
       ; [0 0])))
 
 (defn text-widths [info]
   (let [widths (map #(:charWidths %) (:lineInfo info))]
-    (map #(map-indexed (fn [idx item] {:width item :y (reduce + (take idx %))}) %) widths)))
+    (if (and (= 1 (:lineCount info)) (= [0] (:charWidths (first (:lineInfo info)))))
+      [[{:width (:width info) :y 0}]]
+      (map #(map-indexed (fn [idx item] {:width item :y (reduce + (take idx %))}) %) widths))))
 
 ;;because of cursor settled zero position, nothing to delete
 (defn text-delete

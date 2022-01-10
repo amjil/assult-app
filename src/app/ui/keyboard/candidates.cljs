@@ -18,7 +18,7 @@
                           :left 0
                           :right 0
                           ;:top 0
-                          :bottom 230
+                          :bottom 300
                           :elevation 1998
                           :alignItems "center"
                           :justifyContent "center"

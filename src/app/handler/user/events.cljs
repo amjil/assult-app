@@ -18,20 +18,21 @@
                    :params                 params
                    :format                 (ajax/json-request-format)
                    :response-format        (ajax/json-response-format {:keywords? true})
-                   :on-success             [:put-user-profile-success cb]
+                   :on-success             [:put-user-profile-success ek cb]
                    :on-failure             [:api-request-error ek]}})))
 
 (re-frame/reg-event-fx
  :put-user-profile-success
- (fn [{db :db} [_  cb body]]
+ (fn [{db :db} [_ ek cb body]]
    (cb)
    (let [{code :code msg :msg} body]
-     {:db               db})))
+     {:db              (assoc-in db [:loading ek] false)})))
+
 ;; -- Check Mobile -------------------------------------------------------------
 (re-frame/reg-event-fx
  :user-check-mobile
  (fn [{:keys [db]} [_ mobile]]
-   {:db    (assoc-in db [:loading :login] true)
+   {:db    (assoc-in db [:loading :check-mobile] true)
     :http-xhrio {:method                 :post
                  :uri                    (api/endpoint "users" "check-mobile")
                  :params                 {:mobile mobile}
@@ -45,7 +46,9 @@
  (fn [{db :db} [_ body]]
    (let [{{exists :exists mobile :mobile} :data code :code msg :msg} body]
      (merge
-       {:db               (assoc-in db [:user :mobile] mobile)}
+       {:db             (-> db
+                            (assoc-in [:user :mobile] mobile)
+                            (assoc-in [:loading :check-mobile] false))}
        (cond
          (not (zero? code))
          {:dispatch [:toast msg]} ;; error toast
@@ -70,13 +73,15 @@
 
 (re-frame/reg-event-fx
  :login-success
- (fn [{db :db} [_ {body :body}]]
-   (let [{props :user} body
-         user (merge (:user db) props)]
-     {:db               (assoc-in db [:user :token] user)
+ (fn [{db :db} [_ body]]
+   (let [{token :token} body]
+     (js/console.log ">>>>> login " (bean/->js body))
+     {:db             (-> db
+                          (assoc-in [:user :token] token)
+                          (assoc-in [:loading :login] false))
       :dispatch [:navigate-to :home]
       :navigation-reset nil
-      :store-user-in-ls user})))
+      :store-user-in-ls (assoc (:user db) :token token)})))
 
 ;; -- Register ----------------------------------------------------------------
 (re-frame/reg-event-fx
@@ -84,8 +89,8 @@
  (fn [{:keys [db]} [_ registration]]
    {:db    (assoc-in db [:loading :register-user] true)
     :http-xhrio {:method                 :post
-                 :uri                    (api/endpoint "users")
-                 :params                 {:user registration}
+                 :uri                    (api/endpoint "users" "register")
+                 :params                 registration
                  :format                 (ajax/json-request-format)
                  :response-format        (ajax/json-response-format {:keywords? true})
                  :on-success             [:register-user-success]
@@ -96,7 +101,9 @@
  (fn [{db :db} [_ {body :body}]]
    (let [{props :user} body
          user (merge (:user db) props)]
-     {:db               (assoc db :user user)
+     {:db           (-> db
+                      (assoc :user user)
+                      (assoc-in [:loading :register-user] false))
       :store-user-in-ls user
       :dispatch-n       [[:navigate-back]]})))
 
@@ -104,7 +111,7 @@
 (re-frame/reg-event-fx
  :get-user-profile
  (fn [{:keys [db]} [_ params]]
-   {:db    (assoc-in db [:loading :profile] true)
+   {:db    (assoc-in db [:loading :get-user-profile] true)
     :http-xhrio {:method                 :get
                  :uri                    (api/endpoint "profiles" (:profile params))
                  :headers                (api/auth-header db)
@@ -118,49 +125,49 @@
  (fn [{db :db} [_ {body :body}]]
    (let [{profile :profile} body]
      {:db (-> db
-              (assoc-in [:loading :profile] false)
+              (assoc-in [:loading :get-user-profile] false)
               (assoc :profile profile))})))
 
 ;; -- Send register sms code ---------------------------------------------------
 (re-frame/reg-event-fx
  :user-send-code
  (fn [{:keys [db]} [_ params]]
-   {:db    (assoc-in db [:loading :sign-up] true)
+   {:db    (assoc-in db [:loading :user-send-code] true)
     :http-xhrio {:method                 :post
                  :uri                    (api/endpoint "users" "send-code")
                  :params                 params
                  :format                 (ajax/json-request-format)
                  :response-format        (ajax/json-response-format {:keywords? true})
                  :on-success             [:user-send-code-success]
-                 :on-failure             [:api-request-error :sign-up]}}))
+                 :on-failure             [:api-request-error :user-send-code]}}))
 
 (re-frame/reg-event-fx
  :user-send-code-success
  (fn [{db :db} [_ {body :body}]]
    (let [{profile :profile} body]
      {:db (-> db
-              (assoc-in [:loading :sign-up] false))
+              (assoc-in [:loading :user-send-code] false))
       :dispatch [:navigate-to :user-in-code]})))
 
 ;; --  check sms code ----------------------------------------------------------
 (re-frame/reg-event-fx
  :user-check-code
  (fn [{:keys [db]} [_ params]]
-   {:db    (assoc-in db [:loading :check-code] true)
+   {:db    (assoc-in db [:loading :user-check-code] true)
     :http-xhrio {:method                 :post
                  :uri                    (api/endpoint "users" "check-code")
                  :params                 params
                  :format                 (ajax/json-request-format)
                  :response-format        (ajax/json-response-format {:keywords? true})
                  :on-success             [:user-check-code-success]
-                 :on-failure             [:api-request-error :check-code]}}))
+                 :on-failure             [:api-request-error :user-check-code]}}))
 
 (re-frame/reg-event-fx
  :user-check-code-success
  (fn [{db :db} [_ {body :body}]]
    (let [{profile :profile} body]
      {:db (-> db
-              (assoc-in [:loading :check-code] false))
+              (assoc-in [:loading :user-check-code] false))
       :dispatch [:navigate-to :home]
       :navigation-reset nil})))
 ;; -- Logout ------------------------------------------------------------------
@@ -173,3 +180,14 @@
    {:db                  db/default-db
     :remove-user-from-ls nil
     :dispatch            [:navigate-to :sign-in]}))
+
+
+(comment
+  (re-frame/dispatch [:user-send-code {:mobile "15248141905" :direction 1}])
+  (re-frame/dispatch [:register-user {:mobile "15248141905" :code "414004"}])
+
+  (re-frame/dispatch [:user-send-code {:mobile "15248141905" :direction 2}])
+  (re-frame/dispatch [:login {:mobile "15248141905" :code "370049"}])
+  (re-frame/subscribe [:user-token])
+  (re-frame/subscribe [:user])
+  )

@@ -51,7 +51,7 @@
       (j/call Toast :show
         (bean/->js
           {
-           :placement :bottom-left
+           :placement :top-left
            :render
            (fn []
              (reagent/as-element
