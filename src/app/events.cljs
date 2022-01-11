@@ -8,7 +8,8 @@
    app.handler.text.events
    app.handler.candidates.events
    app.handler.keyboard.events
-   app.handler.user.events))
+   app.handler.user.events
+   app.handler.question.events))
 
 
 (re-frame/reg-event-fx                                      ;; usage: (dispatch [:initialise-app])
