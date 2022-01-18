@@ -10,16 +10,18 @@
    ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]))
 
 (defn view []
-  (let [code (reagent/atom "")]
+  (let [code (reagent/atom "")
+        props {:fontSize 18 :fontFamily "MongolianBaiZheng"}]
     (fn []
       (let [mobile @(re-frame/subscribe [:user-mobile])
-            loading @(re-frame/subscribe [:loading])]
+            loading @(re-frame/subscribe [:loading])
+            user-exists @(re-frame/subscribe [:user-exists])]
         [nbase/box {:h "100%" :safeArea true}
          [nbase/flex {:mt 0 :mx 10 :h "80%" :justifyContent "space-between"}
           [nbase/vstack {:space 4}
            [nbase/hstack {}
-            [nbase/measured-text {} "ᠰᠢᠯᠭᠠᠬᠤ"]
-            [nbase/measured-text {} " ᠳ᠋ᠤᠭᠠᠷ"]]
+            [nbase/measured-text props "ᠰᠢᠯᠭᠠᠬᠤ"]
+            [nbase/measured-text props " ᠳ᠋ᠤᠭᠠᠷ"]]
            [nbase/input {:keyboardType "number-pad"
                          :placeholder "Mobile Code"
                          :on-change-text #(reset! code %)}]
@@ -28,5 +30,7 @@
                                 :justifyContent "center" :alignSelf "center" :alignItems "center"
                                 :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
                                 :on-press #(do
-                                             (js/console.log ">>>> ")
-                                             (re-frame/dispatch [:register-user {:mobile mobile :code @code}]))}]]]]]))))
+                                             (js/console.log ">>>> " user-exists)
+                                             (if user-exists
+                                               (re-frame/dispatch [:login {:mobile mobile :code @code}])
+                                               (re-frame/dispatch [:register-user {:mobile mobile :code @code}])))}]]]]]))))

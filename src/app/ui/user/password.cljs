@@ -23,7 +23,13 @@
             [nbase/measured-text props "ᠦᠭᠡ"]]
            [nbase/input {:type :password
                          :on-change-text #(reset! code %)}]
-           [nbase/flex {:flexDirection "row" :justifyContent "flex-end"}
+           [nbase/flex {:flexDirection "row" :justifyContent "space-between"}
+            [nbase/hstack {:space 2}
+             [nbase/pressable
+              {:onPress #(do
+                            (re-frame/dispatch [:user-send-code {:mobile mobile :direction 2}])
+                            (re-frame/dispatch [:navigate-to :user-in-code]))}
+              [:f> nbase/styled-text-view {:color "darkBlue.600" :fontFamily "MongolianBaiZheng"} "ᠰᠢᠯᠭᠠᠬᠤ  ᠳ᠋ᠤᠭᠠᠷ ᠵᠢᠠᠷ ᠨᠡᠪᠲᠡᠷᠡᠬᠦ"]]]
             [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                                 :justifyContent "center" :alignSelf "center" :alignItems "center"
                                 :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])

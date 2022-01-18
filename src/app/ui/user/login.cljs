@@ -12,14 +12,15 @@
 
 (defn view []
   (let [show (reagent/atom true)
-        mobile (reagent/atom "")]
+        mobile (reagent/atom "")
+        props {:fontSize 18 :fontFamily "MongolianBaiZheng"}]
     (fn []
       [nbase/box {:h "100%" :safeArea true}
        [nbase/flex {:mt 20 :mx 10 :h "80%" :justifyContent "space-between"}
         [nbase/vstack {:space 4}
          [nbase/hstack {}
-          [nbase/measured-text {} "mobile"]
-          [nbase/measured-text {} "number"]]
+          [nbase/measured-text props "ᠤᠳᠠᠰᠤᠨ"]
+          [nbase/measured-text props " ᠳ᠋ᠤᠭᠠᠷ"]]
          [nbase/input {:keyboardType "number-pad"
                        :placeholder "Input Mobile"
                        :onFocus #(reset! show false)

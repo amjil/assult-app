@@ -1,5 +1,6 @@
 (ns app.ui.home.index
   (:require
+   [applied-science.js-interop :as j]
    [app.ui.nativebase :as nbase]
    [app.ui.components :as ui]
    [app.handler.navigation :as navigation]
@@ -35,16 +36,29 @@
    "profile" "md-person"})
 
 (defn home1 []
+  (let [questions @(re-frame/subscribe [:question-list])
+        props {:fontSize 18 :fontFamily "MongolianBaiZheng"}]
+    ;
+    ; [nbase/box {:h "100%" :safeArea true}]
+    [nbase/center {:flex 1 :px 3 :justifyContent "flex-start":safeArea true}
+     [nbase/flat-list
+      {:horizontal true
+       :keyExtractor    (fn [_ index] (str "question-" index))
+       :data questions
+       :renderItem
+       (fn [x]
+         (let [{:keys [item index separators]} (j/lookup x)]
+           (reagent/as-element
+             [nbase/box ;{:width 40}
+              [nbase/measured-text props (j/get item :question_content)]])))}]]))
+
+(defn home2 []
   [nbase/center {:flex 1 :px 3 :safeArea true}
-   [nbase/text "abc"]
+   [nbase/text "home2"]
    [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                        :justifyContent "center" :alignSelf "center" :alignItems "center"
                        :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
                        :onPress #(re-frame/dispatch [:navigate-to :home5])}]])
-
-(defn home2 []
-  [nbase/center {:flex 1 :px 3 :safeArea true}
-   [nbase/text "home2"]])
 
 (defn home3 []
   [nbase/center {:flex 1 :px 3 :safeArea true}
@@ -52,7 +66,12 @@
 
 (defn home4 []
   [nbase/center {:flex 1 :px 3 :safeArea true}
-   [nbase/text "home4"]])
+   [nbase/text "home4"]
+   [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
+                       :justifyContent "center" :alignSelf "center" :alignItems "center"
+                       :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
+                       :onPress #(do ;(re-frame/dispatch [:navigate-to :home]))}]])
+                                   (re-frame/dispatch [:logout]))}]])
 
 (defn home5 []
   [nbase/center {:flex 1 :px 3 :safeArea true}
