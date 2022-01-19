@@ -4,6 +4,7 @@
    [app.ui.nativebase :as nbase]
    [app.ui.components :as ui]
    [app.handler.navigation :as navigation]
+   [app.ui.components :as ui]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [cljs-bean.core :as bean]
@@ -36,27 +37,35 @@
    "profile" "md-person"})
 
 (defn home1 []
-  (let [questions @(re-frame/subscribe [:question-list])
-        props {:fontSize 18 :fontFamily "MongolianBaiZheng"}
-        props2 {:fontSize 14 :fontFamily "MongolianBaiZheng"}]
-    ;
-    [nbase/box {:h "100%" :pt 10 :safeArea true}
-     [nbase/flat-list
-      {:horizontal true
-       :keyExtractor    (fn [_ index] (str "question-" index))
-       :data questions
-       :ItemSeparatorComponent
-       ; (fn [] (reagent/as-element [nbase/divider])) ;{:style {:width 1 :backgroundColor "lightgrey"}}]))
-       (fn [] (reagent/as-element [nbase/box {:style {:width 1 :backgroundColor "lightgrey"}}]))
-       :renderItem
-       (fn [x]
-         (let [{:keys [item index separators]} (j/lookup x)]
-           (reagent/as-element
-             [nbase/box {:flex-direction "row"}
-              [nbase/box {:justifyContent "space-between" :flex 1}
-               [nbase/measured-text props (j/get item :question_content)]
-               [nbase/measured-text {:fontSize 12} (j/get item :created_at)]]
-              [nbase/measured-text props2 (j/get item :question_detail)]])))}]]))
+  (let [h (reagent/atom nil)]
+    (fn []
+      (let [questions @(re-frame/subscribe [:question-list])
+            font {:fontFamily "MongolianBaiZheng"}
+            props {:fontSize 18 :fontFamily "MongolianBaiZheng"}
+            props2 {:fontSize 14 :fontFamily "MongolianBaiZheng"}]
+        [nbase/box {:h "100%" :pt 10 :safeArea true}
+         [nbase/box {:flex 1
+                     :on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
+                                  (reset! h height))}
+          (if @h
+            [nbase/flat-list
+             {:horizontal true
+              :keyExtractor    (fn [_ index] (str "question-" index))
+              :data questions
+              :ItemSeparatorComponent
+              (fn [] (reagent/as-element [nbase/box {:style {:width 4 :backgroundColor "lightgrey"}}]))
+              :renderItem
+              (fn [x]
+                (let [{:keys [item index separators]} (j/lookup x)]
+                  (reagent/as-element
+                    [nbase/box {:flex-direction "row"}
+                     [nbase/box {:justifyContent "space-between" :flex 1}]
+                     [nbase/measured-text (assoc props :height @h) (j/get item :question_content)]
+                      ; [nbase/measured-text {:fontSize 12} (j/get item :created_at)]]
+                     [nbase/box
+                      [ui/userpic (j/get item :avatar_file) 24]
+                      [nbase/measured-text (merge font {:fontSize 14 :margin-top 4}) (j/get item :user_name)]]
+                     [nbase/measured-text (assoc props2 :height @h) (j/get item :question_detail)]])))}])]]))))
 
 (defn home2 []
   [nbase/center {:flex 1 :px 3 :safeArea true}
