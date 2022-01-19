@@ -37,20 +37,26 @@
 
 (defn home1 []
   (let [questions @(re-frame/subscribe [:question-list])
-        props {:fontSize 18 :fontFamily "MongolianBaiZheng"}]
+        props {:fontSize 18 :fontFamily "MongolianBaiZheng"}
+        props2 {:fontSize 14 :fontFamily "MongolianBaiZheng"}]
     ;
-    ; [nbase/box {:h "100%" :safeArea true}]
-    [nbase/center {:flex 1 :px 3 :justifyContent "flex-start":safeArea true}
+    [nbase/box {:h "100%" :pt 10 :safeArea true}
      [nbase/flat-list
       {:horizontal true
        :keyExtractor    (fn [_ index] (str "question-" index))
        :data questions
+       :ItemSeparatorComponent
+       ; (fn [] (reagent/as-element [nbase/divider])) ;{:style {:width 1 :backgroundColor "lightgrey"}}]))
+       (fn [] (reagent/as-element [nbase/box {:style {:width 1 :backgroundColor "lightgrey"}}]))
        :renderItem
        (fn [x]
          (let [{:keys [item index separators]} (j/lookup x)]
            (reagent/as-element
-             [nbase/box ;{:width 40}
-              [nbase/measured-text props (j/get item :question_content)]])))}]]))
+             [nbase/box {:flex-direction "row"}
+              [nbase/box {:justifyContent "space-between" :flex 1}
+               [nbase/measured-text props (j/get item :question_content)]
+               [nbase/measured-text {:fontSize 12} (j/get item :created_at)]]
+              [nbase/measured-text props2 (j/get item :question_detail)]])))}]]))
 
 (defn home2 []
   [nbase/center {:flex 1 :px 3 :safeArea true}
