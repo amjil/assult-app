@@ -13,6 +13,11 @@
    (get-in db [:user :mobile])))
 
 (re-frame/reg-sub
+ :user-exists
+ (fn [db _]
+   (get-in db [:user :exists])))
+
+(re-frame/reg-sub
  :user
  (fn [db _]
    (get db :user)))

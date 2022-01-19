@@ -2,8 +2,7 @@
   (:require
    [re-frame.core :as re-frame]))
 
-;; (re-frame/reg-sub
-;;  :user-token
-;;  (fn [db _]
-;;    (get-in db [:user :token])))
-
+(re-frame/reg-sub
+ :question-list
+ (fn [db _]
+   (get db :questions)))

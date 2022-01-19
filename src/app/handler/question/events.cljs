@@ -10,24 +10,26 @@
 
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
- :user-send-code
+ :get-questions
  (fn [{:keys [db]} [_ params]]
-   {:db    (assoc-in db [:loading :user-send-code] true)
-    :http-xhrio {:method                 :post
-                 :uri                    (api/endpoint "users" "send-code")
+   {:db    (assoc-in db [:loading :get-questions] true)
+    :http-xhrio {:method                 :get
+                 :uri                    (api/endpoint "questions")
+                 :headers                (api/auth-header db)
                  :params                 params
                  :format                 (ajax/json-request-format)
                  :response-format        (ajax/json-response-format {:keywords? true})
-                 :on-success             [:user-send-code-success]
-                 :on-failure             [:api-request-error :user-send-code]}}))
+                 :on-success             [:get-questions-success]
+                 :on-failure             [:api-request-error :get-questions]}}))
 
 (re-frame/reg-event-fx
- :user-send-code-success
- (fn [{db :db} [_ {body :body}]]
-   (let [{profile :profile} body]
+ :get-questions-success
+ (fn [{db :db} [_ body]]
+   (let [{data :data} body]
      {:db (-> db
-              (assoc-in [:loading :user-send-code] false))
-      :dispatch [:navigate-to :user-in-code]})))
+              (assoc :questions data)
+              (assoc-in [:loading :get-questions] false))})))
 
 (comment
-  )
+  (re-frame/dispatch [:get-questions {}])
+  (re-frame/subscribe [:question-list]))

@@ -46,11 +46,12 @@
 (re-frame/reg-event-fx
  :user-check-mobile-success
  (fn [{db :db} [_ body]]
-   (let [{{exists :exists mobile :mobile} :data code :code msg :msg} body]
+   (let [{{exists :exists mobile :mobile has-password :password} :data code :code msg :msg} body]
      (merge
        {:db             (-> db
                             (assoc-in [:user :mobile] mobile)
-                            (assoc-in [:loading :check-mobile] false))}
+                            (assoc-in [:loading :check-mobile] false)
+                            (assoc-in [:user :exists] exists))}
        (cond
          (not (zero? code))
          {:dispatch [:toast msg]} ;; error toast
@@ -82,7 +83,8 @@
      {:db             (-> db
                           (assoc-in [:user :token] token)
                           (assoc-in [:loading :login] false))
-      :dispatch [:navigate-to :home]
+      :dispatch-n [[:navigate-to :home]
+                   [:get-questions {}]]
       :navigation-reset nil
       :store-user-in-ls (assoc (:user db) :token token)})))
 
@@ -199,7 +201,4 @@
   (re-frame/subscribe [:user-token])
   (re-frame/subscribe [:user])
 
-  (re-frame/dispatch [:logout])
-
-
-  )
+  (re-frame/dispatch [:logout]))
