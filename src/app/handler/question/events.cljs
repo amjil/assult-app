@@ -30,6 +30,11 @@
               (assoc :questions data)
               (assoc-in [:loading :get-questions] false))})))
 
+(re-frame/reg-event-fx
+ :set-question
+ (fn [{db :db} [_ params]]
+   {:db             (assoc db :question params)}))
+
 (comment
   (re-frame/dispatch [:get-questions {}])
   (re-frame/subscribe [:question-list]))

@@ -42,7 +42,7 @@
       (let [questions @(re-frame/subscribe [:question-list])
             font {:fontFamily "MongolianBaiZheng"}
             props {:fontSize 18 :fontFamily "MongolianBaiZheng"}
-            props2 {:fontSize 14 :fontFamily "MongolianBaiZheng"}]
+            props2 {:fontSize 16 :fontFamily "MongolianBaiZheng"}]
         [nbase/box {:h "100%" :pt 10 :safeArea true}
          [nbase/box {:flex 1
                      :on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
@@ -58,14 +58,21 @@
               (fn [x]
                 (let [{:keys [item index separators]} (j/lookup x)]
                   (reagent/as-element
-                    [nbase/box {:flex-direction "row"}
+                    [nbase/pressable {:flex-direction "row"
+                                      :on-press #(do (re-frame/dispatch [:navigate-to :question-detail])
+                                                     (re-frame/dispatch [:set-question (bean/->clj x)]))}
                      [nbase/box {:justifyContent "space-between" :flex 1}]
                      [nbase/measured-text (assoc props :height @h) (j/get item :question_content)]
                       ; [nbase/measured-text {:fontSize 12} (j/get item :created_at)]]
                      [nbase/box
                       [ui/userpic (j/get item :avatar_file) 24]
                       [nbase/measured-text (merge font {:fontSize 14 :margin-top 4}) (j/get item :user_name)]]
-                     [nbase/measured-text (assoc props2 :height @h) (j/get item :question_detail)]])))}])]]))))
+                     [nbase/measured-text (assoc props2 :height @h) (j/get item :question_detail)]
+                     [nbase/box {:style {:width 1 :backgroundColor "lightgrey"}}]
+                     [nbase/flex
+                      [nbase/measured-text (merge font {:fontSize 12}) (str "ᠵᠦᠪᠰᠢᠶᠡᠷᠡᠭᠰᠡᠨ " (j/get item :agree_count))]
+                      [nbase/measured-text (merge font {:mt 10 :fontSize 12}) (str "ᠰᠡᠳᠭᠢᠭᠳᠡᠯ " (j/get item :comment_count))]]])))}])]]))))
+
 
 (defn home2 []
   [nbase/center {:flex 1 :px 3 :safeArea true}

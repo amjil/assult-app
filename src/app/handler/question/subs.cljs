@@ -6,3 +6,8 @@
  :question-list
  (fn [db _]
    (get db :questions)))
+
+(re-frame/reg-sub
+ :question
+ (fn [db _]
+   (get db :question)))
