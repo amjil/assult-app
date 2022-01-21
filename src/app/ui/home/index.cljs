@@ -20,7 +20,8 @@
                        :justifyContent "center" :alignSelf "center" :alignItems "center"
                        :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
                        :onPress #(do ;(re-frame/dispatch [:navigate-to :home]))}]])
-                                   (navigation/nav-reset))}]
+                                   (navigation/nav-reset)
+                                   (re-frame/dispatch [:get-questions {}]))}]
    [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                        :justifyContent "center" :alignSelf "center" :alignItems "center"
                        :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
@@ -60,7 +61,7 @@
                   (reagent/as-element
                     [nbase/pressable {:flex-direction "row"
                                       :on-press #(do (re-frame/dispatch [:navigate-to :question-detail])
-                                                     (re-frame/dispatch [:set-question (bean/->clj x)])
+                                                     (re-frame/dispatch [:set-question (bean/->clj item)])
                                                      (re-frame/dispatch [:get-answers (j/get item :id)]))}
                      [nbase/box {:justifyContent "space-between" :flex 1}]
                      [nbase/measured-text (assoc props :height @h) (j/get item :question_content)]
