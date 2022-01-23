@@ -407,14 +407,14 @@
   (cursor-update 4 1 widths)
 
   @(re-frame/subscribe [:editor-text])
-  (re-frame/dispatch [:init-editor {:text "abcd" :text-props {:fontSize 14} :padding 8}])
+  (re-frame/dispatch [:init-editor {:text "abcd" :text-props {:fontSize 14 :width 200} :padding 8}])
   (re-frame/dispatch [:text-change {:type :delete}])
   (re-frame/subscribe [:editor])
   ;; text add
-  (re-frame/dispatch [:text-change {:type :add-text :text-added "abcd"}])
+  (re-frame/dispatch [:text-change {:type :add-text :text-added " abcd"}])
 
   @(re-frame/subscribe [:editor-selection-xy])
 
 
-  (text-info-init {:text "abcdef" :text-props {:fontSize 14}})
+  (text-info-init {:text "The world is a beautiful world!" :text-props {:fontSize 14 :width 50}})
   (re-frame/dispatch [:toast "error hello"]))
