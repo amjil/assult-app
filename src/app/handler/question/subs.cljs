@@ -16,3 +16,8 @@
  :answers
  (fn [db _]
    (get db :answers)))
+
+(re-frame/reg-sub
+ :question-my
+ (fn [db _]
+   (get db :question-my)))

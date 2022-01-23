@@ -19,8 +19,9 @@
         font {:fontFamily "MongolianBaiZheng"}]
     (fn []
       (let [model @(re-frame/subscribe [:question])
-            answers @(re-frame/subscribe [:answers])]
-        [nbase/box {:safeArea true
+            answers @(re-frame/subscribe [:answers])
+            question-my @(re-frame/subscribe [:question-my])]
+        [nbase/box {:h "100%" :pt 2
                     :on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
                                   (reset! h height))}
          (if @h
@@ -29,13 +30,14 @@
             [nbase/flex
              [nbase/measured-text (merge font {:fontSize 12}) (str "answers " (:answer_count model))]
              [nbase/measured-text (merge font {:mt 10 :fontSize 12}) (str "focus " (:focus_count model))]]
-            [nbase/flex
-             [nbase/link {:on-press #(js/console.log "new answer")}
-              [nbase/measured-text (merge font {:fontSize 12}) "new answer"]]
-             [nbase/link {:mt 10 :on-press #(js/console.log "focus ")}
-              [nbase/box {:px 1 :py 1 :rounded "sm" :bg "primary.400" :_text {:color "white"}}
-               [nbase/measured-text (merge font {:fontSize 12}) "focus"]]]]
-            [nbase/box {:h @h :w 1 :bg "success.700"}]
+            [nbase/flex {:mx 1}
+             [nbase/link {:on-press #(re-frame/dispatch [:navigate-to :answer-create])}
+              [nbase/box {:py 1 :rounded "sm" :bg "primary.400"}
+               [nbase/measured-text (merge font {:color "white" :fontSize 12}) "ᠬᠠᠷᠢᠭᠤᠯᠬᠤ"]]]
+             [nbase/link {:mt 10 :on-press #(re-frame/dispatch [:question-focus (:id model)])}
+              [nbase/box {:py 1 :rounded "sm" :bg "primary.400"}
+               [nbase/measured-text (merge font {:color "white" :fontSize 12}) (if (:focus_id question-my) "ᠦᠯᠦ ᠳᠠᠭᠠᠬᠤ" "ᠳᠠᠭᠠᠬᠤ")]]]]
+            [nbase/box {:h @h :w 0.5 :bg "success.500" :mx 1}]
             [nbase/flat-list
              {:horizontal true
               :keyExtractor    (fn [_ index] (str "answer-" index))

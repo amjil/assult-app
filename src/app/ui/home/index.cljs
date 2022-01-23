@@ -62,7 +62,8 @@
                     [nbase/pressable {:flex-direction "row"
                                       :on-press #(do (re-frame/dispatch [:navigate-to :question-detail])
                                                      (re-frame/dispatch [:set-question (bean/->clj item)])
-                                                     (re-frame/dispatch [:get-answers (j/get item :id)]))}
+                                                     (re-frame/dispatch [:get-answers (j/get item :id)])
+                                                     (re-frame/dispatch [:my-question (j/get item :id)]))}
                      [nbase/box {:justifyContent "space-between" :flex 1}]
                      [nbase/measured-text (assoc props :height @h) (j/get item :question_content)]
                       ; [nbase/measured-text {:fontSize 12} (j/get item :created_at)]]
