@@ -121,10 +121,25 @@
       ; [0 0])))
 
 (defn text-widths [info]
-  (let [widths (map #(:charWidths %) (:lineInfo info))]
-    (if (and (= 1 (:lineCount info)) (= [0] (:charWidths (first (:lineInfo info)))))
-      [[{:width (:width info) :y 0}]]
-      (map #(map-indexed (fn [idx item] {:width item :y (reduce + (take idx %))}) %) widths))))
+  (let [lines (:lineInfo info)]
+    (map #(cond
+            (= [0] (:charWidths %))
+            [{:width (:width %) :y 0}]
+
+            (= [0 0] (:charWidths %))
+            [{:width (:width %) :y 0} {:width 0 :y (:width %)}]
+
+            :else
+            (map-indexed (fn [idx item]
+                           {:width item :y (reduce + (take idx (:charWidths %)))})
+             (:charWidths %)))
+      lines)))
+
+; (defn text-widths [info]
+;   (let [widths (map #(:charWidths %) (:lineInfo info))]
+;     (if (and (= 1 (:lineCount info)) (= [0] (:charWidths (first (:lineInfo info)))))
+;       [[{:width (:width info) :y 0}]]
+;       (map #(map-indexed (fn [idx item] {:width item :y (reduce + (take idx %))}) %) widths))))
 
 ;;because of cursor settled zero position, nothing to delete
 (defn text-delete

@@ -26,6 +26,7 @@
    [app.ui.setting.detail :as setting-detail]
    [app.ui.home.index :as home]
    [app.ui.home.question :as question]
+   [app.ui.home.answer :as answer]
    [app.ui.drawer.index :as drawer]
    [app.ui.nativebase :as nativebase]))
 
@@ -81,6 +82,9 @@
               :options    {:title ""}}
              {:name       :question-detail
               :component  question/detail-view
+              :options    {:title ""}}
+             {:name       :answer-create
+              :component  answer/new-answer-view
               :options    {:title ""}}
              {:name       :home
               :component  home/tabs
