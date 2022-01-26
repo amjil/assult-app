@@ -184,6 +184,21 @@
      :else
      (str (subs t1 0 p1) t2 (subs t1 p2)))))
 
+(defn text-info-initial [t props]
+  (if (empty? t)
+    (let [info (bean/->clj
+                (rntext/measure
+                 (bean/->js
+                  (assoc props
+                         :text "1"))))]
+      info)
+    (bean/->clj
+     (rntext/measure
+      (bean/->js
+       (assoc props
+              :text t
+              :useCharsWidth true))))))
+
 (defn text-info [t props]
   (if (empty? t)
     (let [info (bean/->clj
@@ -198,7 +213,6 @@
        (assoc props
               :text t
               :useCharsWidth true))))))
-
 
 (defmulti text-change (fn [x] (:type x)))
 
@@ -267,12 +281,23 @@
          lh    :line-height
          padding :padding} params
 
-        info                 (text-info t props)
+        info                 (text-info-initial t props)
         widths               (text-widths info)
         new-cursor           (count t)
-        line-height          (if (nil? lh) (/ (:height info) (:lineCount info)) lh)
+        line-height          (if (nil? lh)
+                               (cond
+                                 (nil? (-> info :lineInfo last :charWidths))
+                                 (/ (:height info) (:lineCount info))
+
+                                 (empty? (-> info :lineInfo last :charWidths))
+                                 (/ (:height info) (dec (:lineCount info)))
+
+                                 :else
+                                 (/ (:height info) (:lineCount info)))
+                               lh)
+        info                 (if (empty? t) (dissoc info :lineInfo) info)
         [x y]                (cursor-update new-cursor line-height widths)]
-    (js/console.log " text -info -inti >>>")
+    (js/console.log " text -info -inti >>> line-height = " line-height)
     {:text         t
      :text-props   props
      :text-info    info
