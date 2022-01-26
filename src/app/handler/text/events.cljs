@@ -121,19 +121,59 @@
       ; [0 0])))
 
 (defn text-widths [info]
-  (let [lines (:lineInfo info)]
-    (map #(cond
-            (= [0] (:charWidths %))
-            [{:width (:width %) :y 0}]
+  (let [line-infos (:lineInfo info)
+        ll (loop [lines line-infos
+                  nlines []]
+             (let [line (first lines)]
+               (cond
+                 (empty? lines)
+                 nlines
 
-            (= [0 0] (:charWidths %))
-            [{:width (:width %) :y 0} {:width 0 :y (:width %)}]
+                 (= [0] (:charWidths line))
+                 (recur (rest lines)
+                        (conj nlines [{:width (:width line) :y 0}]))
 
-            :else
-            (map-indexed (fn [idx item]
-                           {:width item :y (reduce + (take idx (:charWidths %)))})
-             (:charWidths %)))
-      lines)))
+                 (= [0 0] (:charWidths line))
+                 (recur (rest lines)
+                        (conj nlines [{:width (:width line) :y 0} {:width 0 :y (:width line)}]))
+
+                 (>= (+ (:width line) (-> line :charWidths last)) 10000000)
+                 (recur (-> lines rest rest)
+                        (conj
+                          nlines
+                          (map-indexed
+                            (fn [idx item]
+                              {:width item :y (reduce + (take idx (drop-last (:charWidths line))))})
+                            (drop-last (:charWidths line)))
+                          (map-indexed
+                            (fn [idx item]
+                              {:width item :y (reduce + (take idx (concat [0] (:charWidths (second lines)))))})
+                            (concat [0] (:charWidths (second lines))))))
+
+                 :else
+                 (recur (rest lines)
+                        (conj nlines
+                          (map-indexed
+                            (fn [idx item]
+                              {:width item :y (reduce + (take idx (:charWidths line)))})
+                            (:charWidths line)))))))]
+
+    ll))
+    ; (map #(cond
+    ;         (= [0] (:charWidths %))
+    ;         [{:width (:width %) :y 0}]
+    ;
+    ;         (= [0 0] (:charWidths %))
+    ;         [{:width (:width %) :y 0} {:width 0 :y (:width %)}]
+    ;
+    ;         (>= (+ (:width %) (-> % :charWidths last)) 10000000)
+    ;
+    ;
+    ;         :else
+    ;         (map-indexed (fn [idx item]
+    ;                        {:width item :y (reduce + (take idx (:charWidths %)))})
+    ;          (:charWidths %)))
+    ;   lines)))
 
 ; (defn text-widths [info]
 ;   (let [widths (map #(:charWidths %) (:lineInfo info))]
@@ -290,7 +330,12 @@
                                  (/ (:height info) (:lineCount info))
 
                                  (empty? (-> info :lineInfo last :charWidths))
-                                 (/ (:height info) (dec (:lineCount info)))
+                                 (cond
+                                   (= 1 (:lineCount info))
+                                   (:height info)
+
+                                   :else
+                                   (/ (:height info) (dec (:lineCount info))))
 
                                  :else
                                  (/ (:height info) (:lineCount info)))
