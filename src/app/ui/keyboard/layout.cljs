@@ -54,7 +54,7 @@
      [ui/ion-icons {:name "ios-scan" :color "gray" :size 30}]]
     (if (false? alter)
       [keycommon/key-char-button "."])
-    [keycommon/key-button {:flex 1.5} #(dispatch [:keyboard-add-char " "])
+    [keycommon/key-button {:flex 1.5} #(dispatch [:keyboard-add-char "\n"])
      [ui/ion-icons {:name "ios-return-down-back-sharp" :color "gray" :size 30}]]]])
 
 (defn mn-layout-a [s sn a an]

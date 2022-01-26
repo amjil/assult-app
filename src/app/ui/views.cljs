@@ -25,6 +25,8 @@
    [app.ui.user.code :as user-code]
    [app.ui.setting.detail :as setting-detail]
    [app.ui.home.index :as home]
+   [app.ui.home.question :as question]
+   [app.ui.home.answer :as answer]
    [app.ui.drawer.index :as drawer]
    [app.ui.nativebase :as nativebase]))
 
@@ -57,13 +59,13 @@
          (fn []
            [stack/stack {}
             [
-             {:name       :setting-detail
-              :component  setting-detail/view
-              :options    {:title ""}}
              {:name      :main
               :component home/anonymous
               :options {:title ""
                         :headerShown false}}
+             {:name       :setting-detail
+              :component  setting-detail/view
+              :options    {:title ""}}
              {:name       :password
               :component  password/view
               :options    {:title ""}}
@@ -77,6 +79,12 @@
               :options    {:title ""}}
              {:name       :user-in-code
               :component  user-code/view
+              :options    {:title ""}}
+             {:name       :question-detail
+              :component  question/detail-view
+              :options    {:title ""}}
+             {:name       :answer-create
+              :component  answer/new-answer-view
               :options    {:title ""}}
              {:name       :home
               :component  home/tabs

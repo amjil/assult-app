@@ -121,10 +121,25 @@
       ; [0 0])))
 
 (defn text-widths [info]
-  (let [widths (map #(:charWidths %) (:lineInfo info))]
-    (if (and (= 1 (:lineCount info)) (= [0] (:charWidths (first (:lineInfo info)))))
-      [[{:width (:width info) :y 0}]]
-      (map #(map-indexed (fn [idx item] {:width item :y (reduce + (take idx %))}) %) widths))))
+  (let [lines (:lineInfo info)]
+    (map #(cond
+            (= [0] (:charWidths %))
+            [{:width (:width %) :y 0}]
+
+            (= [0 0] (:charWidths %))
+            [{:width (:width %) :y 0} {:width 0 :y (:width %)}]
+
+            :else
+            (map-indexed (fn [idx item]
+                           {:width item :y (reduce + (take idx (:charWidths %)))})
+             (:charWidths %)))
+      lines)))
+
+; (defn text-widths [info]
+;   (let [widths (map #(:charWidths %) (:lineInfo info))]
+;     (if (and (= 1 (:lineCount info)) (= [0] (:charWidths (first (:lineInfo info)))))
+;       [[{:width (:width info) :y 0}]]
+;       (map #(map-indexed (fn [idx item] {:width item :y (reduce + (take idx %))}) %) widths))))
 
 ;;because of cursor settled zero position, nothing to delete
 (defn text-delete
@@ -407,14 +422,14 @@
   (cursor-update 4 1 widths)
 
   @(re-frame/subscribe [:editor-text])
-  (re-frame/dispatch [:init-editor {:text "abcd" :text-props {:fontSize 14} :padding 8}])
+  (re-frame/dispatch [:init-editor {:text "abcd" :text-props {:fontSize 14 :width 200} :padding 8}])
   (re-frame/dispatch [:text-change {:type :delete}])
   (re-frame/subscribe [:editor])
   ;; text add
-  (re-frame/dispatch [:text-change {:type :add-text :text-added "abcd"}])
+  (re-frame/dispatch [:text-change {:type :add-text :text-added " abcd"}])
 
   @(re-frame/subscribe [:editor-selection-xy])
 
 
-  (text-info-init {:text "abcdef" :text-props {:fontSize 14}})
+  (text-info-init {:text "The world is a beautiful world!" :text-props {:fontSize 14 :width 50}})
   (re-frame/dispatch [:toast "error hello"]))
