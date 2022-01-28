@@ -152,7 +152,29 @@
             (let [{:keys [item index separators]} (j/lookup x)]
               (reagent/as-element
                 [box {:width width :height height}
-                 [rotated-text props width height item]])))}]]))))
+                 [rotated-text props width height item]])))}]])))
+  ([props t info line-height]
+   (let [height (:width info)
+         width (:height info)]
+     (cond
+       (nil? info)
+       [text "empty ...."]
+
+       :else
+       [box {:style {:width  width
+                     :height height}}
+        [flat-list
+         {:horizontal true
+          :keyExtractor    (fn [_ index] (str "text-" index))
+          :data (map (fn [x] (subs t (:start x) (:end x))) (:lineInfo info))
+          :renderItem
+          (fn [x]
+            (let [{:keys [item index separators]} (j/lookup x)]
+              (let [line (get (:lineInfo info) index)
+                    width (:width line)]
+                (reagent/as-element
+                  [box {:width line-height :height width}
+                   [rotated-text props line-height width item]]))))}]]))))
 
 
 (defn theme-text-props [name props]
