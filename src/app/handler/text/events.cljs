@@ -98,9 +98,9 @@
           line (if (empty? widths) [] (nth widths x))
           item-count (apply + (map (fn [i] (count i)) (take x widths)))
 
-          _ (js/console.log "item-count " item-count)
+          ; _ (js/console.log "item-count " item-count)
           y (loop [i    0]
-              (js/console.log "i<<< " i)
+              ; (js/console.log "i<<< " i)
               (cond
                 (empty? widths)
                 0
@@ -117,7 +117,7 @@
                 :else
                 (recur (inc i))))]
 
-      (js/console.log "cursor update " x y)
+      ; (js/console.log "cursor update " x y)
       [(if (zero? x) 0 (* line-height x)) y])))
       ; [0 0])))
 
@@ -369,7 +369,7 @@
                                lh)
         info                 (if (empty? t) (dissoc info :lineInfo) info)
         [x y]                (cursor-update new-cursor line-height widths)]
-    (js/console.log " text -info -inti >>> line-height = " line-height)
+    (js/console.log " text -info -init >>> params = " (bean/->js params))
     {:text         t
      :text-props   props
      :text-info    info

@@ -25,6 +25,7 @@
          line-height @(re-frame/subscribe [:editor-line-height])
          [x y] @(re-frame/subscribe [:editor-selection-xy])]
      (js/console.log "line-height  = " line-height)
+     (js/console.log "opts width  = " (:width opts))
      (when (false? (:flag @atomic))
        (swap! atomic assoc :flag true)
        (re-frame/dispatch
