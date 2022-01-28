@@ -3,6 +3,7 @@
    [re-frame.core :as re-frame]
    [cljs-bean.core :as bean]
    [applied-science.js-interop :as j]
+   [clojure.string :as str]
    ["react-native-measure-text-chars" :as rntext]))
 
 (defn cursor-location [evt padding-value line-height widths]
@@ -59,7 +60,7 @@
     ; (js/console.log "result = " (:iy y) (:y y))
     ; (js/console.log "result = " (bean/->js [x (* line-height x) (:iy y) (:y y)]))
     ; [x (* line-height x) iy y]
-    [x (+ 2 (if (zero? x) 0 (* line-height x))) (:iy y) (:y y)]))
+    [x (if (zero? x) 0 (* line-height x)) (:iy y) (:y y)]))
 
 
 (defn text-delete-cursor
@@ -117,23 +118,86 @@
                 (recur (inc i))))]
 
       (js/console.log "cursor update " x y)
-      [(+ 2 (if (zero? x) 0 (* line-height x))) y])))
+      [(if (zero? x) 0 (* line-height x)) y])))
       ; [0 0])))
 
-(defn text-widths [info]
-  (let [lines (:lineInfo info)]
-    (map #(cond
-            (= [0] (:charWidths %))
-            [{:width (:width %) :y 0}]
+(defn text-widths [info t]
+  (let [line-infos (:lineInfo info)
+        special-space-map [{:width 0 :y 0}]
+        ll (loop [lines line-infos
+                  nlines []
+                  special-space nil]
+             (let [line (first lines)
+                   is-special (str/ends-with? (subs t (:start line) (:end line)) "\n")]
+               (cond
+                 (empty? lines)
+                 nlines
 
-            (= [0 0] (:charWidths %))
-            [{:width (:width %) :y 0} {:width 0 :y (:width %)}]
+                 (= [0] (:charWidths line))
+                 (recur (rest lines)
+                        (conj nlines
+                          (concat special-space
+                            ((if is-special
+                               drop-last
+                               identity)
+                             [{:width (:width line) :y 0}])))
+                        (if is-special
+                          special-space-map))
 
-            :else
-            (map-indexed (fn [idx item]
-                           {:width item :y (reduce + (take idx (:charWidths %)))})
-             (:charWidths %)))
-      lines)))
+                 (= [0 0] (:charWidths line))
+                 (recur (rest lines)
+                        (conj nlines
+                          (concat special-space
+                            ((if is-special
+                               drop-last
+                               identity)
+                             [{:width (:width line) :y 0} {:width 0 :y (:width line)}])))
+                        (if is-special
+                          special-space-map))
+
+                 ; (>= (+ (:width line) (-> line :charWidths last)) 10000000)
+                 ; (recur (-> lines rest rest)
+                 ;        (conj
+                 ;          nlines
+                 ;          (map-indexed
+                 ;            (fn [idx item]
+                 ;              {:width item :y (reduce + (take idx (drop-last (:charWidths line))))})
+                 ;            (drop-last (:charWidths line)))
+                 ;          (map-indexed
+                 ;            (fn [idx item]
+                 ;              {:width item :y (reduce + (take idx (concat [0] (:charWidths (second lines)))))})
+                 ;            (concat [0] (:charWidths (second lines))))))
+
+                 :else
+                 (recur (rest lines)
+                        (conj nlines
+                          (concat special-space
+                            ((if is-special
+                               drop-last
+                               identity)
+                             (map-indexed
+                               (fn [idx item]
+                                 {:width item :y (reduce + (take idx (:charWidths line)))})
+                               (:charWidths line)))))
+                        (if is-special
+                          special-space-map)))))]
+
+    ll))
+    ; (map #(cond
+    ;         (= [0] (:charWidths %))
+    ;         [{:width (:width %) :y 0}]
+    ;
+    ;         (= [0 0] (:charWidths %))
+    ;         [{:width (:width %) :y 0} {:width 0 :y (:width %)}]
+    ;
+    ;         (>= (+ (:width %) (-> % :charWidths last)) 10000000)
+    ;
+    ;
+    ;         :else
+    ;         (map-indexed (fn [idx item]
+    ;                        {:width item :y (reduce + (take idx (:charWidths %)))})
+    ;          (:charWidths %)))
+    ;   lines)))
 
 ; (defn text-widths [info]
 ;   (let [widths (map #(:charWidths %) (:lineInfo info))]
@@ -184,14 +248,15 @@
      :else
      (str (subs t1 0 p1) t2 (subs t1 p2)))))
 
-(defn text-info [t props]
+(defn text-info-initial [t props]
   (if (empty? t)
     (let [info (bean/->clj
                 (rntext/measure
                  (bean/->js
                   (assoc props
-                         :text " "))))]
-      (dissoc info :lineInfo))
+                         :text "1"
+                         :useCharsWidth true))))]
+      info)
     (bean/->clj
      (rntext/measure
       (bean/->js
@@ -199,6 +264,21 @@
               :text t
               :useCharsWidth true))))))
 
+(defn text-info [t props]
+  (if (empty? t)
+    (let [info (bean/->clj
+                (rntext/measure
+                 (bean/->js
+                  (assoc props
+                         :text " "
+                         :useCharsWidth true))))]
+      (dissoc info :lineInfo))
+    (bean/->clj
+     (rntext/measure
+      (bean/->js
+       (assoc props
+              :text t
+              :useCharsWidth true))))))
 
 (defmulti text-change (fn [x] (:type x)))
 
@@ -211,7 +291,7 @@
          lh    :line-height} params
         new-text             (text-delete t start)
         info                 (text-info new-text props)
-        widths               (text-widths info)
+        widths               (text-widths info t)
         new-cursor           (text-delete-cursor t start)
         line-height          (if (nil? lh) (/ (:height info) (:lineCount info)) lh)
         [x y]                (cursor-update new-cursor line-height widths)]
@@ -231,7 +311,7 @@
         [start end]           cursor
         new-text              (text-delete t start end)
         info                  (text-info new-text props)
-        widths                (text-widths info)
+        widths                (text-widths info t)
         new-cursor            start
         line-height           (if (nil? lh) (/ (:height info) (:lineCount info)) lh)
         [x y]                 (cursor-update new-cursor line-height widths)]
@@ -251,7 +331,7 @@
          lh    :line-height} params
         new-text             (text-add t added start)
         info                 (text-info new-text props)
-        widths               (text-widths info)
+        widths               (text-widths info t)
         new-cursor           (+ start (count added))
         line-height          (if (nil? lh) (/ (:height info) (:lineCount info)) lh)
         [x y]                (cursor-update new-cursor line-height widths)]
@@ -267,12 +347,29 @@
          lh    :line-height
          padding :padding} params
 
-        info                 (text-info t props)
-        widths               (text-widths info)
+        info                 (text-info-initial t props)
+        widths               (text-widths info t)
         new-cursor           (count t)
-        line-height          (if (nil? lh) (/ (:height info) (:lineCount info)) lh)
+        line-height          (if (nil? lh)
+                               (+ 2
+                                 (cond
+                                   (nil? (-> info :lineInfo last :charWidths))
+                                   (/ (:height info) (:lineCount info))
+
+                                   (empty? (-> info :lineInfo last :charWidths))
+                                   (cond
+                                     (= 1 (:lineCount info))
+                                     (:height info)
+
+                                     :else
+                                     (/ (:height info) (dec (:lineCount info))))
+
+                                   :else
+                                   (/ (:height info) (:lineCount info))))
+                               lh)
+        info                 (if (empty? t) (dissoc info :lineInfo) info)
         [x y]                (cursor-update new-cursor line-height widths)]
-    (js/console.log " text -info -inti >>>")
+    (js/console.log " text -info -inti >>> line-height = " line-height)
     {:text         t
      :text-props   props
      :text-info    info
@@ -288,7 +385,6 @@
    (let [info (text-change params)]
      (js/console.log "fx text change >>>>>" (bean/->js params)
                      (bean/->js info)
-                     (bean/->js (:text-widths info))
                      (bean/->js (:lineInfo (:text-info info))))
      (re-frame/dispatch [:set-editor-info info]))))
 
@@ -417,7 +513,7 @@
   (def info
     (text-info "abcdef" {:fontSize 12}))
   info
-  (def widths (text-widths info))
+  ; (def widths (text-widths info))
   widths
   (cursor-update 4 1 widths)
 

@@ -24,6 +24,7 @@
          etext @(re-frame/subscribe [:editor-text])
          line-height @(re-frame/subscribe [:editor-line-height])
          [x y] @(re-frame/subscribe [:editor-selection-xy])]
+     (js/console.log "line-height  = " line-height)
      (when (false? (:flag @atomic))
        (swap! atomic assoc :flag true)
        (re-frame/dispatch
@@ -36,7 +37,7 @@
       [gesture/pan-gesture-handler {:onGestureEvent #(re-frame/dispatch [:cursor-location (j/get % :nativeEvent)])}
        [nbase/box (merge theme-props (dissoc opts :width) (if (:focus @atomic) (:_focus theme-props)))
         [nbase/zstack
-         [nbase/measured-text text-props etext info]
+         [nbase/measured-text text-props etext info line-height]
          (if (:focus @atomic)
            [nbase/box {:style {:margin-top y :margin-left x}}
             [:> blinkview {"useNativeDriver" false}
