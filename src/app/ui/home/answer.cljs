@@ -24,17 +24,17 @@
             errors @(re-frame/subscribe [:errors rf-key])
             model @(re-frame/subscribe [:question])]
         [ui/safe-area-consumer
-         [nbase/flex {:height "100%" ;:safeArea true
+         [nbase/flex {:flex 1
                       :justifyContent "space-between"
-                      :pt 2
+                      :pt 2}
+          [nbase/box {:flex-direction "row"
+                      :flex 1
                       :on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
                                     (swap! atomic assoc :height height))}
-          [nbase/box {:flex-direction "row"
-                      :flex 1}
            [nbase/measured-text (merge font {:fontSize 18 :height (:height @atomic)}) (:question_content model)]
            [nbase/box {:h @h :w 0.5 :bg "success.500" :mx 1}]
            (if (:height @atomic)
-             [:f> text/text-input atomic params {:mx 2 :mb 2 :flex 1 :width (:height @atomic)}])]
+             [:f> text/text-input atomic params {:mx 2 :mb 2 :flex 1 :width (- (:height @atomic) 20)}])]
           [candidates/views]
           [nbase/box {:height 220}
            [keyboard/keyboard]]]]))))

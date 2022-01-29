@@ -28,12 +28,18 @@
           [nbase/box {:height "100%" :flex-direction "row"}
            [nbase/measured-text (merge font {:fontSize 18 :height @h}) (:question_content model)]
            [nbase/flex
-            [nbase/measured-text (merge font {:fontSize 12}) (str "answers " (:answer_count model))]
-            [nbase/measured-text (merge font {:mt 10 :fontSize 12}) (str "focus " (:focus_count model))]]
+            [nbase/measured-text (merge font {:fontSize 12}) (str "ᠬᠠᠷᠢᠭᠤᠯᠤᠭᠰᠠᠨ " (:answer_count model))]
+            [nbase/measured-text (merge font {:mt 10 :fontSize 12}) (str "ᠳᠠᠭᠠᠭᠰᠠᠨ " (:focus_count model))]]
            [nbase/flex {:mx 1}
-            [nbase/link {:on-press #(re-frame/dispatch [:navigate-to :answer-create])}
+            [nbase/link {:on-press #(if (:answer_id question-my)
+                                      (re-frame/dispatch [:navigate-to :answer-detail])
+                                      (re-frame/dispatch [:navigate-to :answer-create]))}
              [nbase/box {:py 1 :rounded "sm" :bg "primary.400"}
-              [nbase/measured-text (merge font {:color "white" :fontSize 12}) "ᠬᠠᠷᠢᠭᠤᠯᠬᠤ"]]]
+              [nbase/measured-text
+               (merge font {:color "white" :fontSize 12})
+               (if (:answer_id question-my)
+                 "ᠮᠢᠨᠦ ᠬᠠᠷᠢᠭᠤᠯᠲᠠ"
+                 "ᠬᠠᠷᠢᠭᠤᠯᠬᠤ")]]]
             [nbase/link {:mt 10 :on-press #(re-frame/dispatch [:question-focus (:id model)])}
              [nbase/box {:py 1 :rounded "sm" :bg "primary.400"}
               [nbase/measured-text (merge font {:color "white" :fontSize 12}) (if (:focus_id question-my) "ᠦᠯᠦ ᠳᠠᠭᠠᠬᠤ" "ᠳᠠᠭᠠᠬᠤ")]]]]
