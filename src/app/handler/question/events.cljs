@@ -129,6 +129,29 @@
      {:db (-> db
               (assoc :question-my data)
               (assoc-in [:loading :my-question] false))})))
+;; -----------------------------------------------------
+(re-frame/reg-event-fx
+ :answer-create
+ (fn [{:keys [db]} [_ id params]]
+   {:db    (assoc-in db [:loading :answer-create] true)
+    :http-xhrio {:method                 :post
+                 :uri                    (api/endpoint "questions" (str id) "answers")
+                 :headers                (api/auth-header db)
+                 :params                 params
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:answer-create-success]
+                 :on-failure             [:api-request-error :answer-create]}}))
+
+(re-frame/reg-event-fx
+ :answer-create-success
+ (fn [{db :db} [_ body]]
+   (let [{data :data} body]
+     {:db (-> db
+              (assoc-in [:loading :answer-create] false))
+      :dispatch-n [[:navigate-to :question-detail]
+                   [:get-answers (get-in db [:question :id])]
+                   [:my-question (get-in db [:question :id])]]})))
 
 (comment
   (re-frame/dispatch [:get-questions {}])

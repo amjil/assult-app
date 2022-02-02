@@ -92,7 +92,10 @@
                                             [nativebase/icon-button {:variant "ghost" :colorScheme "indigo"
                                                                      ;:justifyContent "center" :alignSelf "center" :alignItems "center"
                                                                      :icon (reagent/as-element [nativebase/icon {:as Ionicons :name "ios-checkmark"}])
-                                                                     :on-press #(js/console.log "aaaaaa")}]))}}
+                                                                     ; :on-press #(js/console.log @(re-frame/subscribe [:editor-text]))}]))}}
+                                                                     :on-press #(let [t @(re-frame/subscribe [:editor-text])
+                                                                                      q @(re-frame/subscribe [:question])]
+                                                                                  (re-frame/dispatch [:answer-create (:id q) {:content t}]))}]))}}
              {:name       :home
               :component  home/tabs
               :options    {:title ""
