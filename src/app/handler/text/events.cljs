@@ -98,9 +98,9 @@
           line (if (empty? widths) [] (nth widths x))
           item-count (apply + (map (fn [i] (count i)) (take x widths)))
 
-          _ (js/console.log "item-count " item-count)
+          ; _ (js/console.log "item-count " item-count)
           y (loop [i    0]
-              (js/console.log "i<<< " i)
+              ; (js/console.log "i<<< " i)
               (cond
                 (empty? widths)
                 0
@@ -117,7 +117,7 @@
                 :else
                 (recur (inc i))))]
 
-      (js/console.log "cursor update " x y)
+      ; (js/console.log "cursor update " x y)
       [(if (zero? x) 0 (* line-height x)) y])))
       ; [0 0])))
 
@@ -131,7 +131,12 @@
                    is-special (str/ends-with? (subs t (:start line) (:end line)) "\n")]
                (cond
                  (empty? lines)
-                 nlines
+                 (if special-space
+                   (conj nlines special-space)
+                   nlines)
+
+                 (and (true? is-special) (= 1 (count t)))
+                 [[{:width 0 :y 0}] [{:width 0 :y 0}]]
 
                  (= [0] (:charWidths line))
                  (recur (rest lines)
@@ -169,18 +174,20 @@
                  ;            (concat [0] (:charWidths (second lines))))))
 
                  :else
-                 (recur (rest lines)
-                        (conj nlines
-                          (concat special-space
-                            ((if is-special
-                               drop-last
-                               identity)
-                             (map-indexed
-                               (fn [idx item]
-                                 {:width item :y (reduce + (take idx (:charWidths line)))})
-                               (:charWidths line)))))
-                        (if is-special
-                          special-space-map)))))]
+                 (do
+                   (js/console.log "is-special " is-special " line = " (count t))
+                   (recur (rest lines)
+                          (conj nlines
+                            (concat special-space
+                              ((if is-special
+                                 drop-last
+                                 identity)
+                               (map-indexed
+                                 (fn [idx item]
+                                   {:width item :y (reduce + (take idx (:charWidths line)))})
+                                 (:charWidths line)))))
+                          (if is-special
+                            special-space-map))))))]
 
     ll))
     ; (map #(cond
@@ -331,7 +338,7 @@
          lh    :line-height} params
         new-text             (text-add t added start)
         info                 (text-info new-text props)
-        widths               (text-widths info t)
+        widths               (text-widths info new-text)
         new-cursor           (+ start (count added))
         line-height          (if (nil? lh) (/ (:height info) (:lineCount info)) lh)
         [x y]                (cursor-update new-cursor line-height widths)]
@@ -369,7 +376,7 @@
                                lh)
         info                 (if (empty? t) (dissoc info :lineInfo) info)
         [x y]                (cursor-update new-cursor line-height widths)]
-    (js/console.log " text -info -inti >>> line-height = " line-height)
+    (js/console.log " text -info -init >>> params = " (bean/->js params))
     {:text         t
      :text-props   props
      :text-info    info

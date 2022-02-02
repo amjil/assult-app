@@ -18,13 +18,15 @@
          padding-value (:padding t-props)
          text-props (merge
                       (select-keys text-props [:fontSize :color])
-                      {:fontFamily "MongolianBaiZheng"})
+                      {:fontFamily "MongolianBaiZheng"}
+                      (if (:width opts) {:width (:width opts)}))
 
          info @(re-frame/subscribe [:editor-info])
          etext @(re-frame/subscribe [:editor-text])
          line-height @(re-frame/subscribe [:editor-line-height])
          [x y] @(re-frame/subscribe [:editor-selection-xy])]
-     (js/console.log "line-height  = " line-height)
+     (js/console.log "text-props  = " (bean/->js text-props))
+     (js/console.log "opts width  = " (:width opts))
      (when (false? (:flag @atomic))
        (swap! atomic assoc :flag true)
        (re-frame/dispatch

@@ -18,6 +18,7 @@
    ["react-native-smooth-blink-view" :default blinkview]
    ["react-native-svg" :as svg]
    ["react-native-linear-gradient" :default linear-gradient]
+   ["react-native-vector-icons/Ionicons" :default Ionicons]
 
    [app.ui.user.login :as login]
    [app.ui.user.password :as password]
@@ -85,7 +86,16 @@
               :options    {:title ""}}
              {:name       :answer-create
               :component  answer/new-answer-view
-              :options    {:title ""}}
+              :options    {:title ""
+                           :headerRight (fn [tag id classname]
+                                          (reagent/as-element
+                                            [nativebase/icon-button {:variant "ghost" :colorScheme "indigo"
+                                                                     ;:justifyContent "center" :alignSelf "center" :alignItems "center"
+                                                                     :icon (reagent/as-element [nativebase/icon {:as Ionicons :name "ios-checkmark"}])
+                                                                     ; :on-press #(js/console.log @(re-frame/subscribe [:editor-text]))}]))}}
+                                                                     :on-press #(let [t @(re-frame/subscribe [:editor-text])
+                                                                                      q @(re-frame/subscribe [:question])]
+                                                                                  (re-frame/dispatch [:answer-create (:id q) {:content t}]))}]))}}
              {:name       :home
               :component  home/tabs
               :options    {:title ""

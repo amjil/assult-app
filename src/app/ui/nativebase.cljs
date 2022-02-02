@@ -158,7 +158,7 @@
          width (:height info)]
      (cond
        (nil? info)
-       [text "empty ...."]
+       [text ".."]
 
        :else
        [box {:style {:width  width
