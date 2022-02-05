@@ -75,6 +75,11 @@
      {:db (-> db
               (assoc :answers data)
               (assoc-in [:loading :get-answers] false))})))
+
+(re-frame/reg-event-fx
+ :set-answer
+ (fn [{db :db} [_ params]]
+   {:db             (assoc db :answer params)}))
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
  :question-focus
@@ -146,12 +151,97 @@
 (re-frame/reg-event-fx
  :answer-create-success
  (fn [{db :db} [_ body]]
-   (let [{data :data} body]
+   (let [{data :data} body
+         id (get-in db [:question :id])
+         questions (map #(if (= id (:id %))
+                           (assoc % :answer_count (inc (:answer_count %)))
+                           %)
+                        (:questions db))
+         question (:question db)
+         question (assoc question :answer_count (inc (:answer_count question)))]
      {:db (-> db
-              (assoc-in [:loading :answer-create] false))
+              (assoc-in [:loading :answer-create] false)
+              (assoc :questions questions)
+              (assoc :question question))
       :dispatch-n [[:navigate-to :question-detail]
                    [:get-answers (get-in db [:question :id])]
                    [:my-question (get-in db [:question :id])]]})))
+
+;; -----------------------------------------------------
+(re-frame/reg-event-fx
+ :answer-delete
+ (fn [{:keys [db]} [_ pid id]]
+   {:db    (assoc-in db [:loading :answer-delete] true)
+    :http-xhrio {:method                 :delete
+                 :uri                    (api/endpoint "questions" (str pid) "answers" (str id))
+                 :headers                (api/auth-header db)
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:answer-delete-success]
+                 :on-failure             [:api-request-error :answer-delete]}}))
+
+(re-frame/reg-event-fx
+ :answer-delete-success
+ (fn [{db :db} [_ body]]
+   (let [{data :data} body
+         id (get-in db [:question :id])
+         questions (map #(if (= id (:id %))
+                           (assoc % :answer_count (dec (:answer_count %)))
+                           %)
+                        (:questions db))
+         question (:question db)
+         question (assoc question :answer_count (dec (:answer_count question)))]
+     {:db (-> db
+              (assoc-in [:loading :answer-delete] false)
+              (assoc :questions questions)
+              (assoc :question question))
+      :dispatch-n [[:navigate-to :question-detail]
+                   [:get-answers (get-in db [:question :id])]
+                   [:my-question (get-in db [:question :id])]]})))
+;; -----------------------------------------------------
+(re-frame/reg-event-fx
+ :answer-comment-create
+ (fn [{:keys [db]} [_ id params]]
+   {:db    (assoc-in db [:loading :answer-comment-create] true)
+    :http-xhrio {:method                 :post
+                 :uri                    (api/endpoint "answers" (str id) "comments")
+                 :headers                (api/auth-header db)
+                 :params                 params
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:answer-comment-create-success]
+                 :on-failure             [:api-request-error :answer-comment-create]}}))
+
+(re-frame/reg-event-fx
+ :answer-comment-create-success
+ (fn [{db :db} [_ body]]
+   (let [{data :data} body]
+     {:db (-> db
+              (assoc-in [:loading :answer-comment-create] false))
+      :dispatch-n [[:navigate-to :question-detail]
+                   [:get-answers (get-in db [:question :id])]]})))
+
+;; -----------------------------------------------------
+(re-frame/reg-event-fx
+ :answer-comment-delete
+ (fn [{:keys [db]} [_ pid id]]
+   {:db    (assoc-in db [:loading :answer-comment-delete] true)
+    :http-xhrio {:method                 :delete
+                 :uri                    (api/endpoint "answers" (str pid) "comments" (str id))
+                 :headers                (api/auth-header db)
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:answer-comment-delete-success]
+                 :on-failure             [:api-request-error :answer-comment-delete]}}))
+
+(re-frame/reg-event-fx
+ :answer-comment-delete-success
+ (fn [{db :db} [_ body]]
+   (let [{data :data} body]
+     {:db (-> db
+              (assoc-in [:loading :answer-comment-delete] false))
+      :dispatch-n [[:navigate-to :question-detail]
+                   [:get-answers (get-in db [:question :id])]]})))
 
 (comment
   (re-frame/dispatch [:get-questions {}])

@@ -96,6 +96,18 @@
                                                                      :on-press #(let [t @(re-frame/subscribe [:editor-text])
                                                                                       q @(re-frame/subscribe [:question])]
                                                                                   (re-frame/dispatch [:answer-create (:id q) {:content t}]))}]))}}
+             {:name       :answer-comment
+              :component  answer/new-answer-comment
+              :options    {:title ""
+                           :headerRight
+                           (fn [tag id classname]
+                             (reagent/as-element
+                               [nativebase/icon-button
+                                {:variant "ghost"
+                                 :icon (reagent/as-element [nativebase/icon {:as Ionicons :name "ios-checkmark"}])
+                                 :on-press #(let [t @(re-frame/subscribe [:editor-text])
+                                                  q @(re-frame/subscribe [:answer])]
+                                              (re-frame/dispatch [:answer-comment-create (:id q) {:message t}]))}]))}}
              {:name       :home
               :component  home/tabs
               :options    {:title ""
