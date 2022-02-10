@@ -58,7 +58,12 @@
                      [ui/userpic (j/get item :avatar_file) 32]
                      [nbase/measured-text (merge font {:fontSize 14 :margin-top 4}) (j/get item :user_name)]]
                     [nbase/box {:h @h :style {:width 1 :backgroundColor "lightgrey"}}]
-                    [nbase/measured-text (merge font {:fontSize 12 :height @h}) (j/get item :content)]
+                    [nbase/pressable {:on-press #(do
+                                                   (re-frame/dispatch [:answer-comments (j/get item :id)])
+                                                   (re-frame/dispatch [:navigate-to :answer-detail])
+                                                   (re-frame/dispatch [:set-answer (bean/->clj item)])
+                                                   (js/console.log "answer detail >>> "))}
+                     [nbase/measured-text (merge font {:fontSize 12 :height @h}) (j/get item :content)]]
                     ;
                     [nbase/flex
                      [nbase/measured-text (merge font {:fontSize 12}) (str "ᠰᠡᠳᠭᠢᠭᠳᠡᠯ" (j/get item :comment_count))]]

@@ -243,6 +243,27 @@
       :dispatch-n [[:navigate-to :question-detail]
                    [:get-answers (get-in db [:question :id])]]})))
 
+;; -----------------------------------------------------
+(re-frame/reg-event-fx
+ :answer-comments
+ (fn [{:keys [db]} [_ id]]
+   {:db    (assoc-in db [:loading :answer-comments] true)
+    :http-xhrio {:method                 :get
+                 :uri                    (api/endpoint "answers" (str id) "comments")
+                 :headers                (api/auth-header db)
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:answer-comments-success]
+                 :on-failure             [:api-request-error :answer-comments]}}))
+
+(re-frame/reg-event-fx
+ :answer-comments-success
+ (fn [{db :db} [_ body]]
+   (let [{data :data} body]
+     {:db (-> db
+              (assoc-in [:loading :answer-comments] false)
+              (assoc :answer-comments data))})))
+
 (comment
   (re-frame/dispatch [:get-questions {}])
   (re-frame/subscribe [:question-list])
@@ -251,4 +272,6 @@
   (re-frame/subscribe [:answers])
 
   (re-frame/dispatch [:my-question 9])
-  (re-frame/dispatch [:question-my]))
+  (re-frame/dispatch [:question-my])
+
+  (re-frame/dispatch [:answer-questions ]))

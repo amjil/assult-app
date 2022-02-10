@@ -84,6 +84,9 @@
              {:name       :question-detail
               :component  question/detail-view
               :options    {:title ""}}
+             {:name       :answer-detail
+              :component  answer/answer-detail
+              :options    {:title ""}}
              {:name       :answer-create
               :component  answer/new-answer-view
               :options    {:title ""
