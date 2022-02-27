@@ -142,8 +142,7 @@
               (assoc :questions questions)
               (assoc :question question))
       :dispatch-n [[:navigate-to :question-detail]
-                   [:get-answers (get-in db [:question :id])]
-                   [:my-question (get-in db [:question :id])]]})))
+                   [:get-answers (get-in db [:question :id])]]})))
 
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
@@ -174,8 +173,7 @@
               (assoc :questions questions)
               (assoc :question question))
       :dispatch-n [[:navigate-to :question-detail]
-                   [:get-answers (get-in db [:question :id])]
-                   [:my-question (get-in db [:question :id])]]})))
+                   [:get-answers (get-in db [:question :id])]]})))
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
  :answer-comment-create
@@ -197,8 +195,30 @@
      {:db (-> db
               (assoc-in [:loading :answer-comment-create] false))
       :dispatch-n [[:navigate-to :question-detail]
-                   [:get-answers (get-in db [:question :id])]]})))
+                   [:get-comments (get-in db [:question :id])]]})))
 
+;; -----------------------------------------------------
+(re-frame/reg-event-fx
+ :answer-comment-update
+ (fn [{:keys [db]} [_ pid id params]]
+   {:db    (assoc-in db [:loading :answer-comment-update] true)
+    :http-xhrio {:method                 :put
+                 :uri                    (api/endpoint "answers" (str pid) "comments" (str id))
+                 :headers                (api/auth-header db)
+                 :params                 params
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:answer-comment-update-success]
+                 :on-failure             [:api-request-error :answer-comment-update]}}))
+
+(re-frame/reg-event-fx
+ :answer-comment-update-success
+ (fn [{db :db} [_ body]]
+   (let [{data :data} body]
+     {:db (-> db
+              (assoc-in [:loading :answer-comment-update] false))
+      :dispatch-n [[:navigate-to :answer-detail]
+                   [:answer-comments (get-in db [:answer :id])]]})))
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
  :answer-comment-delete
