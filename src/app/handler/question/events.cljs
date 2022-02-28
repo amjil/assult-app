@@ -195,7 +195,7 @@
      {:db (-> db
               (assoc-in [:loading :answer-comment-create] false))
       :dispatch-n [[:navigate-to :question-detail]
-                   [:get-comments (get-in db [:question :id])]]})))
+                   [:answer-comments (get-in db [:question :id])]]})))
 
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
@@ -262,6 +262,27 @@
               (assoc-in [:loading :answer-comments] false)
               (assoc :answer-comments data))})))
 
+;; -----------------------------------------------------
+(re-frame/reg-event-fx
+ :answer-report
+ (fn [{:keys [db]} [_ id params]]
+   {:db    (assoc-in db [:loading :answer-report] true)
+    :http-xhrio {:method                 :post
+                 :uri                    (api/endpoint "answers" (str id) "report")
+                 :headers                (api/auth-header db)
+                 :params                 params
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:answer-report-success]
+                 :on-failure             [:api-request-error :answer-report]}}))
+
+(re-frame/reg-event-fx
+ :answer-report-success
+ (fn [{db :db} [_ body]]
+   (let [{data :data} body]
+     {:db (-> db
+              (assoc-in [:loading :answer-report] false)
+              (assoc :answer-report data))})))
 (comment
   (re-frame/dispatch [:get-questions {}])
   (re-frame/subscribe [:question-list])
