@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "shadow-cljs watch dev",
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "ios": "react-native run-ios --simulator=\"iPhone 13\"",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint ."
@@ -36,6 +36,7 @@
     "react-native-sqlite-storage": "^6.0.1",
     "react-native-svg": "^12.1.1",
     "react-native-vector-icons": "^8.1.0",
+    "react-native-webview": "^11.17.2",
     "shadow-cljs": "^2.17.5"
   },
   "devDependencies": {
