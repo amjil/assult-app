@@ -6,6 +6,7 @@
                 [com.github.seancorfield/honeysql "2.1.833"]
                 [day8.re-frame/http-fx "0.2.3"]
                 [funcool/promesa "6.0.2"]
+                [tongue "0.4.3"]
                 [reagent "1.1.0"]
                 [re-frame "1.2.0"]
                 [re-frame-steroid "0.1.1"]

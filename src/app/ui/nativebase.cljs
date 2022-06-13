@@ -7,20 +7,27 @@
    [steroid.rn.navigation.core :as rnn]
    [promesa.core :as p]
    [promesa.exec :as exec]
+   [app.handler.gesture :as gesture]
    ["react-native-measure-text-chars" :as rntext]
    ["native-base" :refer [NativeBaseProvider
                           Center
                           Container
                           Box
+
+                          PresenceTransition
+
+
+                          Menu Menu.Item Menu.Group Menu.OptionGroup Menu.ItemOption
+                          Popover Popover.Content Popover.Arrow Popover.CloseButton Popover.Header Popover.Body Popover.Footer
                           Modal Modal.Content Modal.CloseButton Modal.Header Modal.Body Modal.Footer
                           Heading
 
                           Alert Alert.Icon
+                          Skeleton Skeleton.Text
 
                           Text
                           Button Button.Group
                           Input
-                          Checkbox
                           Link
                           CloseIcon
                           IconButton
@@ -40,10 +47,14 @@
                           Flex
 
                           FlatList
+                          SectionList
                           ScrollView
 
                           Collapse
                           Spinner
+
+                          ;;
+                          HamburgerIcon
 
                           useStyledSystemPropsResolver
                           usePropsResolution
@@ -62,9 +73,10 @@
 
 (def heading (reagent/adapt-react-class Heading))
 
+(def presence-transition (reagent/adapt-react-class PresenceTransition))
+
 (def text (reagent/adapt-react-class Text))
 (def input (reagent/adapt-react-class Input))
-(def checkbox (reagent/adapt-react-class Checkbox))
 
 (def button (reagent/adapt-react-class Button))
 (def button-group (reagent/adapt-react-class Button.Group))
@@ -81,6 +93,9 @@
 (def alert-icon (reagent/adapt-react-class Alert.Icon))
 (def collapse (reagent/adapt-react-class Collapse))
 (def spinner (reagent/adapt-react-class Spinner))
+
+(def skeleton (reagent/adapt-react-class Skeleton))
+(def skeleton-text (reagent/adapt-react-class Skeleton.Text))
 ; Modal Modal.Content Modal.CloseButton Modal.Header Modal.Body Modal.Footer))
 (def modal (reagent/adapt-react-class Modal))
 (def modal-content (reagent/adapt-react-class Modal.Content))
@@ -88,6 +103,14 @@
 (def modal-header (reagent/adapt-react-class Modal.Header))
 (def modal-body (reagent/adapt-react-class Modal.Body))
 (def modal-footer (reagent/adapt-react-class Modal.Footer))
+
+;Menu
+; Menu Menu.Item Menu.Group Menu.OptionGroup Menu.ItemOption))
+(def menu (reagent/adapt-react-class Menu))
+(def menu-item (reagent/adapt-react-class Menu.Item))
+(def menu-group (reagent/adapt-react-class Menu.Group))
+(def menu-option-group (reagent/adapt-react-class Menu.OptionGroup))
+(def menu-item-option (reagent/adapt-react-class Menu.ItemOption))
 
 ; Actionsheet Actionsheet.Content Actionsheet.Item
 (def actionsheet (reagent/adapt-react-class Actionsheet))
@@ -107,89 +130,6 @@
 (def divider (reagent/adapt-react-class Divider))
 (def scroll-view (reagent/adapt-react-class ScrollView))
 (def flat-list (reagent/adapt-react-class FlatList))
+(def section-list (reagent/adapt-react-class SectionList))
 
 (def center (reagent/adapt-react-class Center))
-
-(defn rotated-text [props width height t]
-  (let [offset (- (/ height 2) (/ width 2))]
-    [text (merge props {:style {:width height :height width
-                                :transform [{:rotate "90deg"}
-                                            {:translateX offset}
-                                            {:translateY offset}]}})
-      t]))
-
-(defn line-height [font-size]
-  (* font-size
-    (if (> font-size 20) 1.5 1)))
-
-(defn measured-text
-  ([props t]
-   (let [width (:height props)
-         info (rntext/measure (bean/->js (merge (assoc props :text t) (if width {:width width}))))]
-     (measured-text props t (bean/->clj info))))
-  ([props t info]
-   (let [height (or (:height props) (:width info) 2)
-         ;; plus 1
-         width (or (:width props) (+ 4 (/ (:height info) (:lineCount info))))]
-     (cond
-       (nil? info)
-       [text "empty ...."]
-
-       (= 1 (:lineCount info))
-       [box {:style {:width width
-                     :height height}}
-        [rotated-text props width height t]]
-
-       :else
-       [box {:style {:width  (* (:lineCount info) width)
-                     :height height}}
-        [flat-list
-         {:horizontal true
-          :keyExtractor    (fn [_ index] (str "text-" index))
-          :data (map (fn [x] (subs t (:start x) (:end x))) (:lineInfo info))
-          :renderItem
-          (fn [x]
-            (let [{:keys [item index separators]} (j/lookup x)]
-              (reagent/as-element
-                [box {:width width :height height}
-                 [rotated-text props width height item]])))}]])))
-  ([props t info line-height]
-   (let [height (:width info)
-         width (:height info)]
-     (cond
-       (nil? info)
-       [text ".."]
-
-       :else
-       [box {:style {:width  width
-                     :height height}}
-        [flat-list
-         {:horizontal true
-          :keyExtractor    (fn [_ index] (str "text-" index))
-          :data (map (fn [x] (subs t (:start x) (:end x))) (:lineInfo info))
-          :renderItem
-          (fn [x]
-            (let [{:keys [item index separators]} (j/lookup x)]
-              (let [line (get (:lineInfo info) index)
-                    width (:width line)]
-                (reagent/as-element
-                  [box {:width line-height :height width}
-                   [rotated-text props line-height width item]]))))}]]))))
-
-
-(defn theme-text-props [name props]
-  (let [theme-props (bean/->js (useThemeProps name (bean/->js props)))
-        [text-props _] (useStyledSystemPropsResolver (bean/->js (j/get theme-props :_text)))]
-    text-props))
-
-(defn theme-props [name props]
-  (let [theme-props (bean/->js (useThemeProps name (bean/->js props)))
-        [text-props _] (useStyledSystemPropsResolver (bean/->js theme-props))]
-    [(bean/->clj theme-props) (bean/->clj text-props)]))
-
-(defn styled-text-view [props t]
-  (let [[text-props _] (useStyledSystemPropsResolver (bean/->js props))]
-    [measured-text (bean/->clj text-props) t]))
-
-(defn view []
-  [center {:flex 1 :py 3 :safeArea true}])
