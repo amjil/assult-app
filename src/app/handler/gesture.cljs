@@ -6,7 +6,9 @@
                                             TapGestureHandler
                                             FlingGestureHandler
                                             LongPressGestureHandler
-                                            State]]
+                                            State
+                                            ScrollView
+                                            GestureHandlerRootView]]
     [applied-science.js-interop :as j]))
 
 (def pan-gesture-handler (r/adapt-react-class PanGestureHandler))
@@ -17,6 +19,10 @@
 
 (def long-press-gesture-handler (r/adapt-react-class LongPressGestureHandler))
 
+(def gesture-root-view (r/adapt-react-class GestureHandlerRootView))
+
+(def scroll-view (r/adapt-react-class ScrollView))
+
 (def state State)
 
 (defn long-press-active [evt]
@@ -25,4 +31,8 @@
 
 (defn tap-state-end [evt]
   (=  (j/get state :END)
+      (j/get evt :state)))
+
+(defn pan-handler-active [evt]
+  (=  (j/get state :ACTIVE)
       (j/get evt :state)))

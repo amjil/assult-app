@@ -29,12 +29,13 @@
        (sqlite/openDatabase
         (bean/->js
          (merge
-          {:name "cand.db"}
+          {:name "cand"
+           :createFromLocation 1})))
 
-          (condp = platform
-            "android"
-            {:location "default"}
-            "ios" {:createFromLocation (str file-prefix "cand.db")}))))
+          ; (condp = platform
+          ;   "android"
+          ;   {:location "default"}
+          ;   "ios" {:createFromLocation (str file-prefix "cand.db")}))))
        #(reset! conn %)))))
 
 (defn close []
@@ -55,7 +56,7 @@
 (defn candidates [index-str return-fn]
   (cond
     (empty? index-str)
-    []
+    (return-fn [])
 
     :else
     (let [table (first index-str)
@@ -66,7 +67,20 @@
                             :order-by [[:active_order :desc]]
                             :limit    20})]
       (p/let [result (.executeSql @conn (first sql) (bean/->js (rest sql)))]
-        (p/then result #(return-fn (rows-data %)))))))
+        (p/then result
+          #(do
+            (if (zero? (j/get-in (first %) [:rows :length]))
+              (let [sql2 (hsql/format {:select   [:id :full_index :short_index :char_word :active_order]
+                                       :from     [(keyword table)]
+                                       :where    [:or [:= :full_index index-str]
+                                                  [:like :short-index (str index-str "%")]]
+                                       :order-by [[:active_order :desc]]
+                                       :limit    100})]
+                (p/let [result2 (.executeSql @conn (first sql2) (bean/->js (rest sql2)))]
+                  (p/then result2
+                    (fn [x]
+                      (return-fn (rows-data x))))))
+              (return-fn (rows-data %)))))))))
 
 (defn next-words [candidate return-fn]
   (js/console.log "next-words " (:id candidate))
@@ -88,7 +102,7 @@
          #(let [next-data  (rows-data %)]
             (cond
               (empty? next-data)
-              []
+              (return-fn [])
 
               :else
               (let [next-grouped (group-by (fn [x] (:t2 x)) next-data)
@@ -98,21 +112,23 @@
                                  :from   [(keyword k)]
                                  :where  [:in :id (map (fn [x] (:id2 x)) v)]})
                               next-grouped)
-                    sql (hsql/format {:select   [:*]
-                                      :from     [{:union sqls}]
+                    sql (hsql/format {:select [:*]
+                                      :from [{:union sqls}]
                                       :order-by [[:active_order :desc]]
-                                      :limit    20})]
-                ;; (js/console.log "sql = " (bean/->js sql))
+                                      :limit 20})]
+                ; (js/console.log "sql = " (bean/->js sql))
                 (p/let [sql-result (.executeSql @conn (first sql) (bean/->js (rest sql)))]
                   (p/then sql-result
                           (fn [res]
-                            (return-fn (rows-data res)))))))))))))
+                            (let [data (rows-data res)]
+                              (return-fn data)))))))))))))
 (open)
 (comment
   (next-words {:id 665 :short_index "ab"} js/console.log)
   (hsql/format {:union [{:select [:*] :from [:foo]}
                         {:select [:*] :from [:bar]}]})
   sqlite/openDatabase
+  open
   (open)
   (is-connected?)
   (close)
@@ -154,6 +170,7 @@
     (hsql/format {:select [:id :full_index :short_index]
                   :from   [:a]
                   :where  [:= :a.short_index "ab"]}))
+
 
   (range 2)
   (first "ab"))

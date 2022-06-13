@@ -7,38 +7,40 @@
    [reagent.core :as reagent]
    [app.ui.nativebase :as nbase]
    [app.ui.keyboard.style :refer [key-style key-con-style key-text-style]]
+   [app.ui.keyboard.bridge :as bridge]
 
-   ["react-native-advanced-ripple" :as ripple]))
+   [steroid.rn.core :as rn]))
 
 (defn key-content [child]
-  [nbase/box {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
+  [rn/view {:style {:height "100%" :alignItems "center" :justifyContent "center"}}
    child])
 
 (defn key-button [box-style on-press child]
-  [nbase/button (merge
-                  {:bg "coolGray.100"
-                   :flex 1
-                   :m 1
-                   :p 0
-                   :borderRadius "md"
-                   :on-press on-press
-                   :align "center"
-                   :justify "center"}
-                  box-style)
+  [rn/touchable-highlight {:style (merge
+                                    {:backgroundColor "#f3f4f6"
+                                     :flex 1
+                                     :margin 4
+                                     :padding 0
+                                     :borderRadius 6
+                                     :alignItems "center"
+                                     :justifyContent "center"}
+                                    box-style)
+                           :underlayColor "#cccccc"
+                           :onPress on-press}
     [key-content child]])
 
 (defn key-char-button
   ([c]
-   [key-button {} #(dispatch [:keyboard-add-char c])
-    [nbase/text {:fontSize 18} c]])
+   [key-button {} #(bridge/editor-insert c)
+    [rn/text {:fontSize 18} c]])
   ([style c]
-   [key-button {} #(dispatch [:keyboard-add-char c])
-    [nbase/text {} c]]))
+   [key-button {} #(bridge/editor-insert c)
+    [rn/text {} c]]))
 
 
 (defn key-row [child]
   (into
-    [nbase/box {:style {:flex 1 :flex-direction "row"
-                        :alignItems "center"
-                        :justifyContent "center"}}]
+    [rn/view {:style {:flex 1 :flex-direction "row"
+                      :alignItems "center"
+                      :justifyContent "center"}}]
     child))
