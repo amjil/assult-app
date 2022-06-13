@@ -37,7 +37,7 @@
   fs/LibraryDirectoryPath
   ;; an fs/ExternalDirectoryPath
   (prn "aa")
-  (copy-file "cand.db")
+  (copy-file "database.db")
   (str fs/DocumentDirectoryPath "/" "cand.db")
   (str fs/DocumentDirectoryPath "/cand.db")
   (check-file "cand.db"))
