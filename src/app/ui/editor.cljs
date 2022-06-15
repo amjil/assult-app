@@ -1,7 +1,6 @@
 (ns app.ui.editor
   (:require
     [app.ui.nativebase :as nbase]
-    [app.ui.webview :as editor]
     [app.ui.components :as ui]
     [app.ui.html :as html]
     [app.ui.text :as text]

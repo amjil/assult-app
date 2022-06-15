@@ -13,8 +13,6 @@
    [steroid.rn.navigation.stack :as stack]
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
-   [app.text.index :as text]
-   [app.font.base :as font]
    [app.handler.gesture :as gesture]
 
    ["react-native-smooth-blink-view" :default blinkview]
@@ -26,11 +24,9 @@
 
    [app.ui.home.views :as home]
    [app.ui.profile.views :as profile]
-   [app.ui.modal.views :as modal]
    [app.ui.toast.views :as toast]
    [app.ui.drawer.index :as drawer]
    [app.ui.nativebase :as nativebase]
-   [app.ui.webview :as webview]
    [app.ui.editor :as editor]
    [app.ui.article.index :as article]
    [app.ui.article.new :as arnew]
@@ -118,7 +114,6 @@
    [{:name      :home
      :component home/home}
     ; {:name      :book
-    ;  ; :component webview/webview-editor
     ;  :component article/main}
     ; {:name      :book
     ;  :component edit-view}

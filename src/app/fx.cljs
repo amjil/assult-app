@@ -7,6 +7,7 @@
    [steroid.rn.components.async-storage :as async-storage]
    [app.ui.nativebase :as nbase]
    [app.handler.navigation :as navigation]
+   [app.ui.text :as text]
    ["react-native-measure-text-chars" :as rntext]
    ["native-base" :refer [useToast useStyledSystemPropsResolver Toast]]))
 
@@ -56,9 +57,8 @@
            (fn []
              (reagent/as-element
                [nbase/box {:bg "emerald.500" :px "2" :py "1" :rounded "sm" :mb 5}
-                [nbase/measured-text
+                [text/measured-text
                   (merge
                     props
-                    {:height width})
-                  msg
-                  info]]))})))))
+                    {:width width})
+                  msg]]))})))))
