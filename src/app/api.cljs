@@ -4,7 +4,7 @@
    [clojure.string :as str]
    [ajax.core :as ajax]))
 
-(def api-url "http://t.amjil.net/api")
+(def api-url "http://ask.amjil.net/api")
 ; (def api-url "http://localhost:3000/api")
 
 (defn endpoint

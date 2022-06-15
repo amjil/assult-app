@@ -5,6 +5,7 @@
    [app.ui.components :as ui]
    [app.handler.navigation :as navigation]
    [app.ui.components :as ui]
+   [app.handler.gesture :as gesture]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [cljs-bean.core :as bean]
@@ -19,8 +20,8 @@
         font {:fontFamily "MongolianBaiZheng"}]
     (fn []
       (let [model @(re-frame/subscribe [:question])
-            answers @(re-frame/subscribe [:answers])
-            question-my @(re-frame/subscribe [:question-my])]
+            answers @(re-frame/subscribe [:answers])]
+            ; question-my @(re-frame/subscribe [:question-my])]
         [ui/safe-area-consumer
          [nbase/box {:on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
                                    (reset! h height))
@@ -31,18 +32,17 @@
             [nbase/measured-text (merge font {:fontSize 12}) (str "ᠬᠠᠷᠢᠭᠤᠯᠤᠭᠰᠠᠨ " (:answer_count model))]
             [nbase/measured-text (merge font {:mt 10 :fontSize 12}) (str "ᠳᠠᠭᠠᠭᠰᠠᠨ " (:focus_count model))]]
            [nbase/flex {:mx 1}
-            [nbase/link {:on-press #(if (:answer_id question-my)
-                                      ; (re-frame/dispatch [:navigate-to :answer-detail])
-                                      (re-frame/dispatch [:navigate-to :answer-create]))}
+            [nbase/link {:on-press #(re-frame/dispatch [:navigate-to :answer-create])}
              [nbase/box {:py 1 :rounded "sm" :bg "primary.400"}
               [nbase/measured-text
                (merge font {:color "white" :fontSize 12})
-               (if (:answer_id question-my)
+               (if (= 1 (:user_question model))
                  "ᠮᠢᠨᠦ ᠬᠠᠷᠢᠭᠤᠯᠲᠠ"
                  "ᠬᠠᠷᠢᠭᠤᠯᠬᠤ")]]]
+
             [nbase/link {:mt 10 :on-press #(re-frame/dispatch [:question-focus (:id model)])}
              [nbase/box {:py 1 :rounded "sm" :bg "primary.400"}
-              [nbase/measured-text (merge font {:color "white" :fontSize 12}) (if (:focus_id question-my) "ᠦᠯᠦ ᠳᠠᠭᠠᠬᠤ" "ᠳᠠᠭᠠᠬᠤ")]]]]
+              [nbase/measured-text (merge font {:color "white" :fontSize 12}) (if (= 1 (:user_focus model)) "ᠦᠯᠦ ᠳᠠᠭᠠᠬᠤ" "ᠳᠠᠭᠠᠬᠤ")]]]]
            [nbase/box {:h @h :w 0.5 :bg "success.500" :mx 1}]
            [nbase/flat-list
             {:horizontal true
@@ -59,4 +59,23 @@
                      [ui/userpic (j/get item :avatar_file) 32]
                      [nbase/measured-text (merge font {:fontSize 14 :margin-top 4}) (j/get item :user_name)]]
                     [nbase/box {:h @h :style {:width 1 :backgroundColor "lightgrey"}}]
-                    [nbase/measured-text (merge font {:fontSize 12 :height @h}) (j/get item :content)]])))}]]]]))))
+                    [nbase/pressable {:on-press #(do
+                                                   (re-frame/dispatch [:answer-comments (j/get item :id)])
+                                                   (re-frame/dispatch [:navigate-to :answer-detail])
+                                                   (re-frame/dispatch [:set-answer (bean/->clj item)])
+                                                   (js/console.log "answer detail >>> "))}
+                     [nbase/measured-text (merge font {:fontSize 12 :height @h}) (j/get item :content)]]
+                    ;
+                    [nbase/flex
+                     [nbase/measured-text (merge font {:fontSize 12}) (str "ᠰᠡᠳᠭᠢᠭᠳᠡᠯ" (j/get item :comment_count))]]
+                    [nbase/flex {:mx 1}
+                     [nbase/link {:on-press #(do
+                                               (re-frame/dispatch [:set-answer (bean/->clj item)])
+                                               (re-frame/dispatch [:navigate-to :answer-comment]))}
+                      [nbase/box {:py 1 :rounded "sm" :bg "primary.400"}
+                       [nbase/measured-text (merge font {:color "white" :fontSize 12}) "ᠰᠡᠳᠭᠡᠭᠳᠡᠯ"]]]]])))}]]]]))))
+                     ; (if (= (:answer_id question-my) (j/get item :id))
+                     ;  [nbase/link {:mt 10 :on-press #(do
+                     ;                                   (re-frame/dispatch [:answer-delete (:id model) (j/get item :id)]))}
+                     ;   [nbase/box {:py 1 :rounded "sm" :bg "primary.400"}
+                     ;    [nbase/measured-text (merge font {:color "white" :fontSize 12}) "ᠬᠠᠰᠤᠬᠤ"]]])]])))}]]]]))))
