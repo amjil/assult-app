@@ -2,6 +2,7 @@
   (:require
    [app.ui.nativebase :as nbase]
    [app.ui.components :as ui]
+   [app.ui.text :as text]
    [steroid.rn.core :as rn]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
@@ -19,8 +20,8 @@
        [nbase/flex {:mt 20 :mx 10 :h "80%" :justifyContent "space-between"}
         [nbase/vstack {:space 4}
          [nbase/hstack {}
-          [nbase/measured-text props "ᠤᠳᠠᠰᠤᠨ"]
-          [nbase/measured-text props " ᠳ᠋ᠤᠭᠠᠷ"]]
+          [text/measured-text props "ᠤᠳᠠᠰᠤᠨ"]
+          [text/measured-text props " ᠳ᠋ᠤᠭᠠᠷ"]]
          [nbase/input {:keyboardType "number-pad"
                        :placeholder "Input Mobile"
                        :onFocus #(reset! show false)
@@ -30,10 +31,10 @@
           [nbase/hstack {:space 2}
            [nbase/pressable
             {:onPress #(js/console.log "aaa")}
-            [:f> nbase/styled-text-view {:color "darkBlue.600"} "Login in with name"]]
+            [text/measured-text {:color "#005db4"} "Login in with name"]]
            [nbase/pressable
             {:onPress #(js/console.log "bbb")}
-            [:f> nbase/styled-text-view {:color "darkBlue.600"} "Login in with email"]]]
+            [text/measured-text {:color "#005db4"} "Login in with email"]]]
           [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                               :justifyContent "center" :alignSelf "center" :alignItems "center"
                               :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])

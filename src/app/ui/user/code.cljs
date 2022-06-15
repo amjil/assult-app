@@ -5,6 +5,7 @@
    [steroid.rn.core :as rn]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
+   [app.ui.text :as text]
    ["native-base" :refer [ArrowForwardIcon]]
    ["react-native-vector-icons/Ionicons" :default Ionicons]
    ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]))
@@ -20,8 +21,8 @@
          [nbase/flex {:mt 0 :mx 10 :h "80%" :justifyContent "space-between"}
           [nbase/vstack {:space 4}
            [nbase/hstack {}
-            [nbase/measured-text props "ᠰᠢᠯᠭᠠᠬᠤ"]
-            [nbase/measured-text props " ᠳ᠋ᠤᠭᠠᠷ"]]
+            [text/measured-text props "ᠰᠢᠯᠭᠠᠬᠤ"]
+            [text/measured-text props " ᠳ᠋ᠤᠭᠠᠷ"]]
            [nbase/input {:keyboardType "number-pad"
                          :placeholder "Mobile Code"
                          :on-change-text #(reset! code %)}]

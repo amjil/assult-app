@@ -28,6 +28,7 @@
                           Text
                           Button Button.Group
                           Input
+                          Checkbox
                           Link
                           CloseIcon
                           IconButton
@@ -77,6 +78,7 @@
 
 (def text (reagent/adapt-react-class Text))
 (def input (reagent/adapt-react-class Input))
+(def checkbox (reagent/adapt-react-class Checkbox))
 
 (def button (reagent/adapt-react-class Button))
 (def button-group (reagent/adapt-react-class Button.Group))

@@ -33,7 +33,12 @@
    [app.ui.question.index :as question]
    [app.ui.message.index :as message]
    [app.ui.basic.theme :as theme]
-   [app.ui.search :as search]))
+   [app.ui.search :as search]
+
+   [app.ui.user.code :as user-code]
+   [app.ui.user.login :as login]
+   [app.ui.user.password :as password]
+   [app.ui.user.register :as register]))
 
 
 (when platform/android?
@@ -174,7 +179,22 @@
                 profile/profile-edit
                 message/model-base
                 message/model-list
-                message/model-focus]))
+                message/model-focus
+                {:name       :password
+                 :component  password/view
+                 :options    {:title ""}}
+                {:name       :sign-in
+                 :component  login/view
+                 :options    {:title ""
+                              :gestureEnabled false
+                              :headerShown false}}
+                {:name       :sign-up
+                 :component  register/view
+                 :options    {:title ""}}
+                {:name       :user-in-code
+                 :component  user-code/view
+                 :options    {:title ""}}]))
+
            (into
              [group {:screenOptions {:presentation "modal"}}]
              (mapv (fn [props]

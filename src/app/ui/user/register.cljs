@@ -2,6 +2,7 @@
   (:require
    [app.ui.nativebase :as nbase]
    [app.ui.components :as ui]
+   [app.ui.text :as text]
    [steroid.rn.core :as rn]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
@@ -18,9 +19,9 @@
          [nbase/flex {:mt 0 :mx 10 :h "80%" :justifyContent "space-between"}
           [nbase/vstack {:space 4}
            [nbase/hstack {}
-            [nbase/measured-text {} "ᠰᠢᠨ᠎ᠡ"]
-            [nbase/measured-text {} " ᠳ᠋ᠤᠭᠠᠷ"]
-            [nbase/measured-text {} "ᠳᠠᠩᠰᠠᠯᠠᠬᠤ"]]
+            [text/measured-text {} "ᠰᠢᠨ᠎ᠡ"]
+            [text/measured-text {} " ᠳ᠋ᠤᠭᠠᠷ"]
+            [text/measured-text {} "ᠳᠠᠩᠰᠠᠯᠠᠬᠤ"]]
            [nbase/input {:keyboardType "number-pad"
                          :placeholder "Input Mobile"
                          :isReadOnly true}
@@ -28,7 +29,7 @@
            [nbase/flex {:flexDirection "row" :justifyContent "space-between"}
             [nbase/vstack {:space 2}
              [nbase/checkbox {:aria-label "check-selected" :on-change #(reset! flag %)}]
-             [nbase/measured-text {} "ᠵᠥᠪᠰᠢᠶᠡᠷᠡᠯ ᠊ᠦᠨ ᠪᠢᠴᠢᠭ ᠊ᠢ ᠤᠩᠰᠢᠭᠰᠠᠨ ᠮᠥᠷᠲᠡᠭᠡᠨ ᠵᠥᠪᠰᠢᠶᠡᠷᠡᠨ᠎ᠡ"]]
+             [text/measured-text {} "ᠵᠥᠪᠰᠢᠶᠡᠷᠡᠯ ᠊ᠦᠨ ᠪᠢᠴᠢᠭ ᠊ᠢ ᠤᠩᠰᠢᠭᠰᠠᠨ ᠮᠥᠷᠲᠡᠭᠡᠨ ᠵᠥᠪᠰᠢᠶᠡᠷᠡᠨ᠎ᠡ"]]
 
 
             [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
