@@ -2,7 +2,6 @@
   (:require
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
-   [app.text.index :as text]
    [applied-science.js-interop :as j]
    ["react-native" :as rnn]
    [cljs-bean.core :as bean]
@@ -108,8 +107,8 @@
                     :padding 10
                     :height 200
                     :alignItems "center"
-                    :justifyContent "center"}}
-           [text/text-inline {:width 30 :fill "white" :font :white :font-size 18} "ᠪᠤᠷᠤᠭᠤ ᠭᠠᠷᠪᠠ"]]))}))
+                    :justifyContent "center"}}]))}))
+           ; [text/text-inline {:width 30 :fill "white" :font :white :font-size 18} "ᠪᠤᠷᠤᠭᠤ ᠭᠠᠷᠪᠠ"]]))}))
 
 (defn view []
   (let [flag (reagent/atom false)]

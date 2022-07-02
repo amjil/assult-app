@@ -2,6 +2,7 @@
   (:require
    [app.ui.nativebase :as nbase]
    [app.ui.components :as ui]
+   [app.ui.text :as text]
    [steroid.rn.core :as rn]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
@@ -19,8 +20,8 @@
          [nbase/flex {:mt 0 :mx 10 :h "80%" :justifyContent "space-between"}
           [nbase/vstack {:space 4}
            [nbase/hstack {}
-            [nbase/measured-text props "ᠨᠢᠭᠤᠴᠠ"]
-            [nbase/measured-text props "ᠦᠭᠡ"]]
+            [text/measured-text props "ᠨᠢᠭᠤᠴᠠ"]
+            [text/measured-text props "ᠦᠭᠡ"]]
            [nbase/input {:type :password
                          :on-change-text #(reset! code %)}]
            [nbase/flex {:flexDirection "row" :justifyContent "space-between"}
@@ -29,7 +30,7 @@
               {:onPress #(do
                             (re-frame/dispatch [:user-send-code {:mobile mobile :direction 2}])
                             (re-frame/dispatch [:navigate-to :user-in-code]))}
-              [:f> nbase/styled-text-view {:color "darkBlue.600" :fontFamily "MongolianBaiZheng"} "ᠰᠢᠯᠭᠠᠬᠤ  ᠳ᠋ᠤᠭᠠᠷ ᠵᠢᠠᠷ ᠨᠡᠪᠲᠡᠷᠡᠬᠦ"]]]
+              [text/measured-text {:color "#005db4" :fontFamily "MongolianBaiZheng"} "ᠰᠢᠯᠭᠠᠬᠤ  ᠳ᠋ᠤᠭᠠᠷ ᠵᠢᠠᠷ ᠨᠡᠪᠲᠡᠷᠡᠬᠦ"]]]
             [nbase/icon-button {:w 20 :h 20 :borderRadius "full" :variant "solid" :colorScheme "indigo"
                                 :justifyContent "center" :alignSelf "center" :alignItems "center"
                                 :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward"}])
