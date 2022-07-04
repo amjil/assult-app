@@ -129,4 +129,6 @@
 (comment
   (re-frame/dispatch [:search-question-answer {:search "aa"}])
   (re-frame/dispatch [:search-question-answer {:search "ᠰᠣᠨᠢᠨ"}])
+  (re-frame/subscribe [:search-num])
+  (re-frame/subscribe [:search-result])
   (prn "hello"))
