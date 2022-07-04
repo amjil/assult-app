@@ -9,7 +9,8 @@
    app.handler.candidates.events
    app.handler.keyboard.events
    app.handler.user.events
-   app.handler.question.events))
+   app.handler.question.events
+   app.handler.search.events))
 
 
 (re-frame/reg-event-fx                                      ;; usage: (dispatch [:initialise-app])
@@ -44,7 +45,8 @@
 (re-frame/reg-event-fx
  :api-request-error                                         ;; triggered when we get request-error from the server
  (fn [{db :db} [_ request-type response]]                   ;; destructure to obtain request-type and response
-   (js/console.log "api error " request-type " " (cljs-bean.core/->js response))
+   (js/console.log "api error " request-type " " (cljs-bean.core/->js response)
+                   "\nmessage = " (get-in response [:response :msg]))
    (let [msg (get-in response [:response :msg])
          status (get response :status)
          msg (if (= status 500)

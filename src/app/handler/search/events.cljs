@@ -8,28 +8,125 @@
 
 (re-frame/reg-event-fx
  :search-question-answer
- (fn [{:keys [db]} [_ params cb]]
+ (fn [{:keys [db]} [_ params]]
    (let [ek :search-question-answer]
      {:db    (assoc-in db [:loading ek] true)
-      :http-xhrio {:method          :get
+      :http-xhrio {:method          :post
                    :timeout         3000
                    :uri             (api/endpoint "search" "question-answers")
                    :headers         (api/auth-header db)
                    :params          params
                    :format          (ajax/json-request-format)
                    :response-format (ajax/json-response-format {:keywords? true})
-                   :on-success      [:put-search-question-answer-success ek cb]
+                   :on-success      [:put-search-question-answer-success ek]
                    :on-failure      [:api-request-error ek]}})))
 
 (re-frame/reg-event-fx
  :put-search-question-answer-success
- (fn [{db :db} [_ ek cb {{total :total result :result} :data}]]
-   (cb)
-   (let [{code :code msg :msg} body]
+ (fn [{db :db} [_ ek body]]
+   (let [{code :code msg :msg {total :total result :result} :data} body]
      {:db    (-> db
-               (assoc-in [:loading ek] false)
-               (assoc :search-count total)
-               (assoc :search result))})))
+                 (assoc-in [:loading ek] false)
+                 (assoc :search-count total)
+                 (assoc :search result))})))
+
+(re-frame/reg-event-fx
+ :search-question
+ (fn [{:keys [db]} [_ params]]
+   (let [ek :search-question]
+     {:db    (assoc-in db [:loading ek] true)
+      :http-xhrio {:method          :post
+                   :timeout         3000
+                   :uri             (api/endpoint "search" "questions")
+                   :headers         (api/auth-header db)
+                   :params          params
+                   :format          (ajax/json-request-format)
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:put-search-question-success ek]
+                   :on-failure      [:api-request-error ek]}})))
+
+(re-frame/reg-event-fx
+ :put-search-question-success
+ (fn [{db :db} [_ ek body]]
+   (let [{code :code msg :msg {total :total result :result} :data} body]
+     {:db    (-> db
+                 (assoc-in [:loading ek] false)
+                 (assoc :search-count total)
+                 (assoc :search result))})))
+
+(re-frame/reg-event-fx
+ :search-question-you-type
+ (fn [{:keys [db]} [_ params]]
+   (let [ek :search-question-you-type]
+     {:db    (assoc-in db [:loading ek] true)
+      :http-xhrio {:method          :post
+                   :timeout         3000
+                   :uri             (api/endpoint "search" "questions-you-type")
+                   :headers         (api/auth-header db)
+                   :params          params
+                   :format          (ajax/json-request-format)
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:put-search-question-you-type-success ek]
+                   :on-failure      [:api-request-error ek]}})))
+
+(re-frame/reg-event-fx
+ :put-search-question-you-type-success
+ (fn [{db :db} [_ ek body]]
+   (let [{code :code msg :msg {total :total result :result} :data} body]
+     {:db    (-> db
+                 (assoc-in [:loading ek] false)
+                 (assoc :search-you-type-count total)
+                 (assoc :search-you-type result))})))
+
+(re-frame/reg-event-fx
+ :search-answer
+ (fn [{:keys [db]} [_ params]]
+   (let [ek :search-answer]
+     {:db    (assoc-in db [:loading ek] true)
+      :http-xhrio {:method          :post
+                   :timeout         3000
+                   :uri             (api/endpoint "search" "answers")
+                   :headers         (api/auth-header db)
+                   :params          params
+                   :format          (ajax/json-request-format)
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:put-search-answer-success ek]
+                   :on-failure      [:api-request-error ek]}})))
+
+(re-frame/reg-event-fx
+ :put-search-answer-success
+ (fn [{db :db} [_ ek body]]
+   (let [{code :code msg :msg {total :total result :result} :data} body]
+     {:db    (-> db
+                 (assoc-in [:loading ek] false)
+                 (assoc :search-count total)
+                 (assoc :search result))})))
+
+(re-frame/reg-event-fx
+ :search-article
+ (fn [{:keys [db]} [_ params]]
+   (let [ek :search-answer]
+     {:db    (assoc-in db [:loading ek] true)
+      :http-xhrio {:method          :post
+                   :timeout         3000
+                   :uri             (api/endpoint "search" "articles")
+                   :headers         (api/auth-header db)
+                   :params          params
+                   :format          (ajax/json-request-format)
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:put-search-article-success ek]
+                   :on-failure      [:api-request-error ek]}})))
+
+(re-frame/reg-event-fx
+ :put-search-article-success
+ (fn [{db :db} [_ ek body]]
+   (let [{code :code msg :msg {total :total result :result} :data} body]
+     {:db    (-> db
+                 (assoc-in [:loading ek] false)
+                 (assoc :search-count total)
+                 (assoc :search result))})))
 
 (comment
-  (re-frame/dispatch [:search-question-answer "aa"]))
+  (re-frame/dispatch [:search-question-answer {:search "aa"}])
+  (re-frame/dispatch [:search-question-answer {:search "ᠰᠣᠨᠢᠨ"}])
+  (prn "hello"))

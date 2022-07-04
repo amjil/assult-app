@@ -46,9 +46,7 @@
 (re-frame/reg-fx
   :toast
   (fn [msg]
-    (let [props {:color "#FFFFFF" :fontFamily "MongolianBaiZheng" :fontSize 16}
-          info (bean/->clj (rntext/measure (bean/->js (assoc props :text msg :width 300))))
-          width (:width info)]
+    (let [props {:color "#FFFFFF" :fontFamily "MongolianBaiZheng" :fontSize 16}] ;:width 300}]
       (j/call Toast :show
         (bean/->js
           {
@@ -57,8 +55,4 @@
            (fn []
              (reagent/as-element
                [nbase/box {:bg "emerald.500" :px "2" :py "1" :rounded "sm" :mb 5}
-                [text/measured-text
-                  (merge
-                    props
-                    {:width width})
-                  msg]]))})))))
+                [text/measured-text props msg]]))})))))

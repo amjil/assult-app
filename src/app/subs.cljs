@@ -4,7 +4,8 @@
    app.handler.candidates.subs
    app.handler.keyboard.subs
    app.handler.user.subs
-   app.handler.question.subs))
+   app.handler.question.subs
+   app.handler.search.subs))
 
 (re-frame/reg-sub
  :loading
