@@ -11,3 +11,13 @@
  :search-num
  (fn [db _]
    (get db :search-count)))
+
+(re-frame/reg-sub
+ :search-you-type-result
+ (fn [db _]
+   (get db :search-you-type)))
+
+(re-frame/reg-sub
+ :search-you-type-num
+ (fn [db _]
+   (get db :search-you-type-count)))

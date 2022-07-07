@@ -126,9 +126,34 @@
                  (assoc :search-count total)
                  (assoc :search result))})))
 
+(re-frame/reg-event-fx
+ :put-search-you-type-result
+ (fn [{db :db} [_ body]]
+   (let [{{total :total result :result} :data} body]
+     {:db    (-> db
+                 (assoc :search-you-type-count total)
+                 (assoc :search-you-type result))})))
+
+(re-frame/reg-event-fx
+ :put-search-result
+ (fn [{db :db} [_ body]]
+   (let [{{total :total result :result} :data} body]
+     {:db    (-> db
+                 (assoc :search-count total)
+                 (assoc :search result))})))
 (comment
   (re-frame/dispatch [:search-question-answer {:search "aa"}])
   (re-frame/dispatch [:search-question-answer {:search "ᠰᠣᠨᠢᠨ"}])
   (re-frame/subscribe [:search-num])
   (re-frame/subscribe [:search-result])
+  
+  (re-frame/dispatch [:put-search-result {:data {:total 0, :result []}}])
+
+  (re-frame/dispatch [:search-question {:search "ᠰᠣᠨᠢᠨ"}])
+
+
+  (re-frame/dispatch [:put-search-you-type-result {:data {:total 0, :result []}}])
+  (re-frame/subscribe [:search-you-type-num])
+  (re-frame/subscribe [:search-you-type-result])
+  (re-frame/dispatch [:search-question-you-type {:search "ᠶᠠ"}])
   (prn "hello"))
