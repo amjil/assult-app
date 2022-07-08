@@ -29,10 +29,10 @@
    [app.ui.nativebase :as nativebase]
    [app.ui.editor :as editor]
    [app.ui.article.index :as article]
-   [app.ui.article.new :as arnew]
    [app.ui.question.index :as question]
    [app.ui.message.index :as message]
    [app.ui.basic.theme :as theme]
+   [app.ui.compose :as compose]
    [app.ui.search :as search]
 
    [app.ui.user.code :as user-code]
@@ -127,7 +127,7 @@
       {:name :question})
     (merge
       ; article/article-list
-      arnew/model-new
+      compose/model-new
       {:name :article})
     (merge
       ; article/article-list
@@ -199,7 +199,7 @@
              [group {:screenOptions {:presentation "modal"}}]
              (mapv (fn [props]
                      [screen (update props :component reagent/reactify-component)])
-               [arnew/model-new
+               [compose/model-new
                 search/search-base]))]]]])]]))
 
         ; [stack/stack {}
@@ -216,7 +216,7 @@
         ;   message/model-base
         ;   message/model-list
         ;   message/model-focus
-        ;   arnew/model-new]]])]]))
+        ;   compose/model-new]]])]]))
 ; (defn root-stack []
 ;   [safe-area/safe-area-provider
 ;    [nativebase/nativebase-provider

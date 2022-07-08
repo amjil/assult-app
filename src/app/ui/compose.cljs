@@ -1,4 +1,4 @@
-(ns app.ui.article.new
+(ns app.ui.compose
   (:require
     [app.ui.nativebase :as nbase]
     [app.ui.editor :as editor]
