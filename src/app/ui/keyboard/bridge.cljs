@@ -4,18 +4,39 @@
     [applied-science.js-interop :as j]
     [cljs-bean.core :as bean]))
 
+(def onchange (atom nil))
+(def current-text (atom ""))
+
+(defn editor-onchange-callback [m]
+  "m is function"
+  (reset! onchange m))
+
+(defn editor-set-text [x]
+  (reset! current-text x))
+
 (defn editor-insert [x]
   (j/call @webref :postMessage
-    (j/call js/JSON :stringify
-      (bean/->js {:type "insertText" :message {:index (:index @cursor)
-                                               :text x}}))))
+          (j/call js/JSON :stringify
+                  (bean/->js {:type "insertText" :message {:index (:index @cursor)
+                                                           :text x}})))
+  (reset! current-text (str (subs @current-text 0 (:index @cursor)) x (subs @current-text (:index @cursor))))
+
+  (cond
+    (empty? @current-text) nil
+    (not (nil? @onchange)) (@onchange @current-text)))
 
 (defn editor-delete []
   (j/call @webref :postMessage
-    (j/call js/JSON :stringify
-      (bean/->js {:type "deleteText"
-                  :message {:start (dec (:index @cursor))
-                            :end (:index @cursor)}}))))
+          (j/call js/JSON :stringify
+                  (bean/->js {:type "deleteText"
+                              :message {:start (dec (:index @cursor))
+                                        :end (:index @cursor)}})))
+
+  (reset! current-text (str (subs @current-text 0 (dec (:index @cursor))) (subs @current-text (:index @cursor))))
+
+  (cond
+    (empty? @current-text) nil
+    (not (nil? @onchange)) (@onchange @current-text)))
 
 (defn editor-content []
   (if @webref
@@ -26,3 +47,13 @@
 
 (defn editor-empty? []
   (= 0 @weblen))
+
+(comment
+  clojure.core/atom
+  (def current-text (clojure.core/atom ""))
+  (reset! current-text "hello")
+  (str (subs @current-text 0 3) " a " (subs @current-text 3))
+  (str (subs @current-text 0 2) (subs @current-text 3))
+
+  (prn "")
+  )

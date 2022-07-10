@@ -71,57 +71,58 @@
       (if (and (= @recomm-flag 1) (= 0 @weblen))
         (do (js/console.log "weblen is zero recomm flag must zero")
           (reset! recomm-flag 0)))
-      [nbase/box
-       {:on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
-                      (reset! h height))
-        :flex 1}
-       [nbase/zstack {:flex 1}
-        (if-not (nil? @h)
-          [nbase/flex {:flex 1 :flex-direction "row" :bg (theme/color "white" "dark.100")}
-           (if (= 1 @focus-elem)
-             [nbase/zstack {:style {:height (- @h 220)}
-                            :minWidth 10
-                            :bg (theme/color "white" "dark.100")}
-              [editor/editor-view
+      [ui/safe-area-consumer
+       [nbase/box
+        {:on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
+                       (reset! h height))
+         :flex 1}
+        [nbase/zstack {:flex 1}
+         (if-not (nil? @h)
+           [nbase/flex {:flex 1 :flex-direction "row" :bg (theme/color "white" "dark.100")}
+            (if (= 1 @focus-elem)
+              [nbase/zstack {:style {:height (- @h 220)}
+                             :minWidth 10
+                             :bg (theme/color "white" "dark.100")}
+               [editor/editor-view
                ; opts
-               {;:placeholder (get-in labels [:question :title-placeholder])
-                :type :text}
+                {;:placeholder (get-in labels [:question :title-placeholder])
+                 :type :text}
                ;content-fn
-               (fn []
+                (fn []
                  ; (js/console.log "content -fn >......."))
-                 (:title @model))
+                  (:title @model))
                  ; (get @model @active-key))
                ;update-fn
-               (fn [x] (js/console.log "1112")
-                 (swap! model assoc :title (:text x)))]
-              (if (= 0 @weblen)
-                [nbase/box {:flex 1 :m 5}
-                 [text/multi-line-text {:fontSize 22 :color (theme/color "#71717a" "#a1a1aa") :fontFamily "MongolianBaiZheng" :width (- @h 220)}
-                  (get-in labels [:question :title-placeholder])]])]
-             [rn/touchable-opacity {:style {:paddingVertical 20
-                                            :paddingLeft 20
-                                            :height (- @h 220)}
-                                    :onPress (fn [] (js/console.log "touchable without feedback .....")
-                                               (bridge/editor-content)
-                                               (reset! focus-elem 1)
-                                               (reset! weblen (count (:title @model)))
-                                               (candidates/candidates-clear))}
-              [text/measured-text {:fontSize 22 :color (theme/color "#71717a" "#a1a1aa") :fontFamily "MongolianBaiZheng" :width (- @h 220)}
-               (if (empty? (:title @model))
-                 (get-in labels [:question :title-placeholder])
-                 (:title @model))]])
-           [nbase/box {:my 5}
-            [nbase/divider (merge {:orientation "vertical" :mr "3" :ml "1"}
-                             (if (= 1 @focus-elem)
-                               {:thickness "2" :bg (theme/color "blue.700" "blue.300")}))]]
-           [nbase/box {:flex 1 :flexDirection "row" :ml 0}
-            [:> rnmodal { :isVisible (= @recomm-flag 1)
+                (fn [x] (js/console.log "1112")
+                  (swap! model assoc :title (:text x)))]
+               (if (= 0 @weblen)
+                 [nbase/box {:flex 1 :m 5}
+                  [text/multi-line-text {:fontSize 22 :color (theme/color "#71717a" "#a1a1aa") :fontFamily "MongolianBaiZheng" :width (- @h 220)}
+                   (get-in labels [:question :title-placeholder])]])]
+              [rn/touchable-opacity {:style {:paddingVertical 20
+                                             :paddingLeft 20
+                                             :height (- @h 220)}
+                                     :onPress (fn [] (js/console.log "touchable without feedback .....")
+                                                (bridge/editor-content)
+                                                (reset! focus-elem 1)
+                                                (reset! weblen (count (:title @model)))
+                                                (candidates/candidates-clear))}
+               [text/measured-text {:fontSize 22 :color (theme/color "#71717a" "#a1a1aa") :fontFamily "MongolianBaiZheng" :width (- @h 220)}
+                (if (empty? (:title @model))
+                  (get-in labels [:question :title-placeholder])
+                  (:title @model))]])
+            [nbase/box {:my 5}
+             [nbase/divider (merge {:orientation "vertical" :mr "3" :ml "1"}
+                                   (if (= 1 @focus-elem)
+                                     {:thickness "2" :bg (theme/color "blue.700" "blue.300")}))]]
+            [nbase/box {:flex 1 :flexDirection "row" :ml 0}
+             [:> rnmodal {:isVisible (= @recomm-flag 1)
                           :coverScreen false
                           :backdropColor (theme/color "lightGray" "#27272a")
                           :scrollHorizontal true
                           :style {:margin-left -10}}
               [recomm-view h recomm-flag]]
-            (if (= 2 @focus-elem)
+             (if (= 2 @focus-elem)
                [nbase/zstack {:style {:height (- @h 220)}
                               :bg (theme/color "white" "dark.100")
                               :minWidth 20}
@@ -152,12 +153,12 @@
                  (if (empty? (:content @model))
                    (get-in labels [:question :content-placeholder])
                    (:content @model))]])]])
-        [candidates/views {:bottom 20}]]
-       [nbase/box {:height 220 :mt 1}
-        [keyboard/keyboard {:type "single-line"
-                            :on-press (fn []
-                                        (bridge/editor-content)
-                                        (candidates/candidates-clear))}]]])))
+         [candidates/views {:bottom 20}]]
+        [nbase/box {:height 220 :mt 1}
+         [keyboard/keyboard {:type "single-line"
+                             :on-press (fn []
+                                         (bridge/editor-content)
+                                         (candidates/candidates-clear))}]]]])))
 
 (def model-new
   {:name       :model-new

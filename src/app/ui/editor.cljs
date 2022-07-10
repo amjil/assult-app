@@ -1,21 +1,21 @@
 (ns app.ui.editor
   (:require
-    [app.ui.nativebase :as nbase]
-    [app.ui.components :as ui]
-    [app.ui.html :as html]
-    [app.ui.text :as text]
-    [app.ui.basic.theme :as theme]
-    [app.handler.gesture :as gesture]
+   [app.ui.nativebase :as nbase]
+   [app.ui.components :as ui]
+   [app.ui.html :as html]
+   [app.ui.text :as text]
+   [app.ui.basic.theme :as theme]
+   [app.handler.gesture :as gesture]
 
-    [applied-science.js-interop :as j]
-    [cljs-bean.core :as bean]
-    [reagent.core :as reagent]
-    [re-frame.core :as re-frame]
-    ["react-native-webview" :refer [WebView]]
+   [applied-science.js-interop :as j]
+   [cljs-bean.core :as bean]
+   [reagent.core :as reagent]
+   [re-frame.core :as re-frame]
+   ["react-native-webview" :refer [WebView]]
     ; ["@react-native-clipboard/clipboard" :default Clipboard]
-    ["react-native" :as rn :refer [Dimensions Clipboard]]
-    ["react-native-svg" :as svg]
-    ["react-native-smooth-blink-view" :default blinkview])
+   ["react-native" :as rn :refer [Dimensions Clipboard]]
+   ["react-native-svg" :as svg]
+   ["react-native-smooth-blink-view" :default blinkview])
   (:import
    [goog.async Debouncer]))
 
@@ -115,15 +115,15 @@
         cursor-dot-delay (reagent/atom false)
         cursor-dot-delay-fn (Debouncer. (fn [] (reset! cursor-dot-delay false)) 500)
         init-selection-fn (Debouncer. (fn []
-                                       (j/call @webref :postMessage
-                                         (j/call js/JSON :stringify (clj->js {:type "initSelection" :message ""}))))
-                              200)
+                                        (j/call @webref :postMessage
+                                                (j/call js/JSON :stringify (clj->js {:type "initSelection" :message ""}))))
+                                      200)
         range (reagent/atom nil)
         is-menu (reagent/atom true)
 
         on-message (fn [e]
                      (let [data (js->clj (j/call js/JSON :parse (j/get-in e [:nativeEvent :data]))
-                                   :keywordize-keys true)]
+                                         :keywordize-keys true)]
                        (condp = (:type data)
                          "initHeight" (do
                                         (js/console.log "initHeight .... " (bean/->js data))
@@ -156,26 +156,27 @@
                                                (reset! cursor (:message data)))
                                              (reset! is-caret true))
                          "copyText" (do (.setString Clipboard (:message data))
-                                      (js/console.log (j/get-in e [:nativeEvent :data])))
+                                        (js/console.log (j/get-in e [:nativeEvent :data])))
 
                          "initRange" (do (js/console.log (j/get-in e [:nativeEvent :data])
-                                           (reset! range (:message data)))
-                                       (reset! is-caret false))
+                                                         (reset! range (:message data)))
+                                         (reset! is-caret false))
                          "updateRange" (do (js/console.log (j/get-in e [:nativeEvent :data]))
-                                         (let [end-position (-> data :message :end)]
-                                           (if (and (not= 0 (:left end-position)))
-                                             (reset! range (:message data))))
-                                         (reset! is-caret false)))))
+                                           (let [end-position (-> data :message :end)]
+                                             (if (and (not= 0 (:left end-position)))
+                                               (reset! range (:message data))))
+                                           (reset! is-caret false)))))
         pan-start-location (reagent/atom nil)
         pan-translate (reagent/atom nil)
         options (.stringify js/JSON
-                     (clj->js
-                             {
-                              :modules #js {:toolbar false}
+                            (clj->js
+                             {:modules #js {:toolbar false}
                               :theme "snow"
-                              :readOnly true}))]
+                              :readOnly true}))
                               ; :debug "info"
                               ; :placeholder "ᠠᠭᠤᠯᠭ᠎ᠠ ᠪᠠᠨ ᠨᠠᠢᠷᠠᠭᠤᠯᠤᠶ᠎ᠠ ..."}))]
+        ]
+
     (fn []
       [gesture/gesture-root-view
        {:flex 1}
