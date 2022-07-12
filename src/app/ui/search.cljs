@@ -87,7 +87,7 @@
                             :coverScreen false
                             :backdropColor (theme/color "lightGray" "#27272a")
                             :scrollHorizontal true
-                            :style {:margin-left 0}}
+                            :style {:left -20}}
                 [recomm-view h recomm-flag recomm-data]]
                [nbase/vstack {:p 1 :alignItems "center" :style {:height (/ (- @h 4) 2)}}
                 [rn/touchable-opacity {:on-press #(reset! check-position 0)}

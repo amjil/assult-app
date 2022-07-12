@@ -1,24 +1,24 @@
 (ns app.ui.compose
   (:require
-    [app.ui.nativebase :as nbase]
-    [app.ui.editor :as editor]
-    [app.ui.components :as ui]
-    [app.ui.text :as text]
-    [app.ui.editor :refer [weblen]]
-    [app.ui.keyboard.index :as keyboard]
-    [app.ui.keyboard.candidates :as candidates]
-    [app.ui.keyboard.bridge :as bridge]
-    [app.ui.basic.theme :as theme]
-    [app.text.message :refer [labels]]
+   [app.ui.nativebase :as nbase]
+   [app.ui.editor :as editor]
+   [app.ui.components :as ui]
+   [app.ui.text :as text]
+   [app.ui.editor :refer [weblen]]
+   [app.ui.keyboard.index :as keyboard]
+   [app.ui.keyboard.candidates :as candidates]
+   [app.ui.keyboard.bridge :as bridge]
+   [app.ui.basic.theme :as theme]
+   [app.text.message :refer [labels]]
 
-    [steroid.rn.core :as rn]
-    [applied-science.js-interop :as j]
-    [cljs-bean.core :as bean]
-    [reagent.core :as reagent]
-    [re-frame.core :as re-frame]
+   [steroid.rn.core :as rn]
+   [applied-science.js-interop :as j]
+   [cljs-bean.core :as bean]
+   [reagent.core :as reagent]
+   [re-frame.core :as re-frame]
 
-    ["react-native-modal" :default rnmodal]
-    ["react-native-vector-icons/Ionicons" :default Ionicons]))
+   ["react-native-modal" :default rnmodal]
+   ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
 (def model (reagent/atom {:title "" :content ""}))
 
@@ -42,19 +42,19 @@
       :renderItem (fn [x]
                     (let [{:keys [item index separators]} (j/lookup x)]
                       (reagent/as-element
-                        [nbase/box {:flex 1 :flexDirection "row"}
-                         [rn/touchable-opacity {:on-press #(js/console.log "recommandations on press >>>")}
-                          [nbase/box {:m 5 :flex 1 :flexDirection "row"}
-                           [text/measured-text {:fontSize 18 :width (- @h 220 20) :color (theme/color "black" "#a1a1aa")} (j/get item :title)]
-                           [nbase/box
-                             [text/measured-text {:fontSize 14 :color (theme/color "gray" "#a1a1aa")} (j/get item :focus_count)]
-                             [text/measured-text {:fontSize 14 :color (theme/color "gray" "#a1a1aa")} "-"]
-                             [text/measured-text {:fontSize 14 :color (theme/color "gray" "#a1a1aa")} (j/get item :answer_count)]]]]
-                         [nbase/divider {:orientation "vertical" :bg (theme/color "gray" "dark.500")}]])))}]]
+                       [nbase/box {:flex 1 :flexDirection "row"}
+                        [rn/touchable-opacity {:on-press #(js/console.log "recommandations on press >>>")}
+                         [nbase/box {:m 5 :flex 1 :flexDirection "row"}
+                          [text/measured-text {:fontSize 18 :width (- @h 220 20) :color (theme/color "black" "#a1a1aa")} (j/get item :title)]
+                          [nbase/box
+                           [text/measured-text {:fontSize 14 :color (theme/color "gray" "#a1a1aa")} (j/get item :focus_count)]
+                           [text/measured-text {:fontSize 14 :color (theme/color "gray" "#a1a1aa")} "-"]
+                           [text/measured-text {:fontSize 14 :color (theme/color "gray" "#a1a1aa")} (j/get item :answer_count)]]]]
+                        [nbase/divider {:orientation "vertical" :bg (theme/color "gray" "dark.500")}]])))}]]
    [rn/touchable-opacity {:on-press #(reset! flag 2)
                           :style {:flex 0.2}}
     [nbase/box {:flex 1 :bg (theme/color "gray.50" "dark.300") :alignItems "center" :justifyContent "center" :borderRightRadius "10"}
-     [text/measured-text {:fontSize 14 :color (theme/color "gray" "#a1a1aa") :width (-@h 220 20)} (get-in labels [:question :close-similar-titles])]]]])
+     [text/measured-text {:fontSize 14 :color (theme/color "gray" "#a1a1aa") :width (- @h 220 20)} (get-in labels [:question :close-similar-titles])]]]])
 
 
 (defn view []
@@ -62,15 +62,17 @@
         h (reagent/atom nil)
         focus-elem (reagent/atom 0)
 
-        recomm-flag (reagent/atom 0)]
+        recomm-flag (reagent/atom 0)
+        _ (bridge/editor-onchange-callback nil)]
+    
     (fn []
       (if (and (= @recomm-flag 0) (not= 0 @weblen))
         (do (js/console.log "weblen ....")
-          (reset! recomm-flag 1)))
+            (reset! recomm-flag 1)))
 
       (if (and (= @recomm-flag 1) (= 0 @weblen))
         (do (js/console.log "weblen is zero recomm flag must zero")
-          (reset! recomm-flag 0)))
+            (reset! recomm-flag 0)))
       [ui/safe-area-consumer
        [nbase/box
         {:on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
@@ -90,6 +92,7 @@
                ;content-fn
                 (fn []
                  ; (js/console.log "content -fn >......."))
+                  (bridge/editor-set-text (:title @model))
                   (:title @model))
                  ; (get @model @active-key))
                ;update-fn
@@ -116,12 +119,12 @@
                                    (if (= 1 @focus-elem)
                                      {:thickness "2" :bg (theme/color "blue.700" "blue.300")}))]]
             [nbase/box {:flex 1 :flexDirection "row" :ml 0}
-             [:> rnmodal {:isVisible (= @recomm-flag 1)
-                          :coverScreen false
-                          :backdropColor (theme/color "lightGray" "#27272a")
-                          :scrollHorizontal true
-                          :style {:margin-left -10}}
-              [recomm-view h recomm-flag]]
+            ;;  [:> rnmodal {:isVisible (= @recomm-flag 1)
+            ;;               :coverScreen false
+            ;;               :backdropColor (theme/color "lightGray" "#27272a")
+            ;;               :scrollHorizontal true
+            ;;               :style {:margin-left -10}}
+            ;;   [recomm-view h recomm-flag]]
              (if (= 2 @focus-elem)
                [nbase/zstack {:style {:height (- @h 220)}
                               :bg (theme/color "white" "dark.100")
@@ -133,6 +136,7 @@
                  ;content-fn
                  (fn []
                    ; (js/console.log "content -fn >......."))
+                   (bridge/editor-set-text (:content @model))
                    (:content @model))
                    ; (get @model @active-key))
                  ;update-fn
@@ -170,8 +174,13 @@
     :headerRight
     (fn [tag id classname]
       (reagent/as-element
-        [nbase/icon-button {:variant "ghost" :colorScheme "indigo"
-                            :icon (reagent/as-element [nbase/icon {:as Ionicons :name "ios-checkmark"}])
-                            :on-press (fn [e] (js/console.log "on press icon button"))}]))}})
-                                        ; (bridge/editor-content)
-                                        ; (re-frame/dispatch [:navigate-back]))}]))}})
+       [nbase/icon-button {:variant "ghost" :colorScheme "indigo"
+                           :icon (reagent/as-element [nbase/icon {:as Ionicons :name "ios-checkmark"}])
+                           :on-press (fn [e]
+                                       (js/console.log "on press icon button")
+                                       (bridge/editor-content)
+                                       (let [model (clojure.set/rename-keys
+                                                    @model
+                                                    {:title :question_content
+                                                     :content :question_detail})]
+                                         (re-frame/dispatch [:create-question model])))}]))}})

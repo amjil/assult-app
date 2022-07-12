@@ -8,6 +8,25 @@
 
 
 
+(re-frame/reg-event-fx
+ :create-question
+ (fn [{:keys [db]} [_ id params]]
+   {:db    (assoc-in db [:loading :create-question] true)
+    :http-xhrio {:method                 :post
+                 :uri                    (api/endpoint "question")
+                 :headers                (api/auth-header db)
+                 :params                 params
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:create-question-success]
+                 :on-failure             [:api-request-error :create-question]}}))
+
+(re-frame/reg-event-fx
+ :create-success
+ (fn [{db :db} [_ body]]
+   (let [{data :data} body]
+     {:db (-> db
+              (assoc-in [:loading :create-question] false))})))
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
  :get-questions
