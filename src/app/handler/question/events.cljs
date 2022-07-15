@@ -10,10 +10,10 @@
 
 (re-frame/reg-event-fx
  :create-question
- (fn [{:keys [db]} [_ id params]]
+ (fn [{:keys [db]} [_ params]]
    {:db    (assoc-in db [:loading :create-question] true)
     :http-xhrio {:method                 :post
-                 :uri                    (api/endpoint "question")
+                 :uri                    (api/endpoint "questions")
                  :headers                (api/auth-header db)
                  :params                 params
                  :format                 (ajax/json-request-format)
@@ -22,11 +22,32 @@
                  :on-failure             [:api-request-error :create-question]}}))
 
 (re-frame/reg-event-fx
- :create-success
+ :create-question-success
  (fn [{db :db} [_ body]]
    (let [{data :data} body]
+     (re-frame/dispatch [:navigate-back])
      {:db (-> db
               (assoc-in [:loading :create-question] false))})))
+
+;; -----------------------------------------------------
+(re-frame/reg-event-fx
+ :delete-question
+ (fn [{:keys [db]} [_ id]]
+   {:db    (assoc-in db [:loading :delete-quesiton] true)
+    :http-xhrio {:method                 :delete
+                 :uri                    (api/endpoint "questions" (str id))
+                 :headers                (api/auth-header db)
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:delete-question-success]
+                 :on-failure             [:api-request-error :delete-question]}}))
+
+(re-frame/reg-event-fx
+ :delete-question-success
+ (fn [{db :db} [_ body]]
+   {:db (-> db
+            (assoc-in [:loading :delete-question] false))
+    :dispatch-n [[:get-questions]]}))
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
  :get-questions

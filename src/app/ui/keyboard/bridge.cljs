@@ -6,6 +6,7 @@
 
 (def onchange (atom nil))
 (def current-text (atom ""))
+(def current-key (atom nil))
 
 (defn editor-onchange-callback [m]
   "m is function"
@@ -14,12 +15,23 @@
 (defn editor-set-text [x]
   (reset! current-text x))
 
+(defn editor-get-text []
+  (str @current-text))
+
+(defn editor-set-key [x]
+  (reset! current-key x))
+
+(defn editor-get-key []
+  (keyword @current-key))
+
 (defn editor-insert [x]
   (j/call @webref :postMessage
           (j/call js/JSON :stringify
                   (bean/->js {:type "insertText" :message {:index (:index @cursor)
                                                            :text x}})))
-  (reset! current-text (str (subs @current-text 0 (:index @cursor)) x (subs @current-text (:index @cursor))))
+  (if (empty? @current-text)
+    (reset! current-text x)
+    (reset! current-text (str (subs @current-text 0 (:index @cursor)) x (subs @current-text (:index @cursor)))))
 
   (cond
     (empty? @current-text) nil
@@ -55,5 +67,4 @@
   (str (subs @current-text 0 3) " a " (subs @current-text 3))
   (str (subs @current-text 0 2) (subs @current-text 3))
 
-  (prn "")
-  )
+  (prn ""))

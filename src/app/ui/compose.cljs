@@ -64,7 +64,7 @@
 
         recomm-flag (reagent/atom 0)
         _ (bridge/editor-onchange-callback nil)]
-    
+
     (fn []
       (if (and (= @recomm-flag 0) (not= 0 @weblen))
         (do (js/console.log "weblen ....")
@@ -92,7 +92,6 @@
                ;content-fn
                 (fn []
                  ; (js/console.log "content -fn >......."))
-                  (bridge/editor-set-text (:title @model))
                   (:title @model))
                  ; (get @model @active-key))
                ;update-fn
@@ -106,7 +105,11 @@
                                              :paddingLeft 20
                                              :height (- @h 220)}
                                      :onPress (fn [] (js/console.log "touchable without feedback .....")
-                                                (bridge/editor-content)
+                                                ; (bridge/editor-content
+                                                (if-not (nil? (bridge/editor-get-key))
+                                                  (swap! model assoc (bridge/editor-get-key) (bridge/editor-get-text)))
+                                                (bridge/editor-set-key "title")
+                                                (bridge/editor-set-text (:title @model))
                                                 (reset! focus-elem 1)
                                                 (reset! weblen (count (:title @model)))
                                                 (candidates/candidates-clear))}
@@ -136,11 +139,10 @@
                  ;content-fn
                  (fn []
                    ; (js/console.log "content -fn >......."))
-                   (bridge/editor-set-text (:content @model))
                    (:content @model))
                    ; (get @model @active-key))
                  ;update-fn
-                 (fn [x] (js/console.log "1112")
+                 (fn [x] (js/console.log "1112" (bean/->js x))
                    (swap! model assoc :content (:text x)))]
                 (if (= 0 @weblen)
                   [nbase/box {:flex 1 :m 5}
@@ -149,7 +151,12 @@
                [rn/touchable-opacity {:style {:paddingVertical 20
                                               :height (- @h 220)}
                                       :onPress (fn [] (js/console.log "touchable without feedback .....2")
-                                                 (bridge/editor-content)
+                                                 (if (nil? (bridge/editor-get-key))
+                                                   (swap! model assoc :title (bridge/editor-get-text))
+                                                   (swap! model assoc (keyword (bridge/editor-get-key)) (bridge/editor-get-text)))
+                                                 (js/console.log "model= " (bean/->js @model))
+                                                 (bridge/editor-set-key "content")
+                                                 (bridge/editor-set-text (:content @model))
                                                  (reset! focus-elem 2)
                                                  (reset! weblen (count (:content @model)))
                                                  (candidates/candidates-clear))}
@@ -177,10 +184,14 @@
        [nbase/icon-button {:variant "ghost" :colorScheme "indigo"
                            :icon (reagent/as-element [nbase/icon {:as Ionicons :name "ios-checkmark"}])
                            :on-press (fn [e]
+                                       (candidates/candidates-clear)
+                                       (if-not (nil? (bridge/editor-get-key))
+                                         (swap! model assoc (bridge/editor-get-key) (bridge/editor-get-text)))
                                        (js/console.log "on press icon button")
-                                       (bridge/editor-content)
-                                       (let [model (clojure.set/rename-keys
-                                                    @model
-                                                    {:title :question_content
-                                                     :content :question_detail})]
+                                       (let [model (-> @model
+                                                     (update :title clojure.string/trim)
+                                                     (update :content clojure.string/trim)
+                                                     (clojure.set/rename-keys
+                                                      {:title :question_content
+                                                       :content :question_detail}))]
                                          (re-frame/dispatch [:create-question model])))}]))}})

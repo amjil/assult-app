@@ -172,10 +172,10 @@
                             (clj->js
                              {:modules #js {:toolbar false}
                               :theme "snow"
-                              :readOnly true}))
+                              :readOnly true}))]
                               ; :debug "info"
                               ; :placeholder "ᠠᠭᠤᠯᠭ᠎ᠠ ᠪᠠᠨ ᠨᠠᠢᠷᠠᠭᠤᠯᠤᠶ᠎ᠠ ..."}))]
-        ]
+
 
     (fn []
       [gesture/gesture-root-view

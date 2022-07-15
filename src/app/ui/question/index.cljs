@@ -14,6 +14,7 @@
     [app.handler.animatable :as animatable]
     [app.text.message :refer [labels]]
     [app.ui.question.comment :as comment]
+    [app.text.message :refer [labels]]
     ["react-native-gesture-handler" :as ges]
     ["react-native-reanimated" :as re-animated]
     ["lottie-react-native" :as lottie]
@@ -26,38 +27,6 @@
 
     ["react-native" :as rn :refer [Dimensions]]
     ["react-native-vector-icons/Ionicons" :default Ionicons]))
-
-(def questions-atom (reagent/atom [{:question_content "ᠲᠡᠷᠭᠡᠯ ᠰᠠᠷᠠ ᠭᠡᠵᠦ ᠶᠠᠮᠠᠷ ᠰᠠᠷᠠ ᠪᠤᠢ?"
-                                    :question_detail "ᠲᠡᠷᠭᠡᠯ ᠰᠠᠷᠠ᠂ ᠬᠠᠪᠢᠷᠭᠠᠨ ᠰᠠᠷᠠ᠂ ᠲᠠᠯ᠎ᠠ ᠰᠠᠷᠠ\nabc\naaa\n111\n2222\n2222"
-                                    ; :question_detail "ᠲᠡᠷᠭᠡᠯ ᠰᠠᠷᠠ᠂ ᠬᠠᠪᠢᠷᠭᠠᠨ ᠰᠠᠷᠠ᠂ ᠲᠠᠯ᠎ᠠ ᠰᠠᠷᠠ"
-                                    :user_name "ᠪᠠᠲᠦ"
-                                    :agree_count 0
-                                    :comment_count 0}
-                                   {:question_content "ᠬᠦᠬᠡ ᠲᠣᠯᠪᠤ ᠭᠡᠰᠡᠨ ᠨᠢ ᠶᠠᠭᠤ ᠪᠤᠢ?"
-                                    :question_detail "ᠬᠦᠬᠡ ᠲᠤᠯᠪᠤᠲᠠᠨ ᠃"
-                                    :user_name "ᠰᠣᠳᠤ"
-                                    :agree_count 0
-                                    :comment_count 0}
-                                   {:question_content "ᠪᠢᠳᠡ ᠬᠡᠨ ᠪᠤᠢ"
-                                    :question_detail ""
-                                    :user_name "ᠪᠠᠭᠠᠲᠤᠷ"
-                                    :agree_count 0
-                                    :comment_count 0}
-                                   {:question_content "ᠶᠠᠭᠠᠬᠢᠪᠠᠯ ᠵᠣᠬᠢᠬᠤ ᠪᠤᠢ"
-                                    :question_detail "ᠶᠠᠭᠠᠬᠢᠵᠤ ᠠᠵᠢᠯᠯᠠᠪᠠᠯ ᠰᠠᠶᠢ ᠦᠷᠢ ᠪᠦᠲᠦᠮᠵᠢ ᠪᠡᠷ ᠰᠠᠢᠨ ᠪᠤᠢ"
-                                    :user_name "ᠰᠦᠬᠡ"
-                                    :agree_count 0
-                                    :comment_count 0}
-                                   {:question_content "ᠪᠢ ᠬᠠᠮᠢᠭ᠎ᠠ ᠲᠦᠷᠦᠪᠡ?"
-                                    :question_detail "ᠪᠢᠳᠡᠨ "
-                                    :user_name "ᠰᠠᠷᠠ"
-                                    :agree_count 0
-                                    :comment_count 0}
-                                   {:question_content "ᠮᠠᠰᠢᠨ ᠭᠡᠳᠡᠭ ᠭᠠᠳᠠᠭᠠᠳᠤ ᠦᠭᠡ ?"
-                                    :question_detail "ᠮᠠᠰᠢᠨ ᠭᠡᠵᠦ "
-                                    :user_name "ᠰᠠᠷᠠ"
-                                    :agree_count 0
-                                    :comment_count 0}]))
 
 (def comments [{:user_name "john" :content "hello"}
                {:user_name "sara" :content "hello, John"}
@@ -162,124 +131,129 @@
         modal-height (str (- (.-height (.get Dimensions "window")) 150) "px")]
 
     (fn []
-      [nbase/zstack {:flex 1
-                    ; :bg "gray.100"
-                     :bg (theme/color "white" "dark.100")
-                     :on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
-                                   (reset! h height))}
-       [nbase/modal {:isOpen @is-open :onClose #(reset! is-open false)}
-        [nbase/box {:bg (theme/color "coolGray.50" "dark.50") :shadow 1 :rounded "lg" :maxHeight modal-height
-                    :minHeight "40%" :overflow "hidden"}
-         [nbase/box
-          {:flex 1 :justifyContent "center" :alignItem "center" :flexDirection "row"
-           :pt "2" :py "3"}
-          [srn/touchable-highlight {:style {:padding 10}
-                                    :underlayColor "#cccccc"
-                                    :onPress #(js/console.log "touchable 1 >>> ")}
-           [text/measured-text {:color "#9ca3af"} "Arial"]]
-          [nbase/divider {:orientation "vertical" :bg "coolGray.400"}]
-          [srn/touchable-highlight {:style {:padding 10}
-                                    :underlayColor "#cccccc"
-                                    :onPress #(js/console.log "touchable 2 >>> ")}
-           [text/measured-text {:color "#9ca3af"} "Nunito Sans"]]
-          [nbase/divider {:orientation "vertical" :bg "coolGray.400"}]
-          [srn/touchable-highlight {:style {:padding 10}
-                                    :underlayColor "#cccccc"
-                                    :onPress #(js/console.log "touchable 3 >>> ")}
-           [text/measured-text {:color "#9ca3af"} "Roboto"]]]]]
-       (if (nil? @h)
-         [nbase/box {:style {:height "100%"}}
-          [nbase/box {:m 1 :p 4
-                      :borderRightWidth "0.5"
-                      :borderColor (theme/color "gray.300" "gray.500")
-                      :bg (theme/color "white" "black")}
-           [nbase/skeleton {:h "100%" :w 24}]]]
+      (let [questions @(re-frame/subscribe [:question-list])]
+        [nbase/zstack {:flex 1
+                      ; :bg "gray.100"
+                       :bg (theme/color "white" "dark.100")
+                       :on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
+                                     (reset! h height))}
+         [nbase/modal {:isOpen @is-open :onClose #(reset! is-open false)}
+          [nbase/box {:bg (theme/color "coolGray.50" "dark.50") :shadow 1 :rounded "lg" :maxHeight modal-height
+                      :minHeight "40%" :overflow "hidden"}
+           [nbase/box
+            {:flex 1 :justifyContent "center" :alignItem "center" :flexDirection "row"
+             :pt "2" :py "3"}
+            [srn/touchable-highlight {:style {:padding 10}
+                                      :underlayColor "#cccccc"
+                                      :onPress #(js/console.log "touchable 1 >>> ")}
+             [text/measured-text {:color "#9ca3af"} "Arial"]]
+            [nbase/divider {:orientation "vertical" :bg "coolGray.400"}]
+            [srn/touchable-highlight {:style {:padding 10}
+                                      :underlayColor "#cccccc"
+                                      :onPress #(js/console.log "touchable 2 >>> ")}
+             [text/measured-text {:color "#9ca3af"} "Nunito Sans"]]
+            [nbase/divider {:orientation "vertical" :bg "coolGray.400"}]
+            [srn/touchable-highlight {:style {:padding 10}
+                                      :underlayColor "#cccccc"
+                                      :onPress (fn []
+                                                 (re-frame/dispatch [:delete-question (:id @model)])
+                                                 (reset! is-open false))}
+             [text/measured-text {:color "#9ca3af"} (get labels :delete)]]]]]
+         (if (nil? @h)
+           [nbase/box {:style {:height "100%"}}
+            [nbase/box {:m 1 :p 4
+                        :borderRightWidth "0.5"
+                        :borderColor (theme/color "gray.300" "gray.500")
+                        :bg (theme/color "white" "black")}
+             [nbase/skeleton {:h "100%" :w 24}]]]
+           [animation/animated-view
+            (merge (bean/->clj (j/get pan-responder :panHandlers))
+                   {:style {:flex 1
+                            :flexDirection "row"}})
+            [animation/animated-view
+             {:style {:flex 1 :transform [{:translateX (j/get container-offset :x)}]
+                      :height @h}}
+             [nbase/flat-list
+              {:keyExtractor    (fn [_ index] (str "question-view-" index))
+               :data      questions
+               :overScrollMode "never"
+               :scrollToOverflowEnabled true
+               :onScroll (fn [e]
+                           (reset! inner-scroll-offset (j/get-in e [:nativeEvent :contentOffset :x])))
+               :ref (fn [r]
+                      (reset! scroll-ref r))
+               ; :onRefresh (fn [e] (js/console.log "on-refreshing ... "))
+               ; :refreshing false
+               :renderItem (fn [x]
+                             (let [{:keys [item index separators]} (j/lookup x)]
+                               (reagent/as-element
+                                [nbase/pressable {:m 1
+                                                  :borderRightWidth "0.5"
+                                                  :borderColor (theme/color "gray.300" "gray.500")
+                                                  :bg (theme/color "white" "dark.100")
+                                                  :on-press (fn [e] (re-frame/dispatch [:navigate-to :question-detail])
+                                                              (reset! model (bean/->clj item)))}
+                                 [nbase/hstack
+                                  [nbase/vstack
+                                   [nbase/box {:bg (theme/color "gray.300" "gray.500")
+                                               :borderRadius "md"
+                                               :p 6
+                                               :alignSelf "center"}]
+                                   [nbase/box {:alignSelf "center"
+                                               :justifyContent "center"
+                                               :mt 4}
+                                    [text/measured-text {:fontSize 18 :color (theme/color "#71717a" "#9ca3af") :width (- @h 68)}
+                                     (j/get item :user_name)]]]
+                                  [nbase/box {:mt 16
+                                              :ml 2}
+                                   [text/measured-text {:fontSize 22 :color (theme/color "#002851" "#9ca3af") :width (- @h 68)}
+                                    (j/get item :question_content)]]
+                                  [nbase/box {:mt 16
+                                              :ml 1
+                                              ; :w 100
+                                              :flex 1}
+                                   [text/simple-text {:fontSize 18 :color (theme/color "#71717a" "#9ca3af") :width (- @h 68)}
+                                    (j/get item :question_detail)]]
+                                  [nbase/box {:ml 2
+                                              :mt 16
+                                              :style {:height (- @h 120)}
+                                              :justifyContent "space-between"}
+                                   [srn/touchable-highlight {:underlayColor "#cccccc"
+                                                             :onPress (fn []
+                                                                        (reset! is-open true)
+                                                                        (reset! model (bean/->clj item)))
+                                                             :style {:height 24}}
+                                    [nbase/icon {:as Ionicons :name "ios-ellipsis-vertical-sharp"
+                                                 :size "6" :color "indigo.500"
+                                                 :mb 40}]]
+                                   [nbase/box {:justifyContent "flex-start"}
+                                    [nbase/box {:mb 6 :alignItems "center"}
+                                     [nbase/icon {:as Ionicons :name "ios-heart-sharp"
+                                                  :size "6" :color "indigo.500"}]
+                                     [text/measured-text {:color "#d4d4d8"} "1024"]]
+                                    [nbase/box {:mb 6 :alignItems "center"}
+                                     [nbase/icon {:as Ionicons :name "ios-chatbubble-ellipses-outline"
+                                                  :size "6" :color "indigo.500"}]
+                                     [text/measured-text {:color "#d4d4d8"} "128"]]
+                                    [nbase/icon {:as Ionicons :name "time-outline"
+                                                 :size "6" :color "gray.300"
+                                                 :mb 1}]
+                                    [nbase/box {:alignSelf "center"}
+                                     [text/measured-text {:color "#d4d4d8"} "2022-04-10 13:52:54"]]]]]])))
+               :showsHorizontalScrollIndicator false
+               :horizontal true
+               :bounces true
+               :style {:flex 1 :height @h
+                       :width (.-width (.get Dimensions "window"))}}]]])
+         ; pull to refresh component
          [animation/animated-view
-          (merge (bean/->clj (j/get pan-responder :panHandlers))
-                 {:style {:flex 1
-                          :flexDirection "row"}})
-          [animation/animated-view
-           {:style {:flex 1 :transform [{:translateX (j/get container-offset :x)}]
-                    :height @h}}
-           [nbase/flat-list
-            {:keyExtractor    (fn [_ index] (str "question-view-" index))
-             :data      @questions-atom
-             :overScrollMode "never"
-             :scrollToOverflowEnabled true
-             :onScroll (fn [e]
-                         (reset! inner-scroll-offset (j/get-in e [:nativeEvent :contentOffset :x])))
-             :ref (fn [r]
-                    (reset! scroll-ref r))
-             ; :onRefresh (fn [e] (js/console.log "on-refreshing ... "))
-             ; :refreshing false
-             :renderItem (fn [x]
-                           (let [{:keys [item index separators]} (j/lookup x)]
-                             (reagent/as-element
-                              [nbase/pressable {:m 1
-                                                :borderRightWidth "0.5"
-                                                :borderColor (theme/color "gray.300" "gray.500")
-                                                :bg (theme/color "white" "dark.100")
-                                                :on-press (fn [e] (re-frame/dispatch [:navigate-to :question-detail])
-                                                            (reset! cursor index)
-                                                            (reset! model (bean/->clj item)))}
-                               [nbase/hstack
-                                [nbase/vstack
-                                 [nbase/box {:bg (theme/color "gray.300" "gray.500")
-                                             :borderRadius "md"
-                                             :p 6
-                                             :alignSelf "center"}]
-                                 [nbase/box {:alignSelf "center"
-                                             :justifyContent "center"
-                                             :mt 4}
-                                  [text/measured-text {:fontSize 18 :color (theme/color "#71717a" "#9ca3af") :width (- @h 68)}
-                                   (j/get item :user_name)]]]
-                                [nbase/box {:mt 16
-                                            :ml 2}
-                                 [text/measured-text {:fontSize 22 :color (theme/color "#002851" "#9ca3af") :width (- @h 68)}
-                                  (j/get item :question_content)]]
-                                [nbase/box {:mt 16
-                                            :ml 1
-                                            ; :w 100
-                                            :flex 1}
-                                 [text/simple-text {:fontSize 18 :color (theme/color "#71717a" "#9ca3af") :width (- @h 68)}
-                                  (j/get item :question_detail)]]
-                                [nbase/box {:ml 2
-                                            :mt 16
-                                            :style {:height (- @h 120)}
-                                            :justifyContent "space-between"}
-                                 [srn/touchable-highlight {:underlayColor "#cccccc" :onPress #(reset! is-open true)
-                                                           :style {:height 24}}
-                                  [nbase/icon {:as Ionicons :name "ios-ellipsis-vertical-sharp"
-                                               :size "6" :color "indigo.500"
-                                               :mb 40}]]
-                                 [nbase/box {:justifyContent "flex-start"}
-                                  [nbase/box {:mb 6 :alignItems "center"}
-                                   [nbase/icon {:as Ionicons :name "ios-heart-sharp"
-                                                :size "6" :color "indigo.500"}]
-                                   [text/measured-text {:color "#d4d4d8"} "1024"]]
-                                  [nbase/box {:mb 6 :alignItems "center"}
-                                   [nbase/icon {:as Ionicons :name "ios-chatbubble-ellipses-outline"
-                                                :size "6" :color "indigo.500"}]
-                                   [text/measured-text {:color "#d4d4d8"} "128"]]
-                                  [nbase/icon {:as Ionicons :name "time-outline"
-                                               :size "6" :color "gray.300"
-                                               :mb 1}]
-                                  [nbase/box {:alignSelf "center"}
-                                   [text/measured-text {:color "#d4d4d8"} "2022-04-10 13:52:54"]]]]]])))
-             :showsHorizontalScrollIndicator false
-             :horizontal true
-             :bounces true
-             :style {:flex 1 :height @h
-                     :width (.-width (.get Dimensions "window"))}}]]])
-       ; pull to refresh component
-       [animation/animated-view
-        {:style {:width 80
-                 :height "100%"
-                 :transform [{:translateX (j/get transform-offset :x)}]}}
-        ; [nbase/box {:flex 1 :bg "primary.100"}]
-        [:> lottie
-           {:source (js/require "../src/json/104547-loading-25.json")
-            :autoPlay true}]]])))
+          {:style {:width 80
+                   :height "100%"
+                   :transform [{:translateX (j/get transform-offset :x)}]}}
+          ; [nbase/box {:flex 1 :bg "primary.100"}]
+          [:> lottie
+             {:source (js/require "../src/json/104547-loading-25.json")
+              :autoPlay true}]]]))))
        ; [nbase/box {:right 4
        ;             :bottom 2}
        ;            ; :position "absolute"}
@@ -466,6 +440,8 @@
 (def question-list
   {:name       :question-list
    :component  list-view
+   :listeners {:tabPress (fn [e]
+                           (re-frame/dispatch [:get-questions]))}
    :options
    {:title ""
     :headerRight
@@ -479,4 +455,5 @@
                                      {:as Ionicons :name "search-outline" :size "5"
                                       :color (theme/color "blue.600" "blue.800")}])
                             :on-press (fn [e] (js/console.log "on press icon button")
-                                        (re-frame/dispatch [:navigate-to :search-base]))}]))}})
+                                        (re-frame/dispatch [:navigate-to :search-base])
+                                        (re-frame/dispatch [:put-search-you-type-result {:data {:total 0, :result []}}]))}]))}})

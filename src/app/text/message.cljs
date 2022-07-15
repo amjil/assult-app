@@ -12,4 +12,5 @@
      :vote "ᠵᠦᠪᠰᠢᠶᠡᠷᠡᠭᠰᠡᠨ"
      :all-answer-comments "《ᠪᠦᠬᠦ ᠰᠡᠳᠭᠡᠭᠳᠡᠯ ᠢ ᠦᠵᠡᠬᠦ》"}
    :search {:recent-search "ᠣᠷᠴᠢᠮ ᠤᠨ ᠬᠠᠢᠯᠲᠠ"
-            :search-to-find "ᠬᠠᠯᠠᠮᠰᠢᠯ ᠬᠠᠢᠯᠲᠠ"}})
+            :search-to-find "ᠬᠠᠯᠠᠮᠰᠢᠯ ᠬᠠᠢᠯᠲᠠ"}
+   :delete "ᠬᠠᠰᠤᠬᠤ"})

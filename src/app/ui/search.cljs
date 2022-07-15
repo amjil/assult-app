@@ -43,15 +43,15 @@
                        [nbase/box {:flex 1 :flexDirection "row"}
                         [rn/touchable-opacity {:on-press #(js/console.log "recommandations on press >>>")}
                          [nbase/box {:m 5 :flex 1 :flexDirection "row"}
-                          [text/measured-text {:fontSize 18 :width (- @h 20) :color (theme/color "black" "#a1a1aa")} (j/get item :question_content)]
-                          ]]
+                          [text/measured-text {:fontSize 18 :width (- @h 20) :color (theme/color "black" "#a1a1aa")} (j/get item :question_content)]]]
+
                         [nbase/divider {:orientation "vertical" :bg (theme/color "gray" "dark.500")}]])))}]]])
 
 (defn base-view []
   (let [h (reagent/atom nil)
         check-position (reagent/atom 0)
         recomm-flag (reagent/atom 0)
-        onchange-fn (fn [x] 
+        onchange-fn (fn [x]
                       (re-frame/dispatch [:search-question-you-type {:search x}]))
         _ (bridge/editor-set-text "")
         _ (bridge/editor-onchange-callback onchange-fn)]
@@ -81,9 +81,9 @@
                  (fn [x] (js/console.log "editir update-fn"))]]]
                    ; (swap! messages
                    ; assoc @conversation-name (concat [{:me true :message (:text x)}] (get @messages @conversation-name))])]]])
-              
+
               [nbase/hstack {:style {:height (- @h 4)} :bg (theme/color "white" "dark.100") :ml 3}
-               [:> rnmodal {:isVisible (not-empty recomm-data)
+               [:> rnmodal {:isVisible (< 0 (count recomm-data))
                             :coverScreen false
                             :backdropColor (theme/color "lightGray" "#27272a")
                             :scrollHorizontal true
