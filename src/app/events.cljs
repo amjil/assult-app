@@ -10,6 +10,7 @@
    app.handler.keyboard.events
    app.handler.user.events
    app.handler.question.events
+   app.handler.answer.events
    app.handler.search.events))
 
 

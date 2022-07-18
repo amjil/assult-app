@@ -30,6 +30,7 @@
    [app.ui.editor :as editor]
    [app.ui.article.index :as article]
    [app.ui.question.index :as question]
+   [app.ui.question.detail :as question-detail]
    [app.ui.message.index :as message]
    [app.ui.basic.theme :as theme]
    [app.ui.compose :as compose]
@@ -174,8 +175,8 @@
                 article/article-edit
                 article/article-list
                 question/question-list
-                question/question-detail
-                question/question-edit
+                question-detail/question-detail
+                question-detail/question-detail2
                 profile/profile-edit
                 message/model-base
                 message/model-list
