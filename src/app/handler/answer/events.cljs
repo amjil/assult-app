@@ -74,20 +74,20 @@
 
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
- :answer-create
+ :create-answer
  (fn [{:keys [db]} [_ id params]]
-   {:db    (assoc-in db [:loading :answer-create] true)
+   {:db    (assoc-in db [:loading :create-answer] true)
     :http-xhrio {:method                 :post
                  :uri                    (api/endpoint "questions" (str id) "answers")
                  :headers                (api/auth-header db)
                  :params                 params
                  :format                 (ajax/json-request-format)
                  :response-format        (ajax/json-response-format {:keywords? true})
-                 :on-success             [:answer-create-success]
-                 :on-failure             [:api-request-error :answer-create]}}))
+                 :on-success             [:create-answer-success]
+                 :on-failure             [:api-request-error :create-answer]}}))
 
 (re-frame/reg-event-fx
- :answer-create-success
+ :create-answer-success
  (fn [{db :db} [_ body]]
    (let [{data :data} body
          id (get-in db [:question :id])
@@ -98,7 +98,7 @@
          question (:question db)
          question (assoc question :answer_count (inc (:answer_count question)))]
      {:db (-> db
-              (assoc-in [:loading :answer-create] false)
+              (assoc-in [:loading :create-answer] false)
               (assoc :questions questions)
               (assoc :question question))
       :dispatch-n [[:navigate-to :question-detail]

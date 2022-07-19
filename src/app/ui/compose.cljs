@@ -171,6 +171,41 @@
                                          (bridge/editor-content)
                                          (candidates/candidates-clear))}]]]])))
 
+;; single input box view
+(defn single-view []
+  (let [h (reagent/atom nil)
+        _ (bridge/editor-set-text "")
+        _ (bridge/editor-onchange-callback nil)]
+    (fn []
+      (let [key-edit @(re-frame/subscribe [:keyboard-editor])]
+        [ui/safe-area-consumer
+         [nbase/box {:flex 1 :bg (theme/color "white" "dark.100")}
+          [nbase/zstack {:flex 1
+                         :bg (theme/color "white" "dark.100")
+                         :on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
+                                       (reset! h height))}
+           (if-not (nil? @h)
+             [nbase/box {:flex 1 :flexDirection "row"}
+              [nbase/box {:bg (theme/color "blue.100" "blue.300") :p 1}
+               [nbase/box {:style {:height (- @h 4)} :bg (theme/color "white" "dark.100")
+                           :borderRadius 4
+                           :minWidth 60
+                           :maxWidth 200}
+                [editor/editor-view
+                 {:type :text}
+                 ;content-fn
+                 (fn []
+                   "")
+                 ;update-fn
+                 (fn [x] (js/console.log "editir update-fn"))]]]])
+
+           [candidates/views {:bottom 20}]]
+          [nbase/box {:height 220 :mt 1}
+           [keyboard/keyboard {:type (:type key-edit);"multi-line"
+                               :on-change true
+                               :on-press (fn [])}]]]]))))
+
+
 (def model-new
   {:name       :model-new
    :component  view
@@ -195,3 +230,20 @@
                                                       {:title :question_content
                                                        :content :question_detail}))]
                                          (re-frame/dispatch [:create-question model])))}]))}})
+
+(def single-new
+  {:name        :single-new
+   :component   single-view
+   :options
+   {:title ""
+    :headerShown true
+    :headerRight
+    (fn [tag id classname]
+      (reagent/as-element
+       [nbase/icon-button {:variant "ghost" :colorScheme "indigo"
+                           :icon (reagent/as-element [nbase/icon {:as Ionicons :name "ios-checkmark"}])
+                           :on-press (fn [e]
+                                       (candidates/candidates-clear)
+                                       (let [content (bridge/editor-get-text)
+                                             info @(re-frame/subscribe [:keyboard-editor])]
+                                         ((:callback-fn info) content)))}]))}})

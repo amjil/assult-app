@@ -21,3 +21,8 @@
  :keyboard-alter
  (fn [db _]
    (get-in db [:keyboard :alter])))
+
+(re-frame/reg-sub
+ :keyboard-editor
+ (fn [db _]
+   (get-in db [:keyboard :editor])))

@@ -177,7 +177,27 @@
    :component  detail-view
    :options
    {:title ""
-    :headerShown true}})
+    :headerShown true
+    :headerRight
+    (fn [tag id classname]
+      (reagent/as-element
+        [nbase/icon-button {:justifyContent "center" :alignItems "center"
+                            :_pressed {:bg (theme/color "blue.300" "blue.500")}
+                            :borderRadius "full"
+                            :icon (reagent/as-element
+                                    [nbase/icon
+                                     {:as Ionicons :name "duplicate-outline" :size "5"
+                                      :color (theme/color "blue.600" "blue.800")}])
+                            :on-press (fn [e]
+                                        (re-frame/dispatch [:keyboard-editor
+                                                            {:type "multi-line"
+                                                             :callback-fn
+                                                             (fn [content]
+                                                               (let [params {:content content}
+                                                                     id (:id @(re-frame/subscribe [:question]))]
+                                                                 (re-frame/dispatch [:create-answer id params])
+                                                                 (re-frame/dispatch [:get-answers id])))}])
+                                        (re-frame/dispatch [:navigate-to :single-new]))}]))}})
 
 (def question-detail2
   {:name       :question-detail2

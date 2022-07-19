@@ -64,5 +64,21 @@
            (assoc-in [:keyboard :shift] false)
            (assoc-in [:keyboard :shift-num] false))}))
 
+
+;; editor & keyboard-----------------------------------------------------
+; (re-frame/dispatch [:keyboard-editor
+;                     {:type "multi-line"
+;                      :callback-fn
+;                      (fn [content]
+;                        (let [params {:foo :bar :content content}
+;                              id (:id @(re-frame/subscribe [:question]))]
+;                          (re-frame/dispatch [:create-answer id content])))}])
+
+(re-frame/reg-event-fx
+  :keyboard-editor
+  (fn [{db :db} [_ m]]
+    {:db (-> db
+           (assoc-in [:keyboard :editor] m))}))
+
 (comment
  (on-press "a"))

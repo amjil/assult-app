@@ -201,6 +201,7 @@
              (mapv (fn [props]
                      [screen (update props :component reagent/reactify-component)])
                [compose/model-new
+                compose/single-new
                 search/search-base]))]]]])]]))
 
         ; [stack/stack {}
