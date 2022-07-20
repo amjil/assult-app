@@ -66,11 +66,7 @@
                      :bg (theme/color "gray" "dark.100")
                      :on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
                                    (reset! h height))}
-          ; [nbase/box {:flex 1 :flex-direction "row" :style {:width "100%" :height @h}}]
-          [nbase/scroll-view {:flex 1 :_contentContainerStyle {:flexGrow 1}
-                              :horizontal true
-                              :nestedScrollEnabled false
-                              :scrollEventThrottle 16}
+          [nbase/box {:flex 1 :flex-direction "row"}
            [nbase/vstack {:m 1 :ml 2 :justifyContent "flex-start" :alignItems "flex-start"}
             [nbase/icon {:as Ionicons :name "help-circle"
                          :size "6" :color "indigo.500" :mb 6}]
@@ -79,66 +75,36 @@
                                                  (re-frame/dispatch [:navigate-to :question-detail2]))}
              [text/measured-text {:fontSize 18 :color "#71717a" :width (- @h 48)} (:question_content question)]]]
            (if-not (empty? (:question_detail question))
-             [nbase/box {:ml 1 :mt 8}
-              [editor/simple-view
-               ;opts
-               {:type :text}
-               ; (:content question)
-               (fn [] (:question_detail question))
-               (fn [] nil)]])
-             ;
+             [nbase/box {:ml 1 :mt 12}
+              [nbase/box {:mt 1}
+               [text/measured-text {:fontSize 18 :color "#71717a" :width (- @h 48)} (:question_detail question)]]])
            [nbase/divider {:orientation "vertical" :mx 2}]
-           [nbase/flex {:m 1 :flex-direction "row" :bg (theme/color "white" "dark.100")}
-            [nbase/vstack
-             [nbase/box {:bg (theme/color "gray.300" "gray.500")
-                         :borderRadius "md"
-                         :p 4
-                         :alignSelf "center"}]
-             [nbase/box {:alignSelf "center"
-                         :justifyContent "center"
-                         :mt 4}
-              [nbase/hstack {:bg (theme/color "white" "dark.100")}
-               [text/measured-text {:fontSize 18 :color "#71717a" :width (- @h 48) } (:user_name question)]
-               [text/measured-text {:fontSize 10 :color "#a1a1aa"} "09:15"]]]]
-            ; [nbase/box {:m 1 :ml 2 :mt 12
-            ;             :bg (theme/color "white" "dark.100")}
-            ;  ;; width 4 + 4 + 4   ()  *  4  = 48
-            ;  [text/multi-line-text {:fontSize 18 :color (theme/color "#71717a" "#9ca3af") :width (- @h 48)} (:question_detail question)]]
-            [nbase/box {:m 1 :ml 2 :mt 8
-                        :bg (theme/color "white" "dark.100")}
-             ;; width 4 + 4 + 4   ()  *  4  = 48
-             [editor/simple-view
-              ;opts
-              {:type :text}
-              ; (:content question)
-              (fn [] (:question_detail question))
-                ; (str "<h2>abc</h2><p></p>" (:question_detail question)))
-              ; "<p>abc</p><p>def</p><p>def</p><p>def</p><p>def</p><p>def</p><p>def</p><p>def</p><p>def</p><p>def</p><p>xxxx</p>"
-              ;tap-fn
-              (fn [] (js/console.log "text on tap >>> question-detail"))]]]
-           [answer-buttons h question]
-
-           (if (< 0 (count comments))
-             [comment-view h (first comments)])
-           (if (< 1 (count comments))
-             [comment-view h (second comments)])
-
-           ; [srn/touchable-opacity {:on-press (fn [] (reset! modal-open true))}]
-           [srn/touchable-opacity {:on-press (fn [] (j/call @modal-open :open)
-                                                    (reset! is-open true))
-                                   :style {:justifyContent "center" :marginHorizontal 10 :paddingBottom 20}}
-            [text/measured-text {:fontSize 14 :color "#60a5fa"} (get-in labels [:question :all-answer-comments])]]
-           [nbase/divider {:orientation "vertical" :mx 2}]]
-          ;; in zstack flow next answer button
-          [comment/list-view modal-open is-open]
-          [nbase/box {:right 4
-                      :bottom 2
-                      :position "absolute"}
-           [nbase/icon-button {:w 10 :h 10 :borderRadius "full" :variant "outline" :colorScheme "coolGray"
-                               :justifyContent "center" :alignSelf "center" :alignItems "center"
-                               :icon (reagent/as-element [nbase/icon {:as Ionicons :name "arrow-forward-outline"}])
-                               :onPress (fn [e]
-                                          (js/console.log "icon-button on press"))}]]]]))))
+           [nbase/flat-list
+            {:keyExtractor    (fn [_ index] (str "answer-list-" index))
+             :data      answers
+             :horizontal true
+             :nestedScrollEnabled true
+             :overScrollMode "never"
+             :scrollToOverflowEnabled true
+             :renderItem
+             (fn [x]
+               (let [{:keys [item index separators]} (j/lookup x)]
+                 (reagent/as-element
+                   [nbase/flex {:m 1 :flex-direction "row" :bg (theme/color "white" "dark.100")}
+                    [nbase/vstack
+                     [nbase/box {:bg (theme/color "gray.300" "gray.500")
+                                 :borderRadius "md"
+                                 :p 4
+                                 :alignSelf "center"}]
+                     [nbase/box {:alignSelf "center"
+                                 :justifyContent "center"
+                                 :mt 4}
+                      [nbase/hstack {:bg (theme/color "white" "dark.100")}
+                       [text/measured-text {:fontSize 18 :color "#71717a" :width (- @h 48) } (j/get item :user_name)]
+                       [text/measured-text {:fontSize 10 :color "#a1a1aa"} "09:15"]]]]
+                    [nbase/box {:m 1 :ml 2 :mt 12
+                                :bg (theme/color "white" "dark.100")}
+                     [text/measured-text {:fontSize 18 :color "#71717a" :width (- @h 48)} (j/get item :content)]]])))}]]]]))))
 
 (defn detail-view2 []
   (let [h (reagent/atom 0)]

@@ -29,25 +29,26 @@
 
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
- :get-answers
- (fn [{:keys [db]} [_ id]]
-   {:db    (assoc-in db [:loading :get-answers] true)
+ :get-answer
+ (fn [{:keys [db]} [_ pid id]]
+   {:db    (assoc-in db [:loading :get-answer] true)
     :http-xhrio {:method                 :get
-                 :uri                    (api/endpoint "questions" (str id) "answers")
+                 :uri                    (api/endpoint "questions" (str pid) "answers" (str id))
                  :headers                (api/auth-header db)
                  :format                 (ajax/json-request-format)
                  :response-format        (ajax/json-response-format {:keywords? true})
-                 :on-success             [:get-answers-success]
-                 :on-failure             [:api-request-error :get-answers]}}))
+                 :on-success             [:get-answer-success]
+                 :on-failure             [:api-request-error :get-answer]}}))
 
 (re-frame/reg-event-fx
- :get-answers-success
+ :get-answer-success
  (fn [{db :db} [_ body]]
-   (let [{data :data} body]
+   (let [{data :data} body
+         answer (:answer db)]
      {:db (-> db
-              (assoc :answers data)
-              (assoc-in [:loading :get-answers] false))})))
-
+              (assoc :answer (merge answer (select-keys body :content)))
+              (assoc-in [:loading :get-answer] false))})))
+;; -----------------------------------------------------
 (re-frame/reg-event-fx
  :set-answer
  (fn [{db :db} [_ params]]
