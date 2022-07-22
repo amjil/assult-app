@@ -6,7 +6,7 @@
     [app.ui.text :as text]
     [app.ui.basic.theme :as theme]
     [app.text.message :refer [labels]]
-    [app.ui.question.comment :as comment]
+    [app.util.time :as time]
     [app.text.message :refer [labels]]
 
     [steroid.rn.core :as srn]
@@ -119,7 +119,8 @@
                       [nbase/box {:mb 6 :alignItems "center"}
                        [nbase/icon {:as Ionicons :name "chatbox-outline"
                                     :size "4" :color "indigo.500"}]
-                       [text/measured-text {:color "#d4d4d8"} "128"]]]]])))}]]]]))))
+                       [text/measured-text {:color "#d4d4d8"} "128"]]
+                      [text/measured-text {:color "#525252"} (time/month-date-from-string (j/get item :created_at))]]]])))}]]]]))))
 
 
 
