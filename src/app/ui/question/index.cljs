@@ -6,6 +6,7 @@
     [app.handler.animation :as animation]
     [app.text.message :refer [labels]]
     [app.text.message :refer [labels]]
+    [app.util.time :as time]
     ["lottie-react-native" :as lottie]
 
     [steroid.rn.core :as srn]
@@ -15,7 +16,9 @@
     [re-frame.core :as re-frame]
 
     ["react-native" :as rn :refer [Dimensions]]
-    ["react-native-vector-icons/Ionicons" :default Ionicons]))
+    ["react-native-vector-icons/Ionicons" :default Ionicons]
+    ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]
+   ))
 
 (def model (reagent/atom {}))
 (def active-key (reagent/atom nil))
@@ -208,22 +211,22 @@
                                                                         (reset! model (bean/->clj item)))
                                                              :style {:height 24}}
                                     [nbase/icon {:as Ionicons :name "ios-ellipsis-vertical-sharp"
-                                                 :size "6" :color "indigo.500"
+                                                 :size "4" :color "indigo.500"
                                                  :mb 40}]]
-                                   [nbase/box {:justifyContent "flex-start"}
+                                   [nbase/box {:justifyContent "flex-end"}
                                     [nbase/box {:mb 6 :alignItems "center"}
                                      [nbase/icon {:as Ionicons :name "ios-heart-sharp"
-                                                  :size "6" :color "indigo.500"}]
+                                                  :size "4" :color "indigo.500"}]
                                      [text/measured-text {:color "#d4d4d8"} "1024"]]
                                     [nbase/box {:mb 6 :alignItems "center"}
-                                     [nbase/icon {:as Ionicons :name "ios-chatbubble-ellipses-outline"
-                                                  :size "6" :color "indigo.500"}]
-                                     [text/measured-text {:color "#d4d4d8"} "128"]]
-                                    [nbase/icon {:as Ionicons :name "time-outline"
-                                                 :size "6" :color "gray.300"
-                                                 :mb 1}]
-                                    [nbase/box {:alignSelf "center"}
-                                     [text/measured-text {:color "#d4d4d8"} "2022-04-10 13:52:54"]]]]]])))
+                                     [nbase/icon {:as Ionicons :name "document-text"
+                                                  :size "4" :color "indigo.500"}]
+                                     [text/measured-text {:color "#d4d4d8"} (str (j/get item :answer_count))]]
+                                    [nbase/box {:alignItems "center" :justifyContent "center"}
+                                     [nbase/icon {:as Ionicons :name "time-outline"
+                                                  :size "4" :color "gray.300"
+                                                  :mb 1}]
+                                     [text/measured-text {:color "#d4d4d8"} (time/month-date-from-string (j/get item :created_at))]]]]]])))
                :showsHorizontalScrollIndicator false
                :horizontal true
                :bounces true
