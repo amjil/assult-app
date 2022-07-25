@@ -1,22 +1,11 @@
 (ns app.ui.question.index
   (:require
     [app.ui.nativebase :as nbase]
-    [app.ui.editor :as editor]
-    [app.ui.components :as ui]
     [app.ui.text :as text]
-    [app.ui.keyboard.index :as keyboard]
-    [app.ui.keyboard.candidates :as candidates]
-    [app.ui.keyboard.bridge :as bridge]
     [app.ui.basic.theme :as theme]
-    [app.handler.gesture :as gesture]
-    [app.handler.animated :as animated]
     [app.handler.animation :as animation]
-    [app.handler.animatable :as animatable]
     [app.text.message :refer [labels]]
-    [app.ui.question.comment :as comment]
     [app.text.message :refer [labels]]
-    ["react-native-gesture-handler" :as ges]
-    ["react-native-reanimated" :as re-animated]
     ["lottie-react-native" :as lottie]
 
     [steroid.rn.core :as srn]

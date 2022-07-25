@@ -1,14 +1,10 @@
 (ns app.ui.question.detail
   (:require
     [app.ui.nativebase :as nbase]
-    [app.ui.editor :as editor]
     [app.ui.components :as ui]
     [app.ui.text :as text]
     [app.ui.basic.theme :as theme]
-    [app.text.message :refer [labels]]
     [app.util.time :as time]
-    [app.text.message :refer [labels]]
-    [app.ui.question.comment :as comment]
 
     [steroid.rn.core :as srn]
     [applied-science.js-interop :as j]
@@ -19,9 +15,7 @@
     ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
 (defn detail-view []
-  (let [h (reagent/atom 0)
-        modal-open (reagent/atom false)
-        is-open (reagent/atom false)]
+  (let [h (reagent/atom 0)]
     (fn []
       (let [question @(re-frame/subscribe [:question])
             answers @(re-frame/subscribe [:answers])]
@@ -81,11 +75,11 @@
                        [nbase/box {:mb 6 :alignItems "center"}
                         [nbase/icon {:as Ionicons :name "heart-outline"
                                      :size "4" :color "warmGray.500"}]
-                        [text/measured-text {:color "#d4d4d8"} "1024"]]
+                        [text/measured-text {:color "#d4d4d8"} (str (j/get item :thanks_count))]]
                        [nbase/box {:mb 6 :alignItems "center"}
                         [nbase/icon {:as Ionicons :name "chatbox-outline"
                                      :size "4" :color "warmGray.500"}]
-                        [text/measured-text {:color "#d4d4d8"} "128"]]
+                        [text/measured-text {:color "#d4d4d8"} (str (j/get item :comment_count))]]
                        [text/measured-text {:color "#525252"} (time/month-date-from-string (j/get item :created_at))]]]]])))}]]]]))))
 
 

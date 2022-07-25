@@ -2,7 +2,6 @@
   (:require
    [re-frame.core :as re-frame]
    [ajax.core :as ajax]
-   [cljs-bean.core :as bean]
    [app.api :as api]
    [app.db :as db]))
 
@@ -241,9 +240,15 @@
  :answer-thanks-success
  (fn [{db :db} [_ body]]
    (let [{data :data} body
-         answer (:answer db)]
+         answer (:answer db)
+         thanks-count (:thanks_count answer)
+         flag (if (zero? (:user_thanks answer))
+                1
+                0)
+         count-num (if (zero? (:user_thanks answer))
+                        1
+                        -1)]
      {:db (-> db
               (assoc-in [:loading :answer-thanks] false)
-              (assoc-in [:answer :user_thanks] (if (zero? (:user_thanks answer))
-                                                 1
-                                                 0)))})))
+              (assoc-in [:answer :thanks_count] (+ thanks-count count-num))
+              (assoc-in [:answer :user_thanks] flag))})))

@@ -1,21 +1,15 @@
 (ns app.ui.question.answer
   (:require
     [app.ui.nativebase :as nbase]
-    [app.ui.editor :as editor]
     [app.ui.components :as ui]
     [app.ui.text :as text]
     [app.ui.basic.theme :as theme]
-    [app.ui.keyboard.index :as keyboard]
-    [app.ui.keyboard.candidates :as candidates]
-    [app.ui.keyboard.bridge :as bridge]
     [app.text.message :refer [labels]]
-    [app.handler.gesture :as gesture]
     [app.ui.question.comment :as comment]
     [app.util.time :as time]
 
     [steroid.rn.core :as rn]
     [applied-science.js-interop :as j]
-    [cljs-bean.core :as bean]
     [reagent.core :as reagent]
     [re-frame.core :as re-frame]
 
@@ -83,7 +77,7 @@
                                             :color (theme/color "blue.600" "blue.800")}])
                                   :on-press (fn [e]
                                               (re-frame/dispatch [:answer-thanks (:id answer)]))}]
-              [text/measured-text {:color "#d4d4d8"} "1024"]]
+              [text/measured-text {:color "#d4d4d8"} (str (:thanks_count answer))]]
              [nbase/box {:mb 6 :alignItems "center"}
               [nbase/icon-button {:justifyContent "center" :alignItems "center"
                                   :_pressed {:bg (theme/color "blue.300" "blue.500")}

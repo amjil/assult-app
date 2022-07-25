@@ -1,19 +1,14 @@
 (ns app.ui.question.comment
   (:require
     [app.ui.nativebase :as nbase]
-    [app.ui.components :as ui]
     [app.ui.text :as text]
     [app.ui.basic.theme :as theme]
-    [app.text.message :refer [labels]]
 
-    [steroid.rn.core :as rn]
     [applied-science.js-interop :as j]
-    [cljs-bean.core :as bean]
     [reagent.core :as reagent]
     [re-frame.core :as re-frame]
 
     ["react-native-modalize" :refer [Modalize]]
-    ["react-native-vector-icons/Ionicons" :default Ionicons]
     ["react-native-portalize" :refer [Portal]]))
 
 (defn view [h item]
@@ -33,7 +28,6 @@
   (let [h (reagent/atom nil)]
     (fn []
       (let [comments @(re-frame/subscribe [:answer-comments])]
-        (js/console.log "comments list count = " (count comments))
         [:> Portal
          [:> Modalize {:ref (fn [r] (reset! modal r))
                         :onLayout #(let [height (j/get-in % [:nativeEvent :layout :height])]
