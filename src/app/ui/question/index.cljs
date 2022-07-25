@@ -28,13 +28,6 @@
     ["react-native" :as rn :refer [Dimensions]]
     ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
-(def comments [{:user_name "john" :content "hello"}
-               {:user_name "sara" :content "hello, John"}
-               {:user_name "peter" :content "what a nice day"}
-               {:user_name "Lily" :content "so, what is the best there?"}])
-
-(def cursor (reagent/atom 0))
-
 (def model (reagent/atom {}))
 (def active-key (reagent/atom nil))
 

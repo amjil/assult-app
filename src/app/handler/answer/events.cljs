@@ -46,33 +46,13 @@
    (let [{data :data} body
          answer (:answer db)]
      {:db (-> db
-              (assoc :answer (merge answer (select-keys body :content)))
+              (assoc-in [:answer :full-content] (:content data))
               (assoc-in [:loading :get-answer] false))})))
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
  :set-answer
  (fn [{db :db} [_ params]]
    {:db             (assoc db :answer params)}))
-;; -----------------------------------------------------
-(re-frame/reg-event-fx
- :question-focus-success
- (fn [{db :db} [_ body]]
-   (let [{data :data} body
-         focus (get-in db [:question :user_focus])
-         focus-count (get-in db [:question :focus_count])
-         focus-count (if (= 0 focus) (inc focus-count) (dec focus-count))
-         id (get-in db [:question :id])
-         questions (get db :questions)
-         questions (map #(if (= id (:id %))
-                           (assoc % :focus_count focus-count)
-                           %)
-                        questions)]
-     {:db (-> db
-              (assoc-in [:question :user_focus] (if (= 1 focus) 0 1))
-              (assoc-in [:question :focus_count] focus-count)
-              (assoc :questions questions)
-              (assoc-in [:loading :question-focus] false))})))
-
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
  :create-answer
