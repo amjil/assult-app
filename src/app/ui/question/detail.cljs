@@ -77,17 +77,14 @@
                       [text/measured-text {:fontSize 18 :color "#71717a" :width (- @h 48)} (j/get item :content)]]
                      [nbase/vstack {:m 1 :mt 12 :ml 2
                                     :bg (theme/color "white" "dark.100")}
-                      [nbase/icon {:as Ionicons :name "ios-ellipsis-vertical-sharp"
-                                   :size "4" :color "indigo.500" :mb 6}]
-
                       [nbase/vstack {:mb 8}
                        [nbase/box {:mb 6 :alignItems "center"}
                         [nbase/icon {:as Ionicons :name "heart-outline"
-                                     :size "4" :color "indigo.500"}]
+                                     :size "4" :color "warmGray.500"}]
                         [text/measured-text {:color "#d4d4d8"} "1024"]]
                        [nbase/box {:mb 6 :alignItems "center"}
                         [nbase/icon {:as Ionicons :name "chatbox-outline"
-                                     :size "4" :color "indigo.500"}]
+                                     :size "4" :color "warmGray.500"}]
                         [text/measured-text {:color "#d4d4d8"} "128"]]
                        [text/measured-text {:color "#525252"} (time/month-date-from-string (j/get item :created_at))]]]]])))}]]]]))))
 

@@ -37,8 +37,8 @@
                       :bg "gray"
                       :on-layout #(let [height (j/get-in % [:nativeEvent :layout :height])]
                                     (reset! h height))}
-
-          [nbase/flex {:flex-direction "row" :bg "white"}
+          [nbase/scroll-view {:flex 1 :_contentContainerStyle {:flexGrow 1}
+                              :horizontal true}
            [nbase/vstack {:m 1 :ml 2 :justifyContent "flex-start" :alignItems "flex-start"}
             [nbase/icon {:as Ionicons :name "help-circle"
                          :size "6" :color "indigo.500" :mb 6}]
@@ -90,20 +90,34 @@
                                   :borderRadius "full" :p 3
                                   :icon (reagent/as-element
                                           [nbase/icon {:as Ionicons :name "chatbox-outline"
-                                                       :size "4" :color "indigo.500"}])}]
-              [text/measured-text {:color "#d4d4d8"} "128"]]
+                                                       :size "4" :color "indigo.500"}])
+                                  :on-press
+                                  (fn [e]
+                                    (re-frame/dispatch
+                                      [:keyboard-editor
+                                       {:type "single-line"
+                                        :callback-fn
+                                        (fn [x]
+                                          (let [params {:message x}
+                                                id (:id @(re-frame/subscribe [:answer]))
+                                                pid (:id @(re-frame/subscribe [:question]))]
+                                            (re-frame/dispatch [:answer-comment-create id params])
+                                            (re-frame/dispatch [:get-answers pid])))}])
+                                    (re-frame/dispatch [:navigate-to :single-new]))}]
+              [text/measured-text {:color "#d4d4d8"} (str (:comment_count answer))]]
              [nbase/box {:mb 6 :alignItems "center"}
               [text/measured-text {:color "#525252"} (time/month-date-from-string (:created_at answer))]]]]
-           (if-not (zero? (count comments))
-             [comment/view h (first comments)])
+           [nbase/divider {:orientation "vertical" :mx 2}]
            (if (pos? (count comments))
+             [comment/view h (first comments)])
+           (if (< 1 (count comments))
              [comment/view h (second comments)])
            (if (< 2 (count comments))
              [rn/touchable-opacity {:on-press (fn [] (j/call @modal-open :open)
                                                      (reset! is-open true))
                                     :style {:justifyContent "center" :marginHorizontal 10 :paddingBottom 20}}
               [text/measured-text {:fontSize 14 :color "#60a5fa"} (get-in labels [:question :all-answer-comments])]])
-           [nbase/divider {:orientation "vertical" :mx 2}]]]]))))
+           [comment/list-view modal-open is-open]]]]))))
 
 
 (def answer-detail
