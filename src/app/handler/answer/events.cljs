@@ -46,7 +46,7 @@
    (let [{data :data} body
          answer (:answer db)]
      {:db (-> db
-              (assoc-in [:answer :full-content] (:content data))
+              (assoc :answer (merge answer (clojure.set/rename-keys data {:content :full-content})))
               (assoc-in [:loading :get-answer] false))})))
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
@@ -224,3 +224,26 @@
      {:db (-> db
               (assoc-in [:loading :answer-report] false)
               (assoc :answer-report data))})))
+;; -----------------------------------------------------
+(re-frame/reg-event-fx
+ :answer-thanks
+ (fn [{:keys [db]} [_ id]]
+   {:db    (assoc-in db [:loading :answer-thanks] true)
+    :http-xhrio {:method                 :post
+                 :uri                    (api/endpoint "answers" (str id) "thanks")
+                 :headers                (api/auth-header db)
+                 :format                 (ajax/json-request-format)
+                 :response-format        (ajax/json-response-format {:keywords? true})
+                 :on-success             [:answer-thanks-success]
+                 :on-failure             [:api-request-error :answer-thanks]}}))
+
+(re-frame/reg-event-fx
+ :answer-thanks-success
+ (fn [{db :db} [_ body]]
+   (let [{data :data} body
+         answer (:answer db)]
+     {:db (-> db
+              (assoc-in [:loading :answer-thanks] false)
+              (assoc-in [:answer :user_thanks] (if (zero? (:user_thanks answer))
+                                                 1
+                                                 0)))})))
