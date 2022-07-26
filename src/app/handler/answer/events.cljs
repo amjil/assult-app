@@ -133,9 +133,14 @@
  (fn [{db :db} [_ body]]
    (let [{data :data} body]
      {:db (-> db
-              (assoc-in [:loading :answer-comment-create] false))
-      :dispatch-n [[:navigate-to :question-detail]
-                   [:answer-comments (get-in db [:question :id])]]})))
+              (assoc-in [:loading :answer-comment-create] false)
+              (update-in [:answer :comment_count] inc)
+              (assoc :answers (map #(if (= (get-in db [:answer :id]) (:id %))
+                                      (update % :comment_count inc)
+                                      %)
+                                   (get db :answers))))
+      :dispatch-n [[:navigate-back]
+                   [:answer-comments (get-in db [:answer :id])]]})))
 
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
@@ -177,9 +182,13 @@
  (fn [{db :db} [_ body]]
    (let [{data :data} body]
      {:db (-> db
-              (assoc-in [:loading :answer-comment-delete] false))
-      :dispatch-n [[:navigate-to :question-detail]
-                   [:get-answers (get-in db [:question :id])]]})))
+              (assoc-in [:loading :answer-comment-delete] false)
+              (update-in [:answer :comment_count] dec)
+              (assoc :answers (map #(if (= (get-in db [:answer :id]) (:id %))
+                                      (update % :comment_count dec)
+                                      %)
+                                   (get db :answers))))
+      :dispatch-n [[:answer-comments (get-in db [:answer :id])]]})))
 
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx
@@ -246,8 +255,8 @@
                 1
                 0)
          count-num (if (zero? (:user_thanks answer))
-                        1
-                        -1)]
+                       1
+                       -1)]
      {:db (-> db
               (assoc-in [:loading :answer-thanks] false)
               (assoc-in [:answer :thanks_count] (+ thanks-count count-num))

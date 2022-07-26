@@ -5,6 +5,7 @@
     [app.ui.text :as text]
     [app.ui.basic.theme :as theme]
     [app.util.time :as time]
+    [app.ui.question.comment :as comment]
 
     [steroid.rn.core :as srn]
     [applied-science.js-interop :as j]
@@ -15,7 +16,9 @@
     ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
 (defn detail-view []
-  (let [h (reagent/atom 0)]
+  (let [h (reagent/atom 0)
+        modal-open (reagent/atom false)
+        is-open (reagent/atom false)]
     (fn []
       (let [question @(re-frame/subscribe [:question])
             answers @(re-frame/subscribe [:answers])]
@@ -77,10 +80,22 @@
                                      :size "4" :color "warmGray.500"}]
                         [text/measured-text {:color "#d4d4d8"} (str (j/get item :thanks_count))]]
                        [nbase/box {:mb 6 :alignItems "center"}
-                        [nbase/icon {:as Ionicons :name "chatbox-outline"
-                                     :size "4" :color "warmGray.500"}]
+                        [nbase/icon-button
+                         {:justifyContent "center" :alignItems "center"
+                          :_pressed {:bg (theme/color "blue.300" "blue.500")}
+                          :borderRadius "full" :p 3
+                          :icon
+                          (reagent/as-element
+                            [nbase/icon {:as Ionicons :name "chatbox-outline"
+                                         :size "4" :color "warmGray.500"}])
+                          :on-press (fn [e]
+                                      (re-frame/dispatch [:answer-comments (j/get item :id)])
+                                      (reset! is-open true)
+                                      (j/call @modal-open :open))}]
                         [text/measured-text {:color "#d4d4d8"} (str (j/get item :comment_count))]]
-                       [text/measured-text {:color "#525252"} (time/month-date-from-string (j/get item :created_at))]]]]])))}]]]]))))
+                       [nbase/box {:mb 6 :alignItems "center"}
+                        [text/measured-text {:color "#525252"} (time/month-date-from-string (j/get item :created_at))]]]]]])))}]
+           [comment/list-view modal-open is-open]]]]))))
 
 
 (def question-detail

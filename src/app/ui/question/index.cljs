@@ -16,9 +16,8 @@
     [re-frame.core :as re-frame]
 
     ["react-native" :as rn :refer [Dimensions]]
-    ["react-native-vector-icons/Ionicons" :default Ionicons]
-    ["react-native-vector-icons/MaterialCommunityIcons" :default MaterialCommunityIcons]
-   ))
+    ["react-native-vector-icons/Ionicons" :default Ionicons]))
+
 
 (def model (reagent/atom {}))
 (def active-key (reagent/atom nil))

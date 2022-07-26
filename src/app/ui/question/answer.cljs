@@ -19,7 +19,8 @@
 (defn detail-view []
   (let [h (reagent/atom 0)
         modal-open (reagent/atom false)
-        is-open (reagent/atom false)]
+        is-open (reagent/atom false)
+        menu-open (reagent/atom false)]
     (fn []
       (let [question @(re-frame/subscribe [:question])
             answer @(re-frame/subscribe [:answer])
@@ -112,6 +113,7 @@
                                     :style {:justifyContent "center" :marginHorizontal 10 :paddingBottom 20}}
               [text/measured-text {:fontSize 14 :color "#60a5fa"} (get-in labels [:question :all-answer-comments])]])
            [comment/list-view modal-open is-open]]]]))))
+
 
 
 (def answer-detail

@@ -29,6 +29,10 @@
   (=  (j/get state :ACTIVE)
       (j/get evt :state)))
 
+(defn tap-state-active [evt]
+  (=  (j/get state :ACTIVE)
+      (j/get evt :state)))
+
 (defn tap-state-end [evt]
   (=  (j/get state :END)
       (j/get evt :state)))
