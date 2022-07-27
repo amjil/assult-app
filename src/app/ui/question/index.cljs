@@ -9,13 +9,13 @@
     [app.util.time :as time]
     ["lottie-react-native" :as lottie]
 
-    [steroid.rn.core :as srn]
+    [steroid.rn.core :as rn]
     [applied-science.js-interop :as j]
     [cljs-bean.core :as bean]
     [reagent.core :as reagent]
     [re-frame.core :as re-frame]
 
-    ["react-native" :as rn :refer [Dimensions]]
+    ["react-native" :as react-native :refer [Dimensions]]
     ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
 
@@ -26,8 +26,8 @@
   (let [h (reagent/atom nil)
         scroll-ref (atom nil)
         is-loading (atom false)
-        container-offset (new rn/Animated.ValueXY #js {:x 0 :y 0})
-        transform-offset (new rn/Animated.ValueXY (bean/->js {:x (- 80) :y 0}))
+        container-offset (new react-native/Animated.ValueXY #js {:x 0 :y 0})
+        transform-offset (new react-native/Animated.ValueXY (bean/->js {:x (- 80) :y 0}))
         scroll-enabled (atom false)
         inner-scroll-offset (atom 0)
 
@@ -61,7 +61,7 @@
                       (reset! inner-scroll-offset x)))
                       ; (check-scroll)))
         pan-responder
-        (rn/PanResponder.create
+        (react-native/PanResponder.create
           #js { ;:onStartShouldSetPanResponder (fn [arg] true)
                 ; :onStartShouldSetPanResponder (fn [e state] true)
                 ; :onStartShouldSetPanResponderCapture (fn [e state] true)
@@ -127,21 +127,21 @@
            [nbase/box
             {:flex 1 :justifyContent "center" :alignItem "center" :flexDirection "row"
              :pt "2" :py "3"}
-            [srn/touchable-highlight {:style {:padding 10}
-                                      :underlayColor "#cccccc"
-                                      :onPress #(js/console.log "touchable 1 >>> ")}
+            [rn/touchable-highlight {:style {:padding 10}
+                                     :underlayColor "#cccccc"
+                                     :onPress #(js/console.log "touchable 1 >>> ")}
              [text/measured-text {:color "#9ca3af"} "Arial"]]
             [nbase/divider {:orientation "vertical" :bg "coolGray.400"}]
-            [srn/touchable-highlight {:style {:padding 10}
-                                      :underlayColor "#cccccc"
-                                      :onPress #(js/console.log "touchable 2 >>> ")}
+            [rn/touchable-highlight {:style {:padding 10}
+                                     :underlayColor "#cccccc"
+                                     :onPress #(js/console.log "touchable 2 >>> ")}
              [text/measured-text {:color "#9ca3af"} "Nunito Sans"]]
             [nbase/divider {:orientation "vertical" :bg "coolGray.400"}]
-            [srn/touchable-highlight {:style {:padding 10}
-                                      :underlayColor "#cccccc"
-                                      :onPress (fn []
-                                                 (re-frame/dispatch [:delete-question (:id @model)])
-                                                 (reset! is-open false))}
+            [rn/touchable-highlight {:style {:padding 10}
+                                     :underlayColor "#cccccc"
+                                     :onPress (fn []
+                                                (re-frame/dispatch [:delete-question (:id @model)])
+                                                (reset! is-open false))}
              [text/measured-text {:color "#9ca3af"} (get labels :delete)]]]]]
          (if (nil? @h)
            [nbase/box {:style {:height "100%"}}
@@ -204,11 +204,11 @@
                                               :mt 16
                                               :style {:height (- @h 120)}
                                               :justifyContent "space-between"}
-                                   [srn/touchable-highlight {:underlayColor "#cccccc"
-                                                             :onPress (fn []
-                                                                        (reset! is-open true)
-                                                                        (reset! model (bean/->clj item)))
-                                                             :style {:height 24}}
+                                   [rn/touchable-highlight {:underlayColor "#cccccc"
+                                                            :onPress (fn []
+                                                                       (reset! is-open true)
+                                                                       (reset! model (bean/->clj item)))
+                                                            :style {:height 24}}
                                     [nbase/icon {:as Ionicons :name "ios-ellipsis-vertical-sharp"
                                                  :size "4" :color "indigo.500"
                                                  :mb 40}]]
@@ -261,13 +261,12 @@
     :headerRight
     (fn [tag id classname]
       (reagent/as-element
-        [nbase/icon-button {:justifyContent "center" :alignItems "center"
-                            :_pressed {:bg (theme/color "blue.300" "blue.500")}
-                            :borderRadius "full"
-                            :icon (reagent/as-element
-                                    [nbase/icon
-                                     {:as Ionicons :name "search-outline" :size "5"
-                                      :color (theme/color "blue.600" "blue.800")}])
-                            :on-press (fn [e] (js/console.log "on press icon button")
-                                        (re-frame/dispatch [:navigate-to :search-base])
-                                        (re-frame/dispatch [:put-search-you-type-result {:data {:total 0, :result []}}]))}]))}})
+        [rn/touchable-opacity
+         {:style {}
+          :on-press (fn [e]
+                      (re-frame/dispatch [:navigate-to :search-base])
+                      (re-frame/dispatch [:put-search-you-type-result {:data {:total 0, :result []}}]))}
+         [nbase/box {:mr 2}
+          [nbase/icon
+           {:as Ionicons :name "search-outline" :size "5"
+            :color (theme/color "blue.600" "blue.800")}]]]))}})

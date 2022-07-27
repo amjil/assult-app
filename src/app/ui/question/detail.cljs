@@ -104,20 +104,19 @@
     :headerRight
     (fn [tag id classname]
       (reagent/as-element
-        [nbase/icon-button {:justifyContent "center" :alignItems "center"
-                            :_pressed {:bg (theme/color "blue.300" "blue.500")}
-                            :borderRadius "full"
-                            :icon (reagent/as-element
-                                    [nbase/icon
-                                     {:as Ionicons :name "duplicate-outline" :size "5"
-                                      :color (theme/color "blue.600" "blue.800")}])
-                            :on-press (fn [e]
-                                        (re-frame/dispatch [:keyboard-editor
-                                                            {:type "multi-line"
-                                                             :callback-fn
-                                                             (fn [x]
-                                                               (let [params {:content x}
-                                                                     id (:id @(re-frame/subscribe [:question]))]
-                                                                 (re-frame/dispatch [:create-answer id params])
-                                                                 (re-frame/dispatch [:get-answers id])))}])
-                                        (re-frame/dispatch [:navigate-to :single-new]))}]))}})
+        [rn/touchable-opacity
+         {:style {}
+          :on-press (fn [e]
+                      (re-frame/dispatch [:keyboard-editor
+                                          {:type "multi-line"
+                                           :callback-fn
+                                           (fn [x]
+                                             (let [params {:content x}
+                                                   id (:id @(re-frame/subscribe [:question]))]
+                                               (re-frame/dispatch [:create-answer id params])
+                                               (re-frame/dispatch [:get-answers id])))}])
+                      (re-frame/dispatch [:navigate-to :single-new]))}
+         [nbase/box {:mr 2}
+          [nbase/icon
+           {:as Ionicons :name "duplicate-outline" :size "5"
+            :color (theme/color "blue.600" "blue.800")}]]]))}})

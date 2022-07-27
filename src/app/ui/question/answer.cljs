@@ -80,25 +80,24 @@
                                               (re-frame/dispatch [:answer-thanks (:id answer)]))}]
               [text/measured-text {:color "#d4d4d8"} (str (:thanks_count answer))]]
              [nbase/box {:mb 6 :alignItems "center"}
-              [nbase/icon-button {:justifyContent "center" :alignItems "center"
-                                  :_pressed {:bg (theme/color "blue.300" "blue.500")}
-                                  :borderRadius "full" :p 3
-                                  :icon (reagent/as-element
-                                          [nbase/icon {:as Ionicons :name "chatbox-outline"
-                                                       :size "4" :color "indigo.500"}])
-                                  :on-press
-                                  (fn [e]
-                                    (re-frame/dispatch
-                                      [:keyboard-editor
-                                       {:type "single-line"
-                                        :callback-fn
-                                        (fn [x]
-                                          (let [params {:message x}
-                                                id (:id @(re-frame/subscribe [:answer]))
-                                                pid (:id @(re-frame/subscribe [:question]))]
-                                            (re-frame/dispatch [:answer-comment-create id params])
-                                            (re-frame/dispatch [:get-answers pid])))}])
-                                    (re-frame/dispatch [:navigate-to :single-new]))}]
+              [rn/touchable-opacity
+               {:style {}
+                :on-press (fn [e]
+                            (re-frame/dispatch
+                              [:keyboard-editor
+                               {:type "single-line"
+                                :callback-fn
+                                (fn [x]
+                                  (let [params {:message x}
+                                        id (:id @(re-frame/subscribe [:answer]))
+                                        pid (:id @(re-frame/subscribe [:question]))]
+                                    (re-frame/dispatch [:answer-comment-create id params])
+                                    (re-frame/dispatch [:get-answers pid])))}])
+                            (re-frame/dispatch [:navigate-to :single-new]))}
+               [nbase/box {:p 3}
+                [nbase/icon
+                 {:as Ionicons :name "chatbox-outline" :size "4"
+                  :color (theme/color "indigo.500" "indigo.800")}]]]
               [text/measured-text {:color "#d4d4d8"} (str (:comment_count answer))]]
              [nbase/box {:mb 6 :alignItems "center"}
               [text/measured-text {:color "#525252"} (time/month-date-from-string (:created_at answer))]]]]
