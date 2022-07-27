@@ -14,7 +14,8 @@
 
     ["react-native" :refer [Dimensions Clipboard]]
     ["react-native-modalize" :refer [Modalize]]
-    ["react-native-portalize" :refer [Portal]]))
+    ["react-native-portalize" :refer [Portal]]
+    ["react-native-vector-icons/Ionicons" :default Ionicons]))
 
 (defn view [h item]
   [nbase/vstack {:flex 1 :ml 2 :mt 1 :mr 2}
@@ -61,8 +62,30 @@
 
          [:> Portal
           [:> Modalize {:ref (fn [r] (reset! modal r))
-                         :onLayout #(let [height (j/get-in % [:nativeEvent :layout :height])]
-                                      (reset! h height))
+                        :onLayout #(let [height (j/get-in % [:nativeEvent :layout :height])]
+                                     (reset! h height))
+                        :HeaderComponent
+                        (reagent/as-element
+                          [nbase/box {:position "absolute"
+                                      :zIndex 2000
+                                      :right 4 :top 4}
+                           [rn/touchable-opacity
+                            {:on-press
+                             (fn [e]
+                               (re-frame/dispatch
+                                 [:keyboard-editor
+                                  {:type "single-line"
+                                   :callback-fn
+                                   (fn [x]
+                                     (let [params {:message x}
+                                           id (:id @(re-frame/subscribe [:answer]))
+                                           pid (:id @(re-frame/subscribe [:question]))]
+                                       (re-frame/dispatch [:answer-comment-create id params])
+                                       (re-frame/dispatch [:get-answers pid])))}])
+                               (re-frame/dispatch [:navigate-to :single-new])
+                               (j/call @modal :close))}
+                            [nbase/icon {:as Ionicons :name "ios-add-circle"
+                                         :size "6" :color "indigo.500"}]]])
                         :flatListProps
                         {:data comments
                          :showsHorizontalScrollIndicator false

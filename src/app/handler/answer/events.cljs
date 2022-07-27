@@ -162,7 +162,7 @@
    (let [{data :data} body]
      {:db (-> db
               (assoc-in [:loading :answer-comment-update] false))
-      :dispatch-n [[:navigate-to :answer-detail]
+      :dispatch-n [[:navigate-back]
                    [:answer-comments (get-in db [:answer :id])]]})))
 ;; -----------------------------------------------------
 (re-frame/reg-event-fx

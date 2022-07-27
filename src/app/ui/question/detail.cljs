@@ -7,7 +7,7 @@
     [app.util.time :as time]
     [app.ui.question.comment :as comment]
 
-    [steroid.rn.core :as srn]
+    [steroid.rn.core :as rn]
     [applied-science.js-interop :as j]
     [cljs-bean.core :as bean]
     [reagent.core :as reagent]
@@ -32,9 +32,9 @@
            [nbase/vstack {:m 1 :ml 2 :justifyContent "flex-start" :alignItems "flex-start"}
             [nbase/icon {:as Ionicons :name "help-circle"
                          :size "6" :color "indigo.500" :mb 6}]
-            [srn/touchable-highlight {:underlayColor "#cccccc"
-                                      :onPress (fn []
-                                                 (re-frame/dispatch [:navigate-to :question-detail2]))}
+            [rn/touchable-highlight {:underlayColor "#cccccc"
+                                     :onPress (fn []
+                                                (re-frame/dispatch [:navigate-to :question-detail2]))}
              [text/measured-text {:fontSize 18 :color "#71717a" :width (- @h 48)} (:question_content question)]]]
            (if-not (empty? (:question_detail question))
              [nbase/box {:ml 1 :mt 12}
@@ -80,18 +80,15 @@
                                      :size "4" :color "warmGray.500"}]
                         [text/measured-text {:color "#d4d4d8"} (str (j/get item :thanks_count))]]
                        [nbase/box {:mb 6 :alignItems "center"}
-                        [nbase/icon-button
-                         {:justifyContent "center" :alignItems "center"
-                          :_pressed {:bg (theme/color "blue.300" "blue.500")}
-                          :borderRadius "full" :p 3
-                          :icon
-                          (reagent/as-element
-                            [nbase/icon {:as Ionicons :name "chatbox-outline"
-                                         :size "4" :color "warmGray.500"}])
-                          :on-press (fn [e]
-                                      (re-frame/dispatch [:answer-comments (j/get item :id)])
-                                      (reset! is-open true)
-                                      (j/call @modal-open :open))}]
+                        [rn/touchable-opacity
+                         {
+                           :on-press (fn [e]
+                                       (re-frame/dispatch [:answer-comments (j/get item :id)])
+                                       (reset! is-open true)
+                                       (j/call @modal-open :open))}
+                         [nbase/box {:p 3}
+                          [nbase/icon {:as Ionicons :name "chatbox-outline"
+                                       :size "4" :color "warmGray.500"}]]]
                         [text/measured-text {:color "#d4d4d8"} (str (j/get item :comment_count))]]
                        [nbase/box {:mb 6 :alignItems "center"}
                         [text/measured-text {:color "#525252"} (time/month-date-from-string (j/get item :created_at))]]]]]])))}]
