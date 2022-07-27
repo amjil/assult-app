@@ -17,7 +17,6 @@
 
    ["react-native-smooth-blink-view" :default blinkview]
    ["react-native-svg" :as svg]
-   ["react-native-linear-gradient" :default linear-gradient]
    ["@react-navigation/stack" :refer [createStackNavigator]]
    ["react-native-portalize" :refer [Host]]
    ["native-base" :refer [extendTheme]]
@@ -160,8 +159,7 @@
      [(rnn/create-navigation-container-reload                 ;; navigation container with shadow-cljs hot reload
        {:on-ready #(re-frame/dispatch [:initialise-app])     ;; when navigation initialized and mounted initialize the app
         :theme @theme/theme}
-       [nativebase/nativebase-provider {:config {:dependencies {"linear-gradient" linear-gradient}}
-                                        :theme (extendTheme (bean/->js {:useSystemColorMode false :initialColorMode "dark"}))}
+       [nativebase/nativebase-provider {:theme (extendTheme (bean/->js {:useSystemColorMode false :initialColorMode "dark"}))}
         [gesture/gesture-root-view {:style {:flex 1}}
          [:> Host
           [navigator {:screenOptions {:headerShown false}}
