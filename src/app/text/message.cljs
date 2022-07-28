@@ -1,6 +1,6 @@
 (ns app.text.message
   (:require
-    [taoensso.tempura :as tempura :refer [tr]]))
+    [tongue.core :as tongue]))
 
 
 (def labels
@@ -15,7 +15,7 @@
    :delete "ᠬᠠᠰᠤᠬᠤ"
    :copy "ᠬᠠᠭᠤᠯᠬᠤ"})
 
-(def tempura-dictionary
+(def dicts
   {:om-MN
     {:errors
      {:already-has-answer "ᠲᠠ ᠨᠢᠭᠡᠨᠲᠡ ᠬᠠᠷᠢᠭᠤᠯᠤᠭᠰᠠᠨ ᠰᠢᠤ"}
@@ -23,20 +23,14 @@
      {:foo "test meesage"}}
    :zh-CN
     {:errors
-     {:already-has-answer "您已回答"}}})
+     {:already-has-answer "您已回答"}}
+   :tongue/fallback :en})
 
-
+(def translate
+  (tongue/build-translate dicts))
 ;; -----------------------------------------------------------
-(defn locale-mn-message [m]
+(defn translate-mn [m]
   (let [mk (if (keyword? m)
              m
              (keyword m))]
-    (tr
-      {:dict tempura-dictionary}
-      [:om-MN]
-      [mk])))
-
-; (tr ; Just a functional call
-;   {:dict tempura-dictionary} ; Opts map, see docstring for details
-;   [:om-MN :fr] ; Vector of descending-preference locales to search
-;   [:example/foo]) ; Vector of descending-preference resource-ids to search
+    (translate :om-MN mk)))
