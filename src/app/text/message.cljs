@@ -1,7 +1,6 @@
 (ns app.text.message
   (:require
-   [cljs-bean.core :refer [bean ->clj ->js]]
-   [applied-science.js-interop :as j]))
+    [taoensso.tempura :as tempura :refer [tr]]))
 
 
 (def labels
@@ -15,3 +14,29 @@
             :search-to-find "ᠬᠠᠯᠠᠮᠰᠢᠯ ᠬᠠᠢᠯᠲᠠ"}
    :delete "ᠬᠠᠰᠤᠬᠤ"
    :copy "ᠬᠠᠭᠤᠯᠬᠤ"})
+
+(def tempura-dictionary
+  {:om-MN
+    {:errors
+     {:already-has-answer "ᠲᠠ ᠨᠢᠭᠡᠨᠲᠡ ᠬᠠᠷᠢᠭᠤᠯᠤᠭᠰᠠᠨ ᠰᠢᠤ"}
+     :example
+     {:foo "test meesage"}}
+   :zh-CN
+    {:errors
+     {:already-has-answer "您已回答"}}})
+
+
+;; -----------------------------------------------------------
+(defn locale-mn-message [m]
+  (let [mk (if (keyword? m)
+             m
+             (keyword m))]
+    (tr
+      {:dict tempura-dictionary}
+      [:om-MN]
+      [mk])))
+
+; (tr ; Just a functional call
+;   {:dict tempura-dictionary} ; Opts map, see docstring for details
+;   [:om-MN :fr] ; Vector of descending-preference locales to search
+;   [:example/foo]) ; Vector of descending-preference resource-ids to search

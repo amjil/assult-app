@@ -2,6 +2,7 @@
   (:require
    [re-frame.core :as re-frame]
    [app.db :as db]
+   [app.text.message :as message]
    steroid.rn.navigation.events
    day8.re-frame.http-fx
    app.fx
@@ -52,7 +53,7 @@
          status (get-in response [:response :value :status])
          msg (if (= status 500)
                "The server error."
-               msg)]
+               (message/locale-mn-message msg))]
      {:db (-> db                                              ;; when we complete a request we need to clean so that our ui is nice and tidy
               (assoc-in [:errors request-type] msg)
               (assoc-in [:loading request-type] false))
