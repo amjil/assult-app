@@ -46,10 +46,10 @@
 (re-frame/reg-event-fx
  :api-request-error                                         ;; triggered when we get request-error from the server
  (fn [{db :db} [_ request-type response]]                   ;; destructure to obtain request-type and response
-   (js/console.log "api error " request-type " " (cljs-bean.core/->js response)
-                   "\nmessage = " (get-in response [:response :msg]))
-   (let [msg (get-in response [:response :msg])
-         status (get response :status)
+   (js/console.log "api error " (cljs-bean.core/->js request-type) " " (cljs-bean.core/->js response)
+                   "\nmessage = " (get-in response [:response :value :body :msg]))
+   (let [msg (get-in response [:response :value :body :msg])
+         status (get-in response [:response :value :status])
          msg (if (= status 500)
                "The server error."
                msg)]

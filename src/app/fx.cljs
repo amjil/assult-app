@@ -55,5 +55,5 @@
            :render
            (fn []
              (reagent/as-element
-               [nbase/box {:bg "emerald.500" :px "2" :py "1" :rounded "sm" :mb 5}
+               [nbase/box {:bg "emerald.500" :px "2" :py "1" :rounded "sm" :mt 10 :mb 5}
                 [text/measured-text props msg]]))})))))
