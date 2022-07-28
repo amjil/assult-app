@@ -34,78 +34,78 @@
 
 (def isopen (reagent/atom false))
 
+(defn- action-sheet []
+  [nbase/actionsheet {:isOpen @isopen :onClose #(reset! isopen false) :safeArea true}
+   [nbase/actionsheet-content {:maxH 300}
+    [nbase/container {:flexDirection "row"}
+     [nbase/box {:h "100%" :w 12 :py 4 :justifyContent "center"}
+      [text/measured-text (merge {:fontSize 16 :color "#71717a"} text/base-prop) (:name @actionsheet-data)]]
+     (for [x (:data @actionsheet-data)]
+       ^{:key x}
+       [nbase/actionsheet-item {:height 250 :w 12 :py 4
+                                :onPress (fn [e]
+                                           (reset! isopen false)
+                                           (swap! profiles assoc-in [@cursor :value] x))}
+        [text/measured-text (merge {:fontSize 16 :color "#1f2937"} text/base-prop) x]])]]])
+
 (defn profile []
-  [nbase/hstack {:bg "white" :h "100%"}
-   [nbase/vstack {:h "100%"
-                  :mx 4
-                  :px 2
-                  :borderLeftWidth "1"
-                  :borderRightWidth "1"
-                  :borderColor "gray.200"}
-    [nbase/box {:mt 2 :p "6" :borderRadius "md" :bg "primary.200"}]
-    [nbase/box {:mt 2
-                :ml 1
-                :justifyContent "center" :alignSelf "center" :alignItems "center"}
-     [text/measured-text {:fontSize 18 :fontFamily "MongolianBaiZheng"} "ᠰᠡᠴᠡᠨᠪᠦᠬᠡ"]]
-    [nbase/flex {:justifyContent "flex-end"
-                 :flex 1}
-     [nbase/box {:p "4" :bg "primary.200"
-                 :mb 2}]
-     [nbase/icon {:as Ionicons :name "chevron-down"
-                  :justifyContent "center" :alignSelf "center"}]]]
-   [nbase/actionsheet {:isOpen @isopen :onClose #(reset! isopen false) :safeArea true}
-    [nbase/actionsheet-content {:maxH 300}
-     [nbase/container {:flexDirection "row"}
-      [nbase/box {:h "100%" :w 12 :py 4 :justifyContent "center"}
-       [text/measured-text (merge {:fontSize 16 :color "#71717a"} text/base-prop) (:name @actionsheet-data)]]
-      (for [x (:data @actionsheet-data)]
-        ^{:key x}
-        [nbase/actionsheet-item {:height 250 :w 12 :py 4
-                                 :onPress (fn [e]
-                                            (reset! isopen false)
-                                            (swap! profiles assoc-in [@cursor :value] x))}
-         [text/measured-text (merge {:fontSize 16 :color "#1f2937"} text/base-prop) x]])]]]
-   [nbase/flat-list
-    {:keyExtractor    (fn [_ index] (str "profile-item-" index))
-     :data      @profiles
-     :renderItem (fn [x]
-                   (let [{:keys [item index separators]} (j/lookup x)]
-                     (reagent/as-element
-                       [nbase/pressable {:style {:height "100%"}; :width 28}}
-                                         :borderLeftWidth "1"
-                                         :borderColor "gray.200"
-                                         :on-press (fn [e]
-                                                     (reset! cursor index)
-                                                     (if (= "text" (j/get item :type))
-                                                       (re-frame/dispatch [:navigate-to :profile-edit])
-                                                       (do
-                                                        (reset! isopen true)
-                                                        (cond
-                                                          (= "gender" (j/get item :title))
-                                                          (reset! actionsheet-data {:name (j/get item :name) :data gender})
+  [ui/safe-area-consumer
+   [nbase/hstack {:bg "light.100" :flex 1}
+    [action-sheet]
+    [nbase/scroll-view
+     {:flex 1 :_contentContainerStyle {:flexGrow 1}
+      :horizontal true :nestedScrollEnabled true}
+     [nbase/vstack {:h "100%"
+                    :mx 4
+                    :px 2
+                    :borderLeftWidth "0.5"
+                    :borderRightWidth "0.5"
+                    :borderColor "gray.200"
+                    :bg "white"}
+      [nbase/box {:mt 2 :p 6 :borderRadius "md" :bg "gray.300"}]
+      [nbase/box {:mt 2
+                  :justifyContent "center" :alignSelf "center" :alignItems "center"}
+       [text/measured-text {:fontSize 18} "ᠰᠡᠴᠡᠨᠪᠦᠬᠡ"]]]
+     [nbase/flat-list
+      {:keyExtractor    (fn [_ index] (str "profile-item-" index))
+       :nestedScrollEnabled true
+       :data      @profiles
+       :renderItem (fn [x]
+                     (let [{:keys [item index separators]} (j/lookup x)]
+                       (reagent/as-element
+                         [nbase/pressable {:style {:height "100%"}; :width 28}}
+                                           :borderLeftWidth "0.5"
+                                           :borderColor "gray.200"
+                                           :bg "white"
+                                           :on-press (fn [e]
+                                                       (reset! cursor index)
+                                                       (if (= "text" (j/get item :type))
+                                                         (re-frame/dispatch [:navigate-to :profile-edit])
+                                                         (do
+                                                          (reset! isopen true)
+                                                          (cond
+                                                            (= "gender" (j/get item :title))
+                                                            (reset! actionsheet-data {:name (j/get item :name) :data gender})
 
-                                                          (= "marital" (j/get item :title))
-                                                          (reset! actionsheet-data {:name (j/get item :name) :data marital})))))}
-                        [nbase/box {:h "20%"
-                                    :mx 2
-                                    :pl 2
-                                    :pt 4}
-                         [text/measured-text {:fontFamily "MongolianBaiZheng" :fontSize 18
-                                              :color "#71717a"}
-                           (j/get item :name)]]
-                        [nbase/divider {:bg "gray.200" :thickness "1"
-                                        :w "100%"}]
-                        [nbase/box {:mx 2
-                                    :pl 2
-                                    :pt 4}
-                         [text/measured-text {:fontFamily "MongolianBaiZheng" :fontSize 18
-                                              :color "#71717a"}
-                           (j/get item :value)]]])))
+                                                            (= "marital" (j/get item :title))
+                                                            (reset! actionsheet-data {:name (j/get item :name) :data marital})))))}
+                          [nbase/box {:h "20%"
+                                      :mx 2
+                                      :pl 2
+                                      :pt 4}
+                           [text/measured-text {:fontSize 18 :color "#71717a"}
+                             (j/get item :name)]]
+                          [nbase/box {:mx 2
+                                      :pl 2
+                                      :pt 4}
+                           [text/measured-text {:fontSize 18
+                                                :color "#71717a"}
+                             (j/get item :value)]]])))
 
-     :w "auto"
-     :ml 2
-     :px 2
-     :horizontal true}]])
+       :w "auto"
+       :ml 2
+       :px 2
+       :horizontal true}]]]])
 
 (defn edit-view []
   [ui/safe-area-consumer
